@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 mongoose
   .connect(MongoURI)
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB!');
     initial();
   })
   .catch(err => console.log(err));
