@@ -4,50 +4,38 @@ const Account = require('../components/account/account.model');
 const Role = require('../components/role/role.model');
 
 const verifyToken = (req, res, next) => {
-  let token = req.headers['Authorization'];
+  let token = req.headers['authorization'];
 
   if (!token) {
-    return res.status(403).send({ message: 'No token provided!' });
+    return res.status(403).send({ message: 'No token provided' });
   }
 
-  jwt.verify(token, config.secret, (err, decoded) => {
+  jwt.verify(token.split(' ')[1], config.secret, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: 'Unauthorized!' });
+      return res.status(401).send({ message: 'Unauthorized' });
     }
-    req.userId = decoded.id;
+    req.accountId = decoded.id;
     next();
   });
 };
 
-const isAdmin = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
+const isAdmin = async (req, res, next) => {
+  try {
+    const account = await Account.findById(req.accountId);
+    if (!account) {
+      return res.status(500).json({ status: 'fail', message: "can't find account" });
     }
-
-    Role.find(
-      {
-        _id: { $in: user.roles },
-      },
-      (err, roles) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === 'admin') {
-            next();
-            return;
-          }
-        }
-
-        res.status(403).send({ message: 'Require Admin Role!' });
+    const roles = await Role.find({ _id: { $in: account.roles } });
+    for (let i = 0; i < roles.length; ++i) {
+      if (roles[i].name === 'admin') {
+        next();
         return;
       }
-    );
-  });
+    }
+    res.status(403).json({ status: 'fail', message: 'Unauthorized' });
+  } catch (err) {
+    return res.status(500).json({ status: 'fail', message: err });
+  }
 };
 
 module.exports = {

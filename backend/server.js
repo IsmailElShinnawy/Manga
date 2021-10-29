@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const Role = require('./components/role/role.model');
 const Account = require('./components/account/account.model');
 const authRouter = require('./components/auth/auth.routes');
+const accountRouter = require('./components/account/account.routes');
 
 var corsOptions = {
   origin: 'http://localhost:8081',
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRouter);
+app.use('/account', accountRouter);
 
 // simple route
 app.get('/', (req, res) => {
