@@ -1,0 +1,9 @@
+.button {
+  transition: transform 150ms ease-in-out;
+  &.disabled:hover {
+    cursor: not-allowed;
+  }
+  &:not(.disabled):hover {
+    transform: scale(0.95);
+  }
+}

@@ -10,7 +10,7 @@ const authRouter = require('./components/auth/auth.routes');
 const accountRouter = require('./components/account/account.routes');
 
 var corsOptions = {
-  origin: 'http://localhost:8081',
+  origin: 'http://localhost:3000',
 };
 
 const MongoURI =

@@ -60,13 +60,13 @@ const Input = ({
       </label>
       <input
         id={id}
-        className='bg-input-background rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-input-focus w-full'
+        className='bg-input-background rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-input-focus w-full mb-2'
         value={inputState.value}
         onChange={onChangeHandler}
         onBlur={onBlurHandler}
         type={type}
       />
-      <p className='text-input-error'>
+      <p className='text-input-error mb-2'>
         {!inputState.isValid && inputState.isTouched ? errorMsg : ''}
       </p>
     </>
