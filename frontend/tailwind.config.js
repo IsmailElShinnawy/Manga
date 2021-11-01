@@ -10,6 +10,12 @@ module.exports = {
         'input-error': '#fa0000',
         'button-background-primary': '#0000ff',
       },
+      minWidth: {
+        '1/2': '50%',
+      },
+      minHeight: {
+        '1/2': '50%',
+      },
     },
   },
   variants: {

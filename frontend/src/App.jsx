@@ -5,6 +5,7 @@ import ProvideAuth from './components/context/AuthContext';
 import AdminRoute from './components/HOC/AdminRoute';
 import AuthenticatedRoute from './components/HOC/AuthenticatedRoute';
 import Nav from './components/shared/Nav/Nav';
+import AdminPage from './components/admin/AdminPage';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <Switch>
           <Route path='/login' exact component={LoginPage} />
           <AdminRoute path='/admin' exact>
-            <main className='page flex justify-center items-center'>Admin Dashboard</main>
+            <AdminPage />
           </AdminRoute>
           <AuthenticatedRoute path='/user'>
             <main className='page flex justify-center items-center'>User profile</main>
