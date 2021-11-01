@@ -1,12 +1,7 @@
-exports.create = (req, res) => {
-  res.status(200).send('create flight Content.');
-};
+const Flight = require('./flight.model');
 
-exports.view = (req, res) => {
-  res.status(200).send('view Content.');
-};
-app.post('/createflight', async (req, res) => {
-  const f = new flight({
+exports.create = async (req, res) => {
+  const f = new Flight({
     flightNumber: req.body.flightNumber,
     departureTime: req.body.departureTime,
     arrivalTime: req.body.arrivalTime,
@@ -16,4 +11,8 @@ app.post('/createflight', async (req, res) => {
   });
   const result = await f.save();
   res.send(result);
-});
+};
+
+exports.view = (req, res) => {
+  res.status(200).send('view Content.');
+};

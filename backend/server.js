@@ -8,6 +8,7 @@ const Role = require('./components/role/role.model');
 const Account = require('./components/account/account.model');
 const authRouter = require('./components/auth/auth.routes');
 const accountRouter = require('./components/account/account.routes');
+const flightRouter = require('./components/flight/flight.routes');
 const flightModel = require('./components/flight/flight.model');
 const { listIndexes } = require('./components/role/role.model');
 
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRouter);
 app.use('/account', accountRouter);
+app.use('/flight', flightRouter);
 
 // simple route
 app.get('/', (req, res) => {
@@ -86,16 +88,3 @@ const initial = async () => {
     console.log(err);
   }
 };
-
-app.post('/createflight', async (req, res) => {
-  const f = new flight({
-    flightNumber: req.body.flightNumber,
-    departureTime: req.body.departureTime,
-    arrivalTime: req.body.arrivalTime,
-    economySeats: req.body.economySeats,
-    businessSeats: req.body.businessSeats,
-    airport: req.body.airport,
-  });
-  const result = await f.save();
-  res.send(result);
-});
