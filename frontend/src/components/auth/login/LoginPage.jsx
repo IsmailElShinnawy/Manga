@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Input } from '../../shared/UIKit/Inputs';
 import { Button } from '../../shared/UIKit/Buttons';
 import { useForm } from '../../../hooks/form-hook';
@@ -11,6 +12,9 @@ import { useHttpClient } from '../../../hooks/http-hook';
 
 import { ReactComponent as LockIcon } from '../../../assets/icons/IconLock.svg';
 import { setLocalAccessToken } from '../../../service/token.service';
+import { useAuth } from '../../context/AuthContext';
+import { isAdmin } from '../../../service/account.service';
+import { write } from '../../../service/localStorage.service';
 
 const LoginPage = () => {
   const { formState, inputHandler } = useForm(
@@ -18,6 +22,9 @@ const LoginPage = () => {
     false
   );
   const { sendRequest, isLoading, error } = useHttpClient();
+  const { signin } = useAuth();
+  const history = useHistory();
+  const location = useLocation();
   const onClickHandler = async event => {
     event.preventDefault();
     try {
@@ -30,10 +37,14 @@ const LoginPage = () => {
         },
         { 'Content-Type': 'application/json' }
       );
+      write('account', response.data.account);
       setLocalAccessToken(response.data.token);
-      console.log(response);
+      signin(response.data.account, response.data.token);
+      const { from } = location.state || {
+        from: { pathname: !isAdmin(response.data.account) ? '/' : '/admin' },
+      };
+      history.replace(from);
     } catch (err) {
-      // console.log(error.response.data.message);
       console.log(err);
     }
   };
