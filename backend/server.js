@@ -64,7 +64,6 @@ const initial = async () => {
   } catch (err) {
     console.log(err);
   }
-}
 
   try {
     const adminRoleId = (await Role.findOne({ name: 'admin' }))._id;
@@ -85,19 +84,18 @@ const initial = async () => {
     }
   } catch (err) {
     console.log(err);
-  } 
-  
-    app.post("/createflight",async(req,res)=> {
-      const f = new flight
-      ({
-        flightNumber: req.body.flightNumber,
-        departureTime : req.body.departureTime,
-        arrivalTime: req.body.arrivalTime,
-        economySeats: req.body.economySeats,
-        businessSeats: req.body.businessSeats,
-        airport: req.body.airport
-      });
-       const result =await f.save() 
-          res.send(result);
-        });
-        
+  }
+};
+
+app.post('/createflight', async (req, res) => {
+  const f = new flight({
+    flightNumber: req.body.flightNumber,
+    departureTime: req.body.departureTime,
+    arrivalTime: req.body.arrivalTime,
+    economySeats: req.body.economySeats,
+    businessSeats: req.body.businessSeats,
+    airport: req.body.airport,
+  });
+  const result = await f.save();
+  res.send(result);
+});
