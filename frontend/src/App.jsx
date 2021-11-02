@@ -6,6 +6,7 @@ import AdminRoute from './components/HOC/AdminRoute';
 import AuthenticatedRoute from './components/HOC/AuthenticatedRoute';
 import Nav from './components/shared/Nav/Nav';
 import AdminPage from './components/admin/AdminPage';
+import ProvideAdminDashboard from './components/context/AdminDashboardContext';
 
 function App() {
   return (

@@ -26,9 +26,7 @@ const AddFlightModalContent = () => {
     try {
       const flightNumber = formState.inputs.flightNumber.value;
       const departureDate = formState.inputs.departureDate.value;
-      departureDate.setDate(departureDate.getDate() + 1);
       const arrivalDate = formState.inputs.arrivalDate.value;
-      arrivalDate.setDate(arrivalDate.getDate() + 1);
       const numberOfEconomy = formState.inputs.numberOfEconomy.value;
       const numberOfBusiness = formState.inputs.numberOfBusiness.value;
       const departureDateTime =

@@ -4,6 +4,11 @@
 
 @import url('../node_modules/react-calendar/dist/Calendar.css');
 
+html,
+body {
+  background: #fafafa;
+}
+
 .page {
   min-height: calc(100vh - 100px);
 }
