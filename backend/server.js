@@ -9,8 +9,6 @@ const Account = require('./components/account/account.model');
 const authRouter = require('./components/auth/auth.routes');
 const accountRouter = require('./components/account/account.routes');
 const flightRouter = require('./components/flight/flight.routes');
-const flightModel = require('./components/flight/flight.model');
-const { listIndexes } = require('./components/role/role.model');
 
 var corsOptions = {
   origin: 'http://localhost:3000',
@@ -86,5 +84,5 @@ const initial = async () => {
     }
   } catch (err) {
     console.log(err);
-  }  
-}
+  }
+};
