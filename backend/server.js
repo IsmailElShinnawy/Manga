@@ -86,5 +86,5 @@ const initial = async () => {
     }
   } catch (err) {
     console.log(err);
-  }
-};
+  }  
+}
