@@ -13,7 +13,7 @@ const CalendarInput = ({ id, label, minDate, maxDate, value = new Date(), onChan
           maxDate={maxDate}
           value={value}
           onChange={onChange}
-          className='rounded-lg'
+          className='rounded-lg w-full'
         />
       </div>
     </>

@@ -12,8 +12,8 @@ const AddFlightModalContent = () => {
       flightNumber: { value: '', isValid: false },
       departureDate: { value: new Date(), isValid: true },
       arrivalDate: { value: new Date(), isValid: true },
-      arrivalTime: { value: new Date(), isValid: true },
-      departureTime: { value: new Date(), isValid: true },
+      arrivalTime: { value: '12:00', isValid: true },
+      departureTime: { value: '12:00', isValid: true },
       numberOfEconomy: { value: 0, isValid: false },
       numberOfBusiness: { value: 0, isValid: false },
     },
@@ -25,6 +25,9 @@ const AddFlightModalContent = () => {
     setIsLoading(true);
     setTimeout(() => {
       console.log(formState.inputs);
+      // console.log(formState.inputs.arrivalDate.value.toISOString());
+      // console.log(formState.inputs.departureDate.value.toISOString());
+      // formState.inputs.arrivalDate.value.setTime();
       setIsLoading(false);
     }, 1000);
   };
@@ -84,10 +87,7 @@ const AddFlightModalContent = () => {
                 <TimeInput
                   label='Arrival Time'
                   value={formState.inputs.arrivalTime.value}
-                  onChange={v => {
-                    console.log(v);
-                    inputHandler('arrivalTime', v, true);
-                  }}
+                  onChange={v => inputHandler('arrivalTime', v, true)}
                 />
               </div>
             </div>
