@@ -6,7 +6,6 @@ import AdminRoute from './components/HOC/AdminRoute';
 import AuthenticatedRoute from './components/HOC/AuthenticatedRoute';
 import Nav from './components/shared/Nav/Nav';
 import AdminPage from './components/admin/AdminPage';
-import AddFlightPage from './components/admin/AddFlightPage';
 
 function App() {
   return (
@@ -26,9 +25,6 @@ function App() {
               403 - You are not authorized to access this page
             </main>
           </Route>
-          {/* <AdminRoute path='/newflight' exact>
-            <AddFlightPage />
-          </AdminRoute> */}
           <Route path='/' exact>
             <main className='page flex justify-center items-center'>Home</main>
           </Route>

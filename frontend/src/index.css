@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('../node_modules/react-calendar/dist/Calendar.css');
+
 .page {
   min-height: calc(100vh - 100px);
 }
