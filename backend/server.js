@@ -8,6 +8,8 @@ const Role = require('./components/role/role.model');
 const Account = require('./components/account/account.model');
 const authRouter = require('./components/auth/auth.routes');
 const accountRouter = require('./components/account/account.routes');
+const flightRouter = require('./components/flight/flight.routes');
+const flightModel = require('./components/flight/flight.model');
 
 var corsOptions = {
   origin: 'http://localhost:8081',
@@ -24,6 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRouter);
 app.use('/account', accountRouter);
+app.use('/flight', flightRouter);
 
 // simple route
 app.get('/', (req, res) => {
@@ -83,4 +86,12 @@ const initial = async () => {
   } catch (err) {
     console.log(err);
   }
+
 };
+
+  
+  
+  
+
+
+
