@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { useForm } from '../../hooks/form-hook';
 import { ReactComponent as AirplaneIcon } from '../../assets/icons/IconAirplane.svg';
 import { VALIDATOR_REQUIRE, VALIDATOR_MIN } from '../../utils/validators';
 import { Input, CalendarInput, TimeInput } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
+import { useHttpClient } from '../../hooks/http-hook';
 
 const AddFlightModalContent = () => {
   const { formState, inputHandler } = useForm(
@@ -19,17 +20,44 @@ const AddFlightModalContent = () => {
     },
     false
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const handleAddFlight = event => {
+  const { sendRequest, error, isLoading } = useHttpClient();
+  const handleAddFlight = async event => {
     event.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      console.log(formState.inputs);
-      // console.log(formState.inputs.arrivalDate.value.toISOString());
-      // console.log(formState.inputs.departureDate.value.toISOString());
-      // formState.inputs.arrivalDate.value.setTime();
-      setIsLoading(false);
-    }, 1000);
+    try {
+      const flightNumber = formState.inputs.flightNumber.value;
+      const departureDate = formState.inputs.departureDate.value;
+      departureDate.setDate(departureDate.getDate() + 1);
+      const arrivalDate = formState.inputs.arrivalDate.value;
+      arrivalDate.setDate(arrivalDate.getDate() + 1);
+      const numberOfEconomy = formState.inputs.numberOfEconomy.value;
+      const numberOfBusiness = formState.inputs.numberOfBusiness.value;
+      const departureDateTime =
+        departureDate.toISOString().split('T')[0] +
+        'T' +
+        formState.inputs.departureTime.value +
+        ':00.000Z';
+      const arrivalDateTime =
+        arrivalDate.toISOString().split('T')[0] +
+        'T' +
+        formState.inputs.arrivalTime.value +
+        ':00.000Z';
+      const response = await sendRequest(
+        '/flight',
+        'POST',
+        {
+          flightNumber,
+          departureTime: departureDateTime,
+          arrivalTime: arrivalDateTime,
+          economySeats: numberOfEconomy,
+          businessSeats: numberOfBusiness,
+          airport: 'EGY',
+        },
+        { 'Content-Type': 'application/json' }
+      );
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <>
@@ -130,6 +158,11 @@ const AddFlightModalContent = () => {
               loadingText='Adding...'
             />
           </div>
+          {error && (
+            <p className='text-red-500'>
+              Could not complete your request: {error.message}
+            </p>
+          )}
         </form>
       </div>
     </>

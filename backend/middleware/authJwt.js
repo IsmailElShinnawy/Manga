@@ -21,7 +21,6 @@ const verifyToken = (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   try {
-    console.log(req.accountId);
     const account = await Account.findById(req.accountId);
     if (!account) {
       return res.status(500).json({ status: 'fail', message: "can't find account" });
