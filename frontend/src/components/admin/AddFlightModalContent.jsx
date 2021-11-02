@@ -11,8 +11,8 @@ const AddFlightModalContent = () => {
     {
       flightNumber: { value: '', isValid: false },
       departureDate: { value: new Date(), isValid: true },
-      arrivalDate: { value: new Date().getTime(), isValid: true },
-      arrivalTime: { value: new Date().getTime(), isValid: true },
+      arrivalDate: { value: new Date(), isValid: true },
+      arrivalTime: { value: new Date(), isValid: true },
       departureTime: { value: new Date(), isValid: true },
       numberOfEconomy: { value: 0, isValid: false },
       numberOfBusiness: { value: 0, isValid: false },
