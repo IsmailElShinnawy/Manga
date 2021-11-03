@@ -16,7 +16,7 @@ const AdminPage = () => {
         <AddFlightModalContent />
       </Modal>
       <main className='page'>
-        <div className='flex items-center'>
+        <div className='flex items-center py-3'>
           <p>Admin Dashboard</p>
           <div className='w-max ml-auto mr-8'>
             <Button text='Add flight' lg onClick={() => setShowModal(true)} />
