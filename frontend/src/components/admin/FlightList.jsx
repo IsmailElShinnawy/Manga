@@ -40,7 +40,10 @@ const FlightList = () => {
               Arrival Time
             </th>
             <th scope='col' className='p-2 pl-0 text-left'>
-              Airport
+              Departure Terminal
+            </th>
+            <th scope='col' className='p-2 pl-0 text-left'>
+              Arrival Terminal
             </th>
             <th scope='col' className='p-2 pl-0 text-left'>
               Economy Seats
@@ -71,7 +74,8 @@ const FlightList = () => {
                 }-${arrivalTime.getFullYear()} ${arrivalTime.getHours()}:${
                   arrivalTime.getMinutes() < 10 ? 0 : ''
                 }${arrivalTime.getMinutes()}`}</td>
-                <td className='py-2'>{flight.airport}</td>
+                <td className='py-2'>{flight.departureTerminal}</td>
+                <td className='py-2'>{flight.arrivalTerminal}</td>
                 <td className='py-2'>{flight.economySeats}</td>
                 <td className='py-2'>{flight.businessSeats}</td>
               </tr>

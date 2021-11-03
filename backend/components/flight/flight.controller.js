@@ -1,14 +1,24 @@
 const Flight = require('./flight.model');
 
 exports.create = async (req, res) => {
+  const {
+    flightNumber,
+    departureTime,
+    arrivalTime,
+    economySeats,
+    businessSeats,
+    departureTerminal,
+    arrivalTerminal,
+  } = req.body;
   try {
     const f = new Flight({
-      flightNumber: req.body.flightNumber,
-      departureTime: req.body.departureTime,
-      arrivalTime: req.body.arrivalTime,
-      economySeats: req.body.economySeats,
-      businessSeats: req.body.businessSeats,
-      airport: req.body.airport,
+      flightNumber: flightNumber,
+      departureTime: departureTime,
+      arrivalTime: arrivalTime,
+      economySeats: +economySeats,
+      businessSeats: +businessSeats,
+      departureTerminal: departureTerminal,
+      arrivalTerminal: arrivalTerminal,
     });
     const result = await f.save();
     res.status(200).json({ status: 'success', data: result });

@@ -22,7 +22,11 @@ const flightSchema = new Schema(
       type: Number,
       required: true,
     },
-    airport: {
+    departureTerminal: {
+      type: String,
+      required: true,
+    },
+    arrivalTerminal: {
       type: String,
       required: true,
     },

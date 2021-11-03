@@ -17,6 +17,8 @@ const AddFlightModalContent = () => {
       departureTime: { value: '12:00', isValid: true },
       numberOfEconomy: { value: 0, isValid: false },
       numberOfBusiness: { value: 0, isValid: false },
+      departureTerminal: { value: '', isValid: false },
+      arrivalTerminal: { value: '', isValid: false },
     },
     false
   );
@@ -29,6 +31,8 @@ const AddFlightModalContent = () => {
       const arrivalDate = formState.inputs.arrivalDate.value;
       const numberOfEconomy = formState.inputs.numberOfEconomy.value;
       const numberOfBusiness = formState.inputs.numberOfBusiness.value;
+      const departureTerminal = formState.inputs.departureTerminal.value;
+      const arrivalTerminal = formState.inputs.arrivalTerminal.value;
       const departureDateTime =
         departureDate.toISOString().split('T')[0] +
         'T' +
@@ -48,7 +52,8 @@ const AddFlightModalContent = () => {
           arrivalTime: arrivalDateTime,
           economySeats: numberOfEconomy,
           businessSeats: numberOfBusiness,
-          airport: 'EGY',
+          departureTerminal,
+          arrivalTerminal,
         },
         { 'Content-Type': 'application/json' }
       );
@@ -83,6 +88,36 @@ const AddFlightModalContent = () => {
               isValid={formState.inputs.flightNumber.isValid}
               placeholder='ex: 6182'
             />
+          </div>
+          <div className='w-2/3 flex'>
+            <div className='w-1/2'>
+              <div className='max-w-max'>
+                <Input
+                  id='departureTerminal'
+                  isValid={formState.inputs.departureTerminal.isValid}
+                  label='Departure Terminal'
+                  onInput={inputHandler}
+                  placeholder='ex: EGY'
+                  validators={[VALIDATOR_REQUIRE()]}
+                  errorMsg='required'
+                  value={formState.inputs.departureTerminal.value}
+                />
+              </div>
+            </div>
+            <div className='w-1/2'>
+              <div className='max-w-max'>
+                <Input
+                  id='arrivalTerminal'
+                  isValid={formState.inputs.arrivalTerminal.isValid}
+                  label='Arrival Terminal'
+                  onInput={inputHandler}
+                  placeholder='ex: JAP'
+                  validators={[VALIDATOR_REQUIRE()]}
+                  errorMsg='required'
+                  value={formState.inputs.arrivalTerminal.value}
+                />
+              </div>
+            </div>
           </div>
           <div className='w-2/3 flex'>
             <div className='w-1/2 pr-4'>
