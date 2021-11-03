@@ -34,4 +34,10 @@ const flightSchema = new Schema(
   { timestamps: true }
 );
 
+flightSchema.index({
+  flightNumber: 'text',
+  departureTerminal: 'text',
+  arrivalTerminal: 'text',
+});
+
 module.exports = model('Flight', flightSchema);
