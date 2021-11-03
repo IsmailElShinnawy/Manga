@@ -140,7 +140,7 @@ const AddFlightModalContent = () => {
               <CalendarInput
                 id='arrivalDate'
                 label='Arrival Date'
-                minDate={new Date()}
+                minDate={formState.inputs.departureDate.value}
                 value={formState.inputs.arrivalDate.value}
                 onChange={v => inputHandler('arrivalDate', v, true)}
               />
