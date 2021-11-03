@@ -50,7 +50,13 @@ exports.searchFlights = async (req, res) => {
   } = req.body;
   const criteria = [];
   if (term.trim().length > 0) {
-    criteria.push({ $text: { $search: term.trim() } });
+    criteria.push({
+      $or: [
+        { flightNumber: { $regex: new RegExp(term.trim()) } },
+        { arrivalTerminal: { $regex: new RegExp(term.trim()) } },
+        { departureTerminal: { $regex: new RegExp(term.trim()) } },
+      ],
+    });
   }
   if (fromArrivalDate) {
     const startDate = new Date(`${fromArrivalDate}T00:00:00.000Z`);

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Search } from '../shared/UIKit/Inputs';
 import { useHttpClient } from '../../hooks/http-hook';
 import months from '../../utils/months';
 import { useAdminDashboard } from '../context/AdminDashboardContext';
@@ -23,10 +24,24 @@ const FlightList = () => {
     fetchAndSetFlights();
   }, [sendRequest, setFlights]);
 
+  const onResponse = useCallback(flights => {
+    setFlights(flights);
+  }, []);
+
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className='w-full p-4 bg-white rounded-xl shadow-xl'>
+      <div className='flex items-center'>
+        <h1>All flights</h1>
+        <div className='w-3/12 ml-auto'>
+          <Search
+            placeholder='Search using flight number or airport terminals...'
+            url='/flight/search'
+            onResponse={onResponse}
+          />
+        </div>
+      </div>
       <table className='table-auto w-full'>
         <thead style={{ background: '#fafafa' }}>
           <tr>
