@@ -9,7 +9,6 @@ const Search = ({ placeholder, url, options = {}, onResponse }) => {
   const debouncedSearchTerm = useDebounced(searchTerm, 1000);
 
   useEffect(() => {
-    // console.log('in');
     const search = async () => {
       try {
         const response = await sendRequest(
@@ -35,6 +34,8 @@ const Search = ({ placeholder, url, options = {}, onResponse }) => {
           id='searchTerm'
           onInput={(_, value) => setSearchTerm(value)}
           placeholder={placeholder}
+          validators={[]}
+          isValid={true}
         />
       </div>
       {isLoading && (

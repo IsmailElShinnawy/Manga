@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Search } from '../shared/UIKit/Inputs';
+import { CalendarInput, Search } from '../shared/UIKit/Inputs';
 import { useHttpClient } from '../../hooks/http-hook';
 import months from '../../utils/months';
 import { useAdminDashboard } from '../context/AdminDashboardContext';
@@ -42,7 +42,7 @@ const FlightList = () => {
           />
         </div>
       </div>
-      <table className='table-auto w-full'>
+      <table className='w-full'>
         <thead style={{ background: '#fafafa' }}>
           <tr>
             <th scope='col' className='p-2 pl-0 text-left'>
