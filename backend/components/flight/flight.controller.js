@@ -7,26 +7,31 @@ exports.updateFlight = async (req, res) => {
     arrivalTime,
     economySeats,
     businessSeats,
-    depratureTerminal,
+    departureTerminal,
     arrivalTerminal,
   } = req.body;
-
-  const oldFlightData = await Flight.findById(req.params.id);
-  console.log(oldFlightData);
-  const updatedFlightData = {
-    flightNumber: flightNumber || oldFlightData.flightNumber,
-    departureTime: departureTime || oldFlightData.departureTime,
-    arrivalTime: arrivalTime || oldFlightData.arrivalTime,
-    economySeats: +economySeats || oldFlightData.economySeats,
-    businessSeats: +businessSeats || oldFlightData.businessSeats,
-    depratureTerminal: depratureTerminal || oldFlightData.depratureTerminal,
-    arrivalTerminal: arrivalTerminal || oldFlightData.arrivalTerminal,
-  };
-  console.log(
-    Flight.findByIdAndUpdate({ _id: req.params.id }, updatedFlightData, {
-      returnDocument: "after",
-    })
-  );
+  try {
+    const oldFlightData = await Flight.findById(req.params.id);
+    const updatedFlightData = {
+      flightNumber: flightNumber || oldFlightData.flightNumber,
+      departureTime: departureTime || oldFlightData.departureTime,
+      arrivalTime: arrivalTime || oldFlightData.arrivalTime,
+      economySeats: +economySeats || oldFlightData.economySeats,
+      businessSeats: +businessSeats || oldFlightData.businessSeats,
+      departureTerminal: departureTerminal || oldFlightData.depratureTerminal,
+      arrivalTerminal: arrivalTerminal || oldFlightData.arrivalTerminal,
+    };
+    const result = await Flight.findByIdAndUpdate(
+      { _id: req.params.id },
+      updatedFlightData,
+      {
+        returnDocument: "after",
+      }
+    );
+    res.status(200).json({ status: "success", data: result });
+  } catch (err) {
+    res.status(500).json({ status: "fail", message: err });
+  }
 };
 exports.create = async (req, res) => {
   const {
