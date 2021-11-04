@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('../node_modules/react-calendar/dist/Calendar.css');
+
+html,
+body {
+  background: #fafafa;
+}
+
+.page {
+  min-height: calc(100vh - 100px);
+}
+
+.shrink {
+  transition: transform 150ms ease-in-out;
+}
+
+.shrink:hover {
+  transform: scale(0.95);
+}
+
+.shrink-lg:hover {
+  transform: scale(0.9);
+}

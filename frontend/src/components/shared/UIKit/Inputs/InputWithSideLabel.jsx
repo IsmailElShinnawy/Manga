@@ -19,7 +19,7 @@ const inputReducer = (state, action) => {
   }
 };
 
-const Input = ({
+const InputWithSideLabel = ({
   id,
   label,
   validators,
@@ -55,8 +55,8 @@ const Input = ({
   }, [id, inputState.value, inputState.isValid, onInput]);
 
   return (
-    <>
-      <label htmlFor={id} className='block w-full mb-2 font-bold'>
+    <div className='flex'>
+      <label htmlFor={id} className='mr-2 font-bold'>
         {label}
       </label>
       <input
@@ -73,8 +73,8 @@ const Input = ({
       <p className='text-input-error mb-2'>
         {!inputState.isValid && inputState.isTouched ? errorMsg : ''}
       </p>
-    </>
+    </div>
   );
 };
 
-export default Input;
+export default InputWithSideLabel;

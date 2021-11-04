@@ -1,8 +1,11 @@
 const express = require("express");
-const router = express.Router();
-const { isAdmin, verifyToken } = require("../../middleware/authJwt");
-const { updateFlight } = require("./flight.controller");
 
+const { create, view, updateFlight } = require("./flight.controller");
+const { isAdmin, verifyToken } = require("../../middleware/authJwt");
+const router = express.Router();
+
+router.post("/", [verifyToken, isAdmin], create);
+router.get("/", view);
 router.put("/:id", [verifyToken, isAdmin], updateFlight);
 
 module.exports = router;

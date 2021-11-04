@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/auth", authRouter);
 app.use("/account", accountRouter);
-app.use("/flights", flightRouter);
+app.use("/flight", flightRouter);
 
 // simple route
 app.get("/", (req, res) => {
