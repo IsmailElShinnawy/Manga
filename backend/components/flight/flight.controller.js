@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 
-const updateFlight = async (req, res) => {
+exports.updateFlight = async (req, res) => {
   const {
     flightNumber,
     departureTime,
     arrivalTime,
     economySeats,
     businessSeats,
-    airport,
+    depratureTerminal,
+    arrivalTerminal,
   } = req.body;
 
   const oldFlightData = await mongoose.findById(req.params.id);
@@ -18,15 +19,12 @@ const updateFlight = async (req, res) => {
     arrivalTime: arrivalTime || oldFlightData.arrivalTime,
     economySeats: +economySeats || oldFlightData.economySeats,
     businessSeats: +businessSeats || oldFlightData.businessSeats,
-    airport: +airport || oldFlightData.airport,
+    depratureTerminal: depratureTerminal || oldFlightData.depratureTerminal,
+    arrivalTerminal: arrivalTerminal || oldFlightData.arrivalTerminal,
   };
   console.log(
     mongoose.findByIdAndUpdate({ _id: req.params.id }, updatedFlightData, {
       returnDocument: "after",
     })
   );
-};
-
-module.exports = {
-  updateFlight,
 };
