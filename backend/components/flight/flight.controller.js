@@ -136,3 +136,16 @@ exports.searchFlights = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err });
   }
 };
+
+exports.deleteFlight = async (req, res) => {
+  var toBeDeleted = req.body.flights;
+  for (var i of toBeDeleted) {
+    try {
+      await Flight.deleteOne({ _id: i });
+    } catch (err) {
+      res.status(500).json({ status: 'fail', message: err });
+      console.log(err);
+    }
+  }
+  res.status(200).json({ status: 'Success', data: null });
+};
