@@ -37,14 +37,18 @@ const FlightList = () => {
     fetchAndSetFlights();
   }, [sendRequest, setFlights]);
 
-  const deleteFlight = async () => {
+  const deleteFlights = async () => {
     try {
       const response = await sendDeleteRequest(
         '/flight',
         'DELETE',
-        {},
+        {
+          flights: flightsToDelete,
+        },
         { 'Content-Type': 'application/json' }
       );
+      console.log(response);
+      setShowConfirmDelete(false);
     } catch (err) {
       console.log(err);
     }
@@ -102,10 +106,20 @@ const FlightList = () => {
           </h2>
           <div className='flex justify-end'>
             <div className='mr-2'>
-              <Button onClick={() => setShowConfirmDelete(false)} text='Cancel' />
+              <Button
+                onClick={() => setShowConfirmDelete(false)}
+                text='Cancel'
+                disabled={isDeleting}
+              />
             </div>
             <div>
-              <Button danger loadingText='Deleting...' text='Confirm Delete' />
+              <Button
+                danger
+                loadingText='Deleting...'
+                text='Confirm Delete'
+                isLoading={isDeleting}
+                onClick={deleteFlights}
+              />
             </div>
           </div>
         </div>
