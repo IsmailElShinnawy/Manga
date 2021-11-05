@@ -8,7 +8,7 @@ import { Input, CalendarInput, TimeInput } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
 import { useHttpClient } from '../../hooks/http-hook';
 
-const AddFlightModalContent = ({ edit, flight }) => {
+const AddFlightModalContent = ({ edit, flight, onResponse }) => {
   const { formState, inputHandler } = useForm(
     {
       flightNumber: { value: flight?.flightNumber || '', isValid: !!flight },
@@ -67,7 +67,7 @@ const AddFlightModalContent = ({ edit, flight }) => {
         },
         { 'Content-Type': 'application/json' }
       );
-      console.log(response);
+      if (onResponse) onResponse(response.data);
     } catch (err) {
       console.log(err);
     }

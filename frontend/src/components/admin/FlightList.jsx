@@ -9,16 +9,23 @@ import AddFlightModalContent from './AddFlightModalContent';
 import { Button } from '../shared/UIKit/Buttons';
 
 const FlightList = () => {
+  // fetching flights
   const { isLoading, sendRequest } = useHttpClient();
-  const { isLoading: isDeleting, sendRequest: sendDeleteRequest } = useHttpClient();
   const [flights, setFlights] = useState([]);
 
+  // adding flight
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // filtering
   const [isFilterOpened, setIsFilterOpened] = useState(false);
   const [options, setOptions] = useState({});
 
+  // updating flight
   const [isEditing, setIsEditing] = useState(false);
   const [flightToEdit, setFlightToEdit] = useState({});
 
+  // deleting flight
+  const { isLoading: isDeleting, sendRequest: sendDeleteRequest } = useHttpClient();
   const [flightsToDelete, setFlightsToDelete] = useState([]);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
@@ -26,10 +33,7 @@ const FlightList = () => {
     const fetchAndSetFlights = async () => {
       try {
         const response = await sendRequest('/flight');
-        if (response && response.data) {
-          setFlights(response.data);
-        }
-        console.log(response);
+        if (response && response.data) setFlights(response.data);
       } catch (err) {
         console.log(err);
       }
@@ -47,8 +51,13 @@ const FlightList = () => {
         },
         { 'Content-Type': 'application/json' }
       );
-      console.log(response);
       setShowConfirmDelete(false);
+      if (response) {
+        flightsToDelete.forEach(flightId => {
+          setFlights(flights => flights.filter(f => f._id !== flightId));
+        });
+      }
+      setFlightsToDelete([]);
     } catch (err) {
       console.log(err);
     }
@@ -83,19 +92,39 @@ const FlightList = () => {
   };
 
   const checkboxInputHandler = useCallback((id, checked) => {
-    if (checked) {
-      addFlightToDelete(id);
-    } else {
-      removeFlightToDelete(id);
-    }
+    if (checked) addFlightToDelete(id);
+    else removeFlightToDelete(id);
   }, []);
+
+  const addFlight = flight => {
+    setFlights(oldFlights => [...oldFlights, flight]);
+  };
+
+  const updateFlight = flight => {
+    setFlights(oldFlights => [...oldFlights.filter(f => f._id !== flight._id), flight]);
+  };
 
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <>
+      <Modal show={showAddModal} close={() => setShowAddModal(false)}>
+        <AddFlightModalContent
+          onResponse={flight => {
+            addFlight(flight);
+            setShowAddModal(false);
+          }}
+        />
+      </Modal>
       <Modal close={() => setIsEditing(false)} show={isEditing}>
-        <AddFlightModalContent edit={true} flight={flightToEdit} />
+        <AddFlightModalContent
+          edit={true}
+          flight={flightToEdit}
+          onResponse={flight => {
+            updateFlight(flight);
+            setIsEditing(false);
+          }}
+        />
       </Modal>
       <Modal show={showConfirmDelete} close={() => setShowConfirmDelete(false)} sm>
         <div className='w-full h-full flex flex-col p-6'>
@@ -124,6 +153,9 @@ const FlightList = () => {
           </div>
         </div>
       </Modal>
+      <div className='w-max ml-auto mr-8'>
+        <Button text='Add flight' lg onClick={() => setShowAddModal(true)} />
+      </div>
       <div className='w-full p-4 bg-white rounded-xl shadow-xl'>
         <div className='flex items-center'>
           <h1>All flights</h1>
