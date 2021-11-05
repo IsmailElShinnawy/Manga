@@ -1,4 +1,5 @@
 const Flight = require('./flight.model');
+const moment = require('moment');
 
 exports.create = async (req, res) => {
   const {
@@ -59,20 +60,20 @@ exports.searchFlights = async (req, res) => {
     });
   }
   if (fromArrivalDate) {
-    const startDate = new Date(`${fromArrivalDate}T00:00:00.000Z`);
-    criteria.push({ arrivalTime: { $gte: new Date(startDate) } });
+    const startDate = moment(fromArrivalDate).toDate();
+    criteria.push({ arrivalTime: { $gte: startDate } });
   }
   if (toArrivalDate) {
-    const endDate = new Date(`${toArrivalDate}T23:59:59.000Z`);
-    criteria.push({ arrivalTime: { $lt: new Date(endDate) } });
+    const endDate = moment(toArrivalDate).add(1, 'days').toDate();
+    criteria.push({ arrivalTime: { $lt: endDate } });
   }
   if (fromDepartureDate) {
-    const startDate = new Date(`${fromDepartureDate}T00:00:00.000Z`);
-    criteria.push({ departureTime: { $gte: new Date(startDate) } });
+    const startDate = moment(fromDepartureDate).toDate();
+    criteria.push({ departureTime: { $gte: startDate } });
   }
   if (toDepartureDate) {
-    const endDate = new Date(`${toDepartureDate}T23:59:59.000Z`);
-    criteria.push({ departureTime: { $lt: new Date(endDate) } });
+    const endDate = moment(toDepartureDate).add(1, 'days').toDate();
+    criteria.push({ departureTime: { $lt: endDate } });
   }
   try {
     const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});
