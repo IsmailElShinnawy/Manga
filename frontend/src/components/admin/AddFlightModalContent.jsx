@@ -8,20 +8,32 @@ import { Input, CalendarInput, TimeInput } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
 import { useHttpClient } from '../../hooks/http-hook';
 
-const AddFlightModalContent = () => {
+const AddFlightModalContent = ({ edit, flight }) => {
   const { formState, inputHandler } = useForm(
     {
-      flightNumber: { value: '', isValid: false },
-      departureDate: { value: moment(), isValid: true },
-      arrivalDate: { value: moment(), isValid: true },
-      arrivalTime: { value: '12:00', isValid: true },
-      departureTime: { value: '12:00', isValid: true },
-      numberOfEconomy: { value: 0, isValid: false },
-      numberOfBusiness: { value: 0, isValid: false },
-      departureTerminal: { value: '', isValid: false },
-      arrivalTerminal: { value: '', isValid: false },
+      flightNumber: { value: flight?.flightNumber || '', isValid: !!flight },
+      departureDate: {
+        value: flight ? moment(flight.departureTime) : moment(),
+        isValid: true,
+      },
+      arrivalDate: {
+        value: flight ? moment(flight.arrivalTime) : moment(),
+        isValid: true,
+      },
+      arrivalTime: {
+        value: flight ? moment(flight.arrivalTime).format('HH:mm') : '12:00',
+        isValid: true,
+      },
+      departureTime: {
+        value: flight ? moment(flight.departureTime).format('HH:mm') : '12:00',
+        isValid: true,
+      },
+      numberOfEconomy: { value: flight?.economySeats || 0, isValid: !!flight },
+      numberOfBusiness: { value: flight?.businessSeats || 0, isValid: !!flight },
+      departureTerminal: { value: flight?.departureTerminal || '', isValid: !!flight },
+      arrivalTerminal: { value: flight?.arrivalTerminal || '', isValid: !!flight },
     },
-    false
+    !!flight
   );
   const { sendRequest, error, isLoading } = useHttpClient();
   const handleAddFlight = async event => {
@@ -42,8 +54,8 @@ const AddFlightModalContent = () => {
       const departureTerminal = formState.inputs.departureTerminal.value;
       const arrivalTerminal = formState.inputs.arrivalTerminal.value;
       const response = await sendRequest(
-        '/flight',
-        'POST',
+        `/flight${edit ? `/${flight._id}` : ''}`,
+        edit ? 'PUT' : 'POST',
         {
           flightNumber,
           departureTime: departureDateTime,
@@ -71,7 +83,7 @@ const AddFlightModalContent = () => {
           className='ml-2 mr-2'
           outline='none'
         />
-        <h2 className='text-white text-3xl'>New Flight</h2>
+        <h2 className='text-white text-3xl'>{`${edit ? 'Edit' : 'Add'}`} Flight</h2>
       </div>
       <div className='w-full p-4'>
         <form onSubmit={handleAddFlight}>
@@ -122,7 +134,7 @@ const AddFlightModalContent = () => {
               <CalendarInput
                 id='departureDate'
                 label='Departure Date'
-                minDate={moment().toDate()}
+                minDate={edit ? null : moment().toDate()}
                 value={formState.inputs.departureDate.value.toDate()}
                 onChange={date => inputHandler('departureDate', moment(date), true)}
               />
@@ -138,7 +150,7 @@ const AddFlightModalContent = () => {
               <CalendarInput
                 id='arrivalDate'
                 label='Arrival Date'
-                minDate={formState.inputs.departureDate.value.toDate()}
+                minDate={edit ? null : formState.inputs.departureDate.value.toDate()}
                 value={formState.inputs.arrivalDate.value.toDate()}
                 onChange={date => inputHandler('arrivalDate', moment(date), true)}
               />
@@ -181,12 +193,12 @@ const AddFlightModalContent = () => {
           </div>
           <div className='w-1/3'>
             <Button
-              text='Add'
+              text={edit ? 'Save Changes' : 'Add'}
               disabled={!formState.isValid}
               type='submit'
               onClick={handleAddFlight}
               isLoading={isLoading}
-              loadingText='Adding...'
+              loadingText={edit ? 'Saving...' : 'Adding...'}
             />
           </div>
           {error && (
