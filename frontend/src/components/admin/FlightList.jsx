@@ -39,6 +39,13 @@ const FlightList = () => {
     }));
   };
 
+  const clearOption = id => {
+    setOptions(oldOptions => ({
+      ...oldOptions,
+      [id]: null,
+    }));
+  };
+
   if (isLoading) return <p>Loading...</p>;
 
   return (
@@ -64,7 +71,11 @@ const FlightList = () => {
       </div>
       {isFilterOpened && (
         <div className='p-8'>
-          <FilterFlights addOption={addOption} options={options} />
+          <FilterFlights
+            addOption={addOption}
+            clearOption={clearOption}
+            options={options}
+          />
         </div>
       )}
       <table className='w-full'>
@@ -103,10 +114,10 @@ const FlightList = () => {
               >
                 <td className='py-2'>{flight.flightNumber}</td>
                 <td className='py-2'>
-                  {moment(flight.departureTime).format('DD-MMM-YYYY hh:mm')}
+                  {moment(flight.departureTime).format('DD-MMM-YYYY hh:mm A')}
                 </td>
                 <td className='py-2'>
-                  {moment(flight.arrivalTime).format('DD-MMM-YYYY hh:mm')}
+                  {moment(flight.arrivalTime).format('DD-MMM-YYYY hh:mm A')}
                 </td>
                 <td className='py-2'>{flight.departureTerminal}</td>
                 <td className='py-2'>{flight.arrivalTerminal}</td>

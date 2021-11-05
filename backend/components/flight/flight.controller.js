@@ -60,19 +60,39 @@ exports.searchFlights = async (req, res) => {
     });
   }
   if (fromArrivalDate) {
-    const startDate = moment(fromArrivalDate).toDate();
+    const extractedDate = moment(fromArrivalDate).format('YYYY-MM-DD');
+    const startDate = moment(
+      `${extractedDate} ${fromArrivalTime ? fromArrivalTime : ''}`,
+      'YYYY-MM-DD hh:mm'
+    ).toDate();
     criteria.push({ arrivalTime: { $gte: startDate } });
   }
   if (toArrivalDate) {
-    const endDate = moment(toArrivalDate).add(1, 'days').toDate();
+    const extractedDate = moment(toArrivalDate).format('YYYY-MM-DD');
+    const endDate = moment(
+      `${extractedDate} ${toArrivalTime ? toArrivalTime : ''}`,
+      'YYYY-MM-DD hh:mm'
+    )
+      .add(toArrivalTime ? 0 : 1, 'days')
+      .toDate();
     criteria.push({ arrivalTime: { $lt: endDate } });
   }
   if (fromDepartureDate) {
-    const startDate = moment(fromDepartureDate).toDate();
+    const extractedDate = moment(fromDepartureDate).format('YYYY-MM-DD');
+    const startDate = moment(
+      `${extractedDate} ${fromDepartureTime ? fromDepartureTime : ''}`,
+      'YYYY-MM-DD hh:mm'
+    ).toDate();
     criteria.push({ departureTime: { $gte: startDate } });
   }
   if (toDepartureDate) {
-    const endDate = moment(toDepartureDate).add(1, 'days').toDate();
+    const extractedDate = moment(toDepartureDate).format('YYYY-MM-DD');
+    const endDate = moment(
+      `${extractedDate} ${toDepartureTime ? toDepartureTime : ''}`,
+      'YYYY-MM-DD hh:mm'
+    )
+      .add(toDepartureTime ? 0 : 1, 'days')
+      .toDate();
     criteria.push({ departureTime: { $lt: endDate } });
   }
   try {
