@@ -25,9 +25,6 @@ const AdminPage = () => {
           <div className='col-span-12'>
             <FlightList />
           </div>
-          {/* <div className='col-span-5'>
-            <FlightCard />
-          </div> */}
         </div>
       </main>
     </ProvideAdminDashboard>

@@ -3,11 +3,15 @@ import { Search } from '../shared/UIKit/Inputs';
 import { useHttpClient } from '../../hooks/http-hook';
 import { useAdminDashboard } from '../context/AdminDashboardContext';
 import moment from 'moment';
+import FilterFlights from './FilterFlights';
+import { ReactComponent as FilterIcon } from '../../assets/icons/IconFilter.svg';
 
 const FlightList = () => {
   const { isLoading, sendRequest } = useHttpClient();
   const [flights, setFlights] = useState([]);
   const { selectFlight } = useAdminDashboard();
+  const [isFilterOpened, setIsFilterOpened] = useState(false);
+  const [options, setOptions] = useState({});
 
   useEffect(() => {
     const fetchAndSetFlights = async () => {
@@ -28,20 +32,41 @@ const FlightList = () => {
     setFlights(flights);
   }, []);
 
+  const addOption = (id, value) => {
+    setOptions(oldOptions => ({
+      ...oldOptions,
+      [id]: value,
+    }));
+  };
+
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className='w-full p-4 bg-white rounded-xl shadow-xl'>
       <div className='flex items-center'>
         <h1>All flights</h1>
-        <div className='w-3/12 ml-auto'>
+        <FilterIcon
+          className='ml-auto hover:cursor-pointer hover:bg-gray-300 rounded-md'
+          fill='#ffffff'
+          stroke='#0000ff'
+          width='32px'
+          height='32px'
+          onClick={() => setIsFilterOpened(isFilterOpened => !isFilterOpened)}
+        />
+        <div className='w-3/12'>
           <Search
             placeholder='Search using flight number or airport terminals...'
             url='/flight/search'
             onResponse={onResponse}
+            options={options}
           />
         </div>
       </div>
+      {isFilterOpened && (
+        <div className='p-8'>
+          <FilterFlights addOption={addOption} options={options} />
+        </div>
+      )}
       <table className='w-full'>
         <thead style={{ background: '#fafafa' }}>
           <tr>

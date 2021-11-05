@@ -25,7 +25,7 @@ const Search = ({ placeholder, url, options = {}, onResponse }) => {
       }
     };
     search();
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, options]);
 
   return (
     <div className='w-full flex items-center'>
