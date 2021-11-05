@@ -5,7 +5,6 @@ import Modal from '../shared/Modal/Modal';
 import AddFlightModalContent from './AddFlightModalContent';
 import FlightList from './FlightList';
 import ProvideAdminDashboard from '../context/AdminDashboardContext';
-import FlightCard from './FlightCard';
 
 const AdminPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -16,7 +15,7 @@ const AdminPage = () => {
         <AddFlightModalContent />
       </Modal>
       <main className='page'>
-        <div className='flex items-center'>
+        <div className='flex items-center py-3'>
           <p>Admin Dashboard</p>
           <div className='w-max ml-auto mr-8'>
             <Button text='Add flight' lg onClick={() => setShowModal(true)} />
@@ -26,9 +25,6 @@ const AdminPage = () => {
           <div className='col-span-12'>
             <FlightList />
           </div>
-          {/* <div className='col-span-5'>
-            <FlightCard />
-          </div> */}
         </div>
       </main>
     </ProvideAdminDashboard>

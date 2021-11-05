@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Search } from '../shared/UIKit/Inputs';
 import { useHttpClient } from '../../hooks/http-hook';
-import months from '../../utils/months';
 import { useAdminDashboard } from '../context/AdminDashboardContext';
+import moment from 'moment';
+import FilterFlights from './FilterFlights';
+import { ReactComponent as FilterIcon } from '../../assets/icons/IconFilter.svg';
 
 const FlightList = () => {
-  const { isLoading, error, sendRequest } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [flights, setFlights] = useState([]);
   const { selectFlight } = useAdminDashboard();
+  const [isFilterOpened, setIsFilterOpened] = useState(false);
+  const [options, setOptions] = useState({});
 
   useEffect(() => {
     const fetchAndSetFlights = async () => {
@@ -23,11 +28,57 @@ const FlightList = () => {
     fetchAndSetFlights();
   }, [sendRequest, setFlights]);
 
+  const onResponse = useCallback(flights => {
+    setFlights(flights);
+  }, []);
+
+  const addOption = (id, value) => {
+    setOptions(oldOptions => ({
+      ...oldOptions,
+      [id]: value,
+    }));
+  };
+
+  const clearOption = id => {
+    setOptions(oldOptions => ({
+      ...oldOptions,
+      [id]: null,
+    }));
+  };
+
   if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className='w-full p-4 bg-white rounded-xl shadow-xl'>
-      <table className='table-auto w-full'>
+      <div className='flex items-center'>
+        <h1>All flights</h1>
+        <FilterIcon
+          className='ml-auto hover:cursor-pointer hover:bg-gray-300 rounded-md'
+          fill='#ffffff'
+          stroke='#0000ff'
+          width='32px'
+          height='32px'
+          onClick={() => setIsFilterOpened(isFilterOpened => !isFilterOpened)}
+        />
+        <div className='w-3/12'>
+          <Search
+            placeholder='Search using flight number or airport terminals...'
+            url='/flight/search'
+            onResponse={onResponse}
+            options={options}
+          />
+        </div>
+      </div>
+      {isFilterOpened && (
+        <div className='p-8'>
+          <FilterFlights
+            addOption={addOption}
+            clearOption={clearOption}
+            options={options}
+          />
+        </div>
+      )}
+      <table className='w-full'>
         <thead style={{ background: '#fafafa' }}>
           <tr>
             <th scope='col' className='p-2 pl-0 text-left'>
@@ -55,8 +106,6 @@ const FlightList = () => {
         </thead>
         <tbody className='divide-y'>
           {flights.map(flight => {
-            const departureTime = new Date(flight.departureTime);
-            const arrivalTime = new Date(flight.arrivalTime);
             return (
               <tr
                 key={flight._id}
@@ -64,16 +113,12 @@ const FlightList = () => {
                 onClick={() => selectFlight(flight)}
               >
                 <td className='py-2'>{flight.flightNumber}</td>
-                <td className='py-2'>{`${departureTime.getDay()}-${
-                  months[departureTime.getMonth()]
-                }-${departureTime.getFullYear()} ${departureTime.getHours()}:${
-                  departureTime.getMinutes() < 10 ? 0 : ''
-                }${departureTime.getMinutes()}`}</td>
-                <td className='py-2'>{`${arrivalTime.getDay()}-${
-                  months[arrivalTime.getMonth()]
-                }-${arrivalTime.getFullYear()} ${arrivalTime.getHours()}:${
-                  arrivalTime.getMinutes() < 10 ? 0 : ''
-                }${arrivalTime.getMinutes()}`}</td>
+                <td className='py-2'>
+                  {moment(flight.departureTime).format('DD-MMM-YYYY hh:mm A')}
+                </td>
+                <td className='py-2'>
+                  {moment(flight.arrivalTime).format('DD-MMM-YYYY hh:mm A')}
+                </td>
                 <td className='py-2'>{flight.departureTerminal}</td>
                 <td className='py-2'>{flight.arrivalTerminal}</td>
                 <td className='py-2'>{flight.economySeats}</td>

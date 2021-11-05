@@ -51,7 +51,9 @@ const Input = ({
   };
 
   useEffect(() => {
-    onInput(id, inputState.value, inputState.isValid);
+    if (onInput) {
+      onInput(id, inputState.value, inputState.isValid);
+    }
   }, [id, inputState.value, inputState.isValid, onInput]);
 
   return (
