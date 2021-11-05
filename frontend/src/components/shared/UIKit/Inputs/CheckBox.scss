@@ -1,0 +1,23 @@
+.checkbox {
+  background-color: #000 !important;
+}
+
+.checkbox-div::after {
+  content: '';
+}
+
+.checked::after {
+  width: 12px;
+  height: 7px;
+  border-width: 0px 0px 1px 1px;
+  border-color: blue;
+  display: block;
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  transform: rotate(-45deg);
+}
+
+.checked.danger::after {
+  border-color: red;
+}

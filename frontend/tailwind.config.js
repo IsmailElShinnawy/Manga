@@ -11,10 +11,12 @@ module.exports = {
         'button-background-primary': '#0000ff',
       },
       minWidth: {
+        '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
       },
       minHeight: {
+        '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
       },
