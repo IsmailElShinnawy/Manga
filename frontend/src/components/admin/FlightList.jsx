@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { CalendarInput, Search } from '../shared/UIKit/Inputs';
+import { Search } from '../shared/UIKit/Inputs';
 import { useHttpClient } from '../../hooks/http-hook';
-import months from '../../utils/months';
 import { useAdminDashboard } from '../context/AdminDashboardContext';
+import moment from 'moment';
 
 const FlightList = () => {
-  const { isLoading, error, sendRequest } = useHttpClient();
+  const { isLoading, sendRequest } = useHttpClient();
   const [flights, setFlights] = useState([]);
   const { selectFlight } = useAdminDashboard();
 
@@ -70,8 +70,6 @@ const FlightList = () => {
         </thead>
         <tbody className='divide-y'>
           {flights.map(flight => {
-            const departureTime = new Date(flight.departureTime);
-            const arrivalTime = new Date(flight.arrivalTime);
             return (
               <tr
                 key={flight._id}
@@ -79,16 +77,12 @@ const FlightList = () => {
                 onClick={() => selectFlight(flight)}
               >
                 <td className='py-2'>{flight.flightNumber}</td>
-                <td className='py-2'>{`${departureTime.getDay()}-${
-                  months[departureTime.getMonth()]
-                }-${departureTime.getFullYear()} ${departureTime.getHours()}:${
-                  departureTime.getMinutes() < 10 ? 0 : ''
-                }${departureTime.getMinutes()}`}</td>
-                <td className='py-2'>{`${arrivalTime.getDay()}-${
-                  months[arrivalTime.getMonth()]
-                }-${arrivalTime.getFullYear()} ${arrivalTime.getHours()}:${
-                  arrivalTime.getMinutes() < 10 ? 0 : ''
-                }${arrivalTime.getMinutes()}`}</td>
+                <td className='py-2'>
+                  {moment(flight.departureTime).format('DD-MMM-YYYY hh:mm')}
+                </td>
+                <td className='py-2'>
+                  {moment(flight.arrivalTime).format('DD-MMM-YYYY hh:mm')}
+                </td>
                 <td className='py-2'>{flight.departureTerminal}</td>
                 <td className='py-2'>{flight.arrivalTerminal}</td>
                 <td className='py-2'>{flight.economySeats}</td>

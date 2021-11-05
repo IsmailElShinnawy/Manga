@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 
 import { useForm } from '../../hooks/form-hook';
 import { ReactComponent as AirplaneIcon } from '../../assets/icons/IconAirplane.svg';
@@ -11,8 +12,8 @@ const AddFlightModalContent = () => {
   const { formState, inputHandler } = useForm(
     {
       flightNumber: { value: '', isValid: false },
-      departureDate: { value: new Date(), isValid: true },
-      arrivalDate: { value: new Date(), isValid: true },
+      departureDate: { value: moment(), isValid: true },
+      arrivalDate: { value: moment(), isValid: true },
       arrivalTime: { value: '12:00', isValid: true },
       departureTime: { value: '12:00', isValid: true },
       numberOfEconomy: { value: 0, isValid: false },
@@ -26,23 +27,20 @@ const AddFlightModalContent = () => {
   const handleAddFlight = async event => {
     event.preventDefault();
     try {
+      // console.log(formState.inputs);
       const flightNumber = formState.inputs.flightNumber.value;
       const departureDate = formState.inputs.departureDate.value;
+      const departureTime = formState.inputs.departureTime.value;
       const arrivalDate = formState.inputs.arrivalDate.value;
+      const arrivalTime = formState.inputs.arrivalTime.value;
+      const extractedDepartureDate = departureDate.format('YYYY-MM-DD');
+      const extractedArrivalDate = arrivalDate.format('YYYY-MM-DD');
+      const departureDateTime = moment(`${extractedDepartureDate} ${departureTime}`);
+      const arrivalDateTime = moment(`${extractedArrivalDate} ${arrivalTime}`);
       const numberOfEconomy = formState.inputs.numberOfEconomy.value;
       const numberOfBusiness = formState.inputs.numberOfBusiness.value;
       const departureTerminal = formState.inputs.departureTerminal.value;
       const arrivalTerminal = formState.inputs.arrivalTerminal.value;
-      const departureDateTime =
-        departureDate.toISOString().split('T')[0] +
-        'T' +
-        formState.inputs.departureTime.value +
-        ':00.000Z';
-      const arrivalDateTime =
-        arrivalDate.toISOString().split('T')[0] +
-        'T' +
-        formState.inputs.arrivalTime.value +
-        ':00.000Z';
       const response = await sendRequest(
         '/flight',
         'POST',
@@ -124,15 +122,15 @@ const AddFlightModalContent = () => {
               <CalendarInput
                 id='departureDate'
                 label='Departure Date'
-                minDate={new Date()}
-                value={formState.inputs.departureDate.value}
-                onChange={v => inputHandler('departureDate', v, true)}
+                minDate={moment().toDate()}
+                value={formState.inputs.departureDate.value.toDate()}
+                onChange={date => inputHandler('departureDate', moment(date), true)}
               />
               <div className='mt-4'>
                 <TimeInput
                   label='Departure Time'
                   value={formState.inputs.departureTime.value}
-                  onChange={v => inputHandler('departureTime', v, true)}
+                  onChange={time => inputHandler('departureTime', time, true)}
                 />
               </div>
             </div>
@@ -140,15 +138,15 @@ const AddFlightModalContent = () => {
               <CalendarInput
                 id='arrivalDate'
                 label='Arrival Date'
-                minDate={formState.inputs.departureDate.value}
-                value={formState.inputs.arrivalDate.value}
-                onChange={v => inputHandler('arrivalDate', v, true)}
+                minDate={formState.inputs.departureDate.value.toDate()}
+                value={formState.inputs.arrivalDate.value.toDate()}
+                onChange={date => inputHandler('arrivalDate', moment(date), true)}
               />
               <div className='mt-4'>
                 <TimeInput
                   label='Arrival Time'
                   value={formState.inputs.arrivalTime.value}
-                  onChange={v => inputHandler('arrivalTime', v, true)}
+                  onChange={time => inputHandler('arrivalTime', time, true)}
                 />
               </div>
             </div>

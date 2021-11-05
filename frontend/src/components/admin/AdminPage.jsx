@@ -5,7 +5,6 @@ import Modal from '../shared/Modal/Modal';
 import AddFlightModalContent from './AddFlightModalContent';
 import FlightList from './FlightList';
 import ProvideAdminDashboard from '../context/AdminDashboardContext';
-import FlightCard from './FlightCard';
 
 const AdminPage = () => {
   const [showModal, setShowModal] = useState(false);
