@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 const Role = require('./components/role/role.model');
 const Account = require('./components/account/account.model');
@@ -11,11 +12,10 @@ const accountRouter = require('./components/account/account.routes');
 const flightRouter = require('./components/flight/flight.routes');
 
 var corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
 };
 
-const MongoURI =
-  'mongodb+srv://mangaAdmin:mangaAdmin111@cluster0.mmmpx.mongodb.net/MangaFlightsDB?retryWrites=true&w=majority';
+const MongoURI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.mmmpx.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
 
 const app = express();
 
@@ -68,15 +68,15 @@ const initial = async () => {
   try {
     const adminRoleId = (await Role.findOne({ name: 'admin' }))._id;
     const adminAccount = await Account.findOne({
-      email: 'admin@mangaflights.com',
+      email: `${process.env.ADMIN_EMAIL}`,
       username: 'admin',
     });
 
     if (!adminAccount) {
       const admin = new Account({
-        email: 'admin@mangaflights.com',
+        email: `${process.env.ADMIN_EMAIL}`,
         username: 'admin',
-        password: bcrypt.hashSync('mangaAdmin111', 8),
+        password: bcrypt.hashSync(`${process.env.ADMIN_PASSWORD}`, 8),
         roles: [adminRoleId],
       });
 
