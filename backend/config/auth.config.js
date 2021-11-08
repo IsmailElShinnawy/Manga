@@ -1,3 +1,3 @@
 module.exports = {
-  secret: 'acl-manga-secret',
+  secret: `${process.env.JWT_SECRET}`,
 };
