@@ -1,172 +1,112 @@
-import React from 'react';
 import moment from 'moment';
+import React from 'react';
+import { useAdminDashboard } from '../context/AdminDashboardContext';
+import { Search, TimeInput } from '../shared/UIKit/Inputs';
+import DateInput from '../shared/UIKit/Inputs/DateInput';
 
-import { CalendarInput, TimeInput } from '../shared/UIKit/Inputs';
+const FilterFlights = () => {
+  const { filterOptions, addOption, removeOption, setFlights } = useAdminDashboard();
 
-import { ReactComponent as XIcon } from '../../assets/icons/IconX.svg';
+  const {
+    fromDepartureDate = '',
+    toDepartureDate = '',
+    fromArrivalDate = '',
+    toArrivalDate = '',
+    fromDepartureTime = '',
+    toDepartureTime = '',
+    fromArrivalTime = '',
+    toArrivalTime = '',
+  } = filterOptions;
 
-const FilterFlights = ({
-  addOption,
-  clearOption,
-  options: {
-    fromDepartureDate = null,
-    toDepartureDate = null,
-    fromArrivalDate = null,
-    toArrivalDate = null,
-    fromDepartureTime = null,
-    toDepartureTime = null,
-    fromArrivalTime = null,
-    toArrivalTime = null,
-  },
-}) => {
   return (
-    <>
-      <h2>Filter</h2>
-      <div className='flex'>
-        <div className='w-1/2'>
-          <h3>Departure Date:</h3>
-          <div className='flex'>
-            <div className='w-1/2 p-2'>
-              <div>
-                <CalendarInput
-                  id='fromDepartureDate'
-                  label='From:'
-                  onChange={date => {
-                    addOption('fromDepartureDate', moment(date).toDate());
-                  }}
-                  value={fromDepartureDate}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('fromDepartureDate')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-              <div>
-                <TimeInput
-                  label='From:'
-                  onChange={time => addOption('fromDepartureTime', time)}
-                  value={fromDepartureTime}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('fromDepartureTime')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-            </div>
-            <div className='w-1/2 p-2'>
-              <div>
-                <CalendarInput
-                  id='toDepartureDate'
-                  label='To:'
-                  onChange={date => {
-                    addOption('toDepartureDate', moment(date).toDate());
-                  }}
-                  value={toDepartureDate}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('toDepartureDate')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-              <div>
-                <TimeInput
-                  label='To:'
-                  onChange={time => addOption('toDepartureTime', time)}
-                  value={toDepartureTime}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('toDepartureTime')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className='flex flex-col bg-white rounded-xl shadow-xl p-2'>
+      <Search
+        placeholder='Search for a flight using flight number or airport terminals'
+        options={filterOptions}
+        url='/flight/search'
+        onResponse={setFlights}
+      />
+      <div className='grid grid-cols-2'>
+        <div className='mb-2'>
+          <DateInput
+            id='fromDepartureDate'
+            label='From Departure Date:'
+            onChange={event =>
+              addOption('fromDepartureDate', moment(event.target.value).toDate())
+            }
+            value={
+              !!fromDepartureDate ? moment(fromDepartureDate).format('yyyy-MM-DD') : ''
+            }
+            clear={() => removeOption('fromDepartureDate')}
+          />
         </div>
-        <div className='w-1/2'>
-          <h3>Arrival Date:</h3>
-          <div className='flex'>
-            <div className='w-1/2 p-2'>
-              <div>
-                <CalendarInput
-                  id='fromArrivalDate'
-                  label='From:'
-                  onChange={date => {
-                    addOption('fromArrivalDate', moment(date).toDate());
-                  }}
-                  value={fromArrivalDate}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('fromArrivalDate')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-              <div>
-                <TimeInput
-                  label='From:'
-                  onChange={time => addOption('fromArrivalTime', time)}
-                  value={fromArrivalTime}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('fromArrivalTime')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-            </div>
-            <div className='w-1/2 p-2'>
-              <div>
-                <CalendarInput
-                  id='toArrivalDate'
-                  label='To:'
-                  onChange={date => {
-                    addOption('toArrivalDate', moment(date).toDate());
-                  }}
-                  value={toArrivalDate}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('toArrivalDate')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-              <div>
-                <TimeInput
-                  label='To:'
-                  onChange={time => addOption('toArrivalTime', time)}
-                  value={toArrivalTime}
-                />
-                <p
-                  className='flex items-center hover:cursor-pointer shrink mt-2'
-                  onClick={() => clearOption('toArrivalTime')}
-                >
-                  <XIcon fill='red' />
-                  <span className='text-red-500'>Clear Selection</span>
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className='mb-2'>
+          <TimeInput
+            label='From Departure Time:'
+            value={fromDepartureTime}
+            onChange={time => addOption('fromDepartureTime', time)}
+            clear={() => removeOption('fromDepartureTime')}
+          />
+        </div>
+        <div className='mb-2'>
+          <DateInput
+            id='toDepartureDate'
+            label='To Departure Date:'
+            onChange={event =>
+              addOption('toDepartureDate', moment(event.target.value).toDate())
+            }
+            value={!!toDepartureDate ? moment(toDepartureDate).format('yyyy-MM-DD') : ''}
+            clear={() => removeOption('toDepartureDate')}
+          />
+        </div>
+        <div className='mb-2'>
+          <TimeInput
+            label='To Departure Time:'
+            value={toDepartureTime}
+            onChange={time => addOption('toDepartureTime', time)}
+            clear={() => removeOption('toDepartureTime')}
+          />
+        </div>
+        <div className='mb-2'>
+          <DateInput
+            id='fromArrivalDate'
+            label='From Arrival Date:'
+            onChange={event =>
+              addOption('fromArrivalDate', moment(event.target.value).toDate())
+            }
+            value={!!fromArrivalDate ? moment(fromArrivalDate).format('yyyy-MM-DD') : ''}
+            clear={() => removeOption('fromArrivalDate')}
+          />
+        </div>
+        <div className='mb-2'>
+          <TimeInput
+            label='From Arrival Time:'
+            value={fromArrivalTime}
+            onChange={time => addOption('fromArrivalTime', time)}
+            clear={() => removeOption('fromArrivalTime')}
+          />
+        </div>
+        <div className='mb-2'>
+          <DateInput
+            id='toArrivalDate'
+            label='To Arrival Date:'
+            onChange={event =>
+              addOption('toArrivalDate', moment(event.target.value).toDate())
+            }
+            value={!!toArrivalDate ? moment(toArrivalDate).format('yyyy-MM-DD') : ''}
+            clear={() => removeOption('toArrivalDate')}
+          />
+        </div>
+        <div className='mb-2'>
+          <TimeInput
+            label='To Arrival Time:'
+            value={toArrivalTime}
+            onChange={time => addOption('toArrivalTime', time)}
+            clear={() => removeOption('toArrivalTime')}
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
