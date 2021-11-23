@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { isAdmin } from '../../../service/account.service';
 import { remove } from '../../../service/localStorage.service';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../UIKit/Buttons';
@@ -17,13 +18,23 @@ const Nav = () => {
     signout();
   };
   return noNavRoutes.includes(location.pathname) ? null : (
-    <nav className='Nav shadow-lg w-full flex items-center px-16'>
+    <nav className='Nav shadow-lg w-full flex items-center justify-end px-16'>
+      {location.pathname !== '/' && (
+        <Link to='/' className='nav-btn shrink mr-2'>
+          Back to home
+        </Link>
+      )}
+      {isAdmin(account) && location.pathname !== '/admin' && (
+        <Link to='/admin' className='nav-btn shrink mr-2'>
+          To Admin Dashboard
+        </Link>
+      )}
       {account ? (
-        <div className='ml-auto'>
+        <div className=''>
           <Button text='Logout' lg onClick={onLogoutHandler} />
         </div>
       ) : (
-        <Link to='/login' className='auth-btn shrink'>
+        <Link to='/login' className='nav-btn shrink'>
           login
         </Link>
       )}
