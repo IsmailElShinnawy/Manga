@@ -14,6 +14,18 @@ const accountSchema = new Schema({
     type: String,
     required: true,
   },
+  firstname: {
+    type: String,
+    required: true,
+  },
+  lastname: {
+    type: String,
+    required: true,
+  },
+  passportNumber: {
+    type: Number,
+    required: true,
+  }, 
   roles: [
     {
       type: Schema.Types.ObjectId,
