@@ -195,7 +195,6 @@ exports.deleteFlight = async (req, res) => {
   res.status(200).json({ status: 'Success', data: null });
 };
 
-<<<<<<< HEAD
 exports.viewFlight=async (req,res)=>{
   try{
   var flight= await Flight.findById(req.params.id);
@@ -210,7 +209,6 @@ exports.viewFlight=async (req,res)=>{
 
 
 
-=======
 exports.getFlightSeatInfo = async (req, res) => {
   const { cabin } = req.body;
   try {
@@ -228,4 +226,3 @@ exports.getFlightSeatInfo = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err });
   }
 };
->>>>>>> 7ee2249a2f3749736fc07a0577403c9edd4eaefe
