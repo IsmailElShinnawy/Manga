@@ -1,4 +1,5 @@
 const Flight = require('./flight.model');
+const { businessCabinClass, economyCabinClass } = require('../../config/flight.config');
 const moment = require('moment');
 
 exports.updateFlight = async (req, res) => {
@@ -15,8 +16,8 @@ exports.updateFlight = async (req, res) => {
     const oldFlightData = await Flight.findById(req.params.id);
     const updatedFlightData = {
       flightNumber: flightNumber || oldFlightData.flightNumber,
-      departureTime: departureTime || oldFlightData.departureTime,
-      arrivalTime: arrivalTime || oldFlightData.arrivalTime,
+      departureTime: new Date(departureTime) || oldFlightData.departureTime,
+      arrivalTime: new Date(arrivalTime) || oldFlightData.arrivalTime,
       economySeats: +economySeats || oldFlightData.economySeats,
       businessSeats: +businessSeats || oldFlightData.businessSeats,
       departureTerminal: departureTerminal || oldFlightData.depratureTerminal,
@@ -47,8 +48,8 @@ exports.create = async (req, res) => {
   try {
     const f = new Flight({
       flightNumber: flightNumber,
-      departureTime: departureTime,
-      arrivalTime: arrivalTime,
+      departureTime: new Date(departureTime),
+      arrivalTime: new Date(arrivalTime),
       economySeats: +economySeats,
       businessSeats: +businessSeats,
       departureTerminal: departureTerminal,
@@ -133,6 +134,38 @@ exports.searchFlights = async (req, res) => {
     res.status(200).json({ status: 'success', data: flights });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
+exports.userSearchFlights = async (req, res) => {
+  const {
+    passengers,
+    departureTerminal,
+    arrivalTerminal,
+    departureDate,
+    arrivalDate,
+    cabinClass,
+  } = req.body;
+
+  try {
+    const minDepartureTime = moment(departureDate, 'YYYY-MM-DD');
+    const maxDepartureTime = moment(departureDate, 'YYYY-MM-DD').add(1, 'days');
+    const minArrivalTime = moment(arrivalDate, 'YYYY-MM-DD');
+    const maxArrivalTime = moment(arrivalDate, 'YYYY-MM-DD').add(1, 'days');
+    const seats = cabinClass === economyCabinClass ? 'economySeats' : 'businessSeats';
+    const flights = await Flight.find({
+      departureTerminal,
+      arrivalTerminal,
+      departureTime: {
+        $gte: minDepartureTime.toDate(),
+        $lt: maxDepartureTime.toDate(),
+      },
+      arrivalTime: { $gte: minArrivalTime.toDate(), $lt: maxArrivalTime.toDate() },
+      [seats]: { $gte: passengers < 0 ? 0 : passengers },
+    });
+    res.status(200).json({ status: 'success', data: flights });
+  } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
   }
 };
