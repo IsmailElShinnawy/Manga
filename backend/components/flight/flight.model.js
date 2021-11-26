@@ -30,6 +30,19 @@ const flightSchema = new Schema(
       type: String,
       required: true,
     },
+    tripDuration: {
+      type: Number, 
+      required: true,
+    },
+    price: {
+      type: Number, 
+      required: true,
+    },
+    baggageAllowance: {
+      type: Number, 
+      required: true,
+    },
+    
   },
   { timestamps: true }
 );
