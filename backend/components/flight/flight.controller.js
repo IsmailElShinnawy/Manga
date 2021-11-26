@@ -1,5 +1,5 @@
-const Flight = require('./flight.model');
-const moment = require('moment');
+const Flight = require("./flight.model");
+const moment = require("moment");
 
 exports.updateFlight = async (req, res) => {
   const {
@@ -26,12 +26,12 @@ exports.updateFlight = async (req, res) => {
       { _id: req.params.id },
       updatedFlightData,
       {
-        returnDocument: 'after',
+        returnDocument: "after",
       }
     );
-    res.status(200).json({ status: 'success', data: result });
+    res.status(200).json({ status: "success", data: result });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 exports.create = async (req, res) => {
@@ -55,18 +55,18 @@ exports.create = async (req, res) => {
       arrivalTerminal: arrivalTerminal,
     });
     const result = await f.save();
-    res.status(200).json({ status: 'success', data: result });
+    res.status(200).json({ status: "success", data: result });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
 exports.view = async (req, res) => {
   try {
     const flights = await Flight.find();
-    res.status(200).json({ status: 'success', data: flights });
+    res.status(200).json({ status: "success", data: flights });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -93,47 +93,49 @@ exports.searchFlights = async (req, res) => {
     });
   }
   if (fromArrivalDate) {
-    const extractedDate = moment(fromArrivalDate).format('YYYY-MM-DD');
+    const extractedDate = moment(fromArrivalDate).format("YYYY-MM-DD");
     const startDate = moment(
-      `${extractedDate} ${fromArrivalTime ? fromArrivalTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${fromArrivalTime ? fromArrivalTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     ).toDate();
     criteria.push({ arrivalTime: { $gte: startDate } });
   }
   if (toArrivalDate) {
-    const extractedDate = moment(toArrivalDate).format('YYYY-MM-DD');
+    const extractedDate = moment(toArrivalDate).format("YYYY-MM-DD");
     const endDate = moment(
-      `${extractedDate} ${toArrivalTime ? toArrivalTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${toArrivalTime ? toArrivalTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     )
-      .add(toArrivalTime ? 0 : 1, 'days')
+      .add(toArrivalTime ? 0 : 1, "days")
       .toDate();
     criteria.push({ arrivalTime: { $lt: endDate } });
   }
   if (fromDepartureDate) {
-    const extractedDate = moment(fromDepartureDate).format('YYYY-MM-DD');
+    const extractedDate = moment(fromDepartureDate).format("YYYY-MM-DD");
     const startDate = moment(
-      `${extractedDate} ${fromDepartureTime ? fromDepartureTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${fromDepartureTime ? fromDepartureTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     ).toDate();
     criteria.push({ departureTime: { $gte: startDate } });
   }
   if (toDepartureDate) {
-    const extractedDate = moment(toDepartureDate).format('YYYY-MM-DD');
+    const extractedDate = moment(toDepartureDate).format("YYYY-MM-DD");
     const endDate = moment(
-      `${extractedDate} ${toDepartureTime ? toDepartureTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${toDepartureTime ? toDepartureTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     )
-      .add(toDepartureTime ? 0 : 1, 'days')
+      .add(toDepartureTime ? 0 : 1, "days")
       .toDate();
     criteria.push({ departureTime: { $lt: endDate } });
   }
   try {
-    const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});
-    res.status(200).json({ status: 'success', data: flights });
+    const flights = await Flight.find(
+      criteria.length > 0 ? { $and: [...criteria] } : {}
+    );
+    res.status(200).json({ status: "success", data: flights });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -143,9 +145,27 @@ exports.deleteFlight = async (req, res) => {
     try {
       await Flight.deleteOne({ _id: i });
     } catch (err) {
-      res.status(500).json({ status: 'fail', message: err });
+      res.status(500).json({ status: "fail", message: err });
       console.log(err);
     }
   }
-  res.status(200).json({ status: 'Success', data: null });
+  res.status(200).json({ status: "Success", data: null });
+};
+
+exports.getFlightSeatInfo = async (req, res) => {
+  const { cabin } = req.body;
+  try {
+    const flight = await Flight.findById(req.params.id);
+    let seatInfo = 0;
+    if (cabin == "Business") {
+      seatInfo = flight.allBusinessSeats;
+    } else {
+      seatInfo == flight.allEconomySeats;
+    }
+    console.log(flight);
+    res.status(200).json({ status: "success", data: seatInfo });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "fail", message: err });
+  }
 };
