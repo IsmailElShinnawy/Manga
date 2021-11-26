@@ -18,24 +18,40 @@ const Nav = () => {
     signout();
   };
   return noNavRoutes.includes(location.pathname) ? null : (
-    <nav className='Nav shadow-lg w-full flex items-center justify-end px-16'>
-      {location.pathname !== '/' && (
-        <Link to='/' className='nav-btn shrink mr-2'>
-          Back to home
-        </Link>
-      )}
-      {isAdmin(account) && location.pathname !== '/admin' && (
-        <Link to='/admin' className='nav-btn shrink mr-2'>
-          To Admin Dashboard
-        </Link>
-      )}
-      {account ? (
-        <div className=''>
-          <Button text='Logout' lg onClick={onLogoutHandler} />
-        </div>
+    <nav className='Nav w-full flex items-center px-20 py-6'>
+      <Link to='/' className='text-primary font-nunito font-extrabold text-2xl mr-auto'>
+        <h1>Manga Flights</h1>
+      </Link>
+      <Link
+        to='/account/flights'
+        className='text-primary font-nunito mr-4 hover:underline'
+      >
+        Flights
+      </Link>
+      <Link to='/packages' className='text-link font-nunito mx-4 hover:underline'>
+        Packages
+      </Link>
+      {!account ? (
+        <>
+          <Link to='/login' className='text-link font-nunito mx-4 hover:underline'>
+            Sign in
+          </Link>
+          <Link to='/login' className='text-white bg-primary ml-2 py-3 px-5 rounded-link'>
+            Sign up
+          </Link>
+        </>
       ) : (
-        <Link to='/login' className='nav-btn shrink'>
-          login
+        <button
+          onClick={onLogoutHandler}
+          className='text-link font-nunito mx-4 hover:underline'
+        >
+          Sign out
+        </button>
+      )}
+
+      {isAdmin(account) && location.pathname !== '/admin' && (
+        <Link to='/admin' className='text-white bg-primary ml-2 py-3 px-5 rounded-link'>
+          To Admin Dashboard
         </Link>
       )}
     </nav>

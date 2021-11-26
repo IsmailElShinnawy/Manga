@@ -6,6 +6,7 @@ import AdminRoute from './components/HOC/AdminRoute';
 import AuthenticatedRoute from './components/HOC/AuthenticatedRoute';
 import Nav from './components/shared/Nav/Nav';
 import AdminPage from './components/admin/AdminPage';
+import LandingPage from './components/home/LandingPage';
 import ProvideAdminDashboard from './components/context/AdminDashboardContext';
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
             </main>
           </Route>
           <Route path='/' exact>
-            <main className='page flex justify-center items-center'>Home</main>
+            <LandingPage />
           </Route>
         </Switch>
       </Router>
