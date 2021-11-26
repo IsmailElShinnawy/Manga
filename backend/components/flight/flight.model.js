@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const flightSchema = new Schema(
   {
@@ -20,6 +20,14 @@ const flightSchema = new Schema(
     },
     businessSeats: {
       type: Number,
+      required: true,
+    },
+    allEconomySeats: {
+      type: [Boolean],
+      required: true,
+    },
+    allBusinessSeats: {
+      type: [Boolean],
       required: true,
     },
     departureTerminal: {
@@ -48,9 +56,9 @@ const flightSchema = new Schema(
 );
 
 flightSchema.index({
-  flightNumber: 'text',
-  departureTerminal: 'text',
-  arrivalTerminal: 'text',
+  flightNumber: "text",
+  departureTerminal: "text",
+  arrivalTerminal: "text",
 });
 
-module.exports = model('Flight', flightSchema);
+module.exports = model("Flight", flightSchema);

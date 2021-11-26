@@ -1,18 +1,18 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-require('dotenv').config();
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+require("dotenv").config();
 
-const Role = require('./components/role/role.model');
-const Account = require('./components/account/account.model');
-const authRouter = require('./components/auth/auth.routes');
-const accountRouter = require('./components/account/account.routes');
-const flightRouter = require('./components/flight/flight.routes');
+const Role = require("./components/role/role.model");
+const Account = require("./components/account/account.model");
+const authRouter = require("./components/auth/auth.routes");
+const accountRouter = require("./components/account/account.routes");
+const flightRouter = require("./components/flight/flight.routes");
 
 var corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || "http://localhost:3000",
 };
 
 const MongoURI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.mmmpx.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`;
@@ -23,22 +23,22 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/auth', authRouter);
-app.use('/account', accountRouter);
-app.use('/flight', flightRouter);
+app.use("/auth", authRouter);
+app.use("/account", accountRouter);
+app.use("/flight", flightRouter);
 
 // simple route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to ACL project.' });
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to ACL project." });
 });
 
 mongoose
   .connect(MongoURI)
   .then(() => {
-    console.log('Connected to MongoDB!');
+    console.log("Connected to MongoDB!");
     initial();
   })
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
@@ -50,13 +50,13 @@ const initial = async () => {
     const rolesCount = await Role.estimatedDocumentCount();
     if (rolesCount === 0) {
       const userRole = new Role({
-        name: 'user',
+        name: "user",
       });
 
       await userRole.save();
 
       const adminRole = new Role({
-        name: 'admin',
+        name: "admin",
       });
 
       await adminRole.save();
@@ -66,16 +66,16 @@ const initial = async () => {
   }
 
   try {
-    const adminRoleId = (await Role.findOne({ name: 'admin' }))._id;
+    const adminRoleId = (await Role.findOne({ name: "admin" }))._id;
     const adminAccount = await Account.findOne({
       email: `${process.env.ADMIN_EMAIL}`,
-      username: 'admin',
+      username: "admin",
     });
 
     if (!adminAccount) {
       const admin = new Account({
         email: `${process.env.ADMIN_EMAIL}`,
-        username: 'admin',
+        username: "admin",
         password: bcrypt.hashSync(`${process.env.ADMIN_PASSWORD}`, 8),
         roles: [adminRoleId],
       });
