@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 
 const {
   create,
@@ -6,16 +6,18 @@ const {
   updateFlight,
   searchFlights,
   deleteFlight,
+  userSearchFlights,
   getFlightSeatInfo,
-} = require("./flight.controller");
-const { isAdmin, verifyToken } = require("../../middleware/authJwt");
+} = require('./flight.controller');
+const { isAdmin, verifyToken } = require('../../middleware/authJwt');
 const router = express.Router();
 
-router.get("/:id", [verifyToken], getFlightSeatInfo);
-router.post("/", [verifyToken, isAdmin], create);
-router.get("/", [verifyToken, isAdmin], view);
-router.put("/:id", [verifyToken, isAdmin], updateFlight);
-router.post("/search", [verifyToken, isAdmin], searchFlights);
-router.delete("/", [verifyToken, isAdmin], deleteFlight);
+router.post('/', [verifyToken, isAdmin], create);
+router.get('/', [verifyToken, isAdmin], view);
+router.post('/user/search', userSearchFlights);
+router.put('/:id', [verifyToken, isAdmin], updateFlight);
+router.post('/search', [verifyToken, isAdmin], searchFlights);
+router.delete('/', [verifyToken, isAdmin], deleteFlight);
+router.get('/:id', [verifyToken], getFlightSeatInfo);
 
 module.exports = router;
