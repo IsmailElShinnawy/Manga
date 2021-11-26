@@ -1,6 +1,6 @@
 const account = require('./account.model');
 exports.allAccess = (req, res) => {
-  res.status(200).send('Public Content.');
+  res.status(200).send('Public Content!');
 };
 
 exports.userBoard = (req, res) => {

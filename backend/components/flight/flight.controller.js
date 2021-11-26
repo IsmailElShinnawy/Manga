@@ -1,4 +1,5 @@
 const Flight = require('./flight.model');
+const { businessCabinClass, economyCabinClass } = require('../../config/flight.config');
 const moment = require('moment');
 
 exports.updateFlight = async (req, res) => {
@@ -10,17 +11,23 @@ exports.updateFlight = async (req, res) => {
     businessSeats,
     departureTerminal,
     arrivalTerminal,
+    tripDuration, 
+    price, 
+    baggageAllowance
   } = req.body;
   try {
     const oldFlightData = await Flight.findById(req.params.id);
     const updatedFlightData = {
       flightNumber: flightNumber || oldFlightData.flightNumber,
-      departureTime: departureTime || oldFlightData.departureTime,
-      arrivalTime: arrivalTime || oldFlightData.arrivalTime,
+      departureTime: new Date(departureTime) || oldFlightData.departureTime,
+      arrivalTime: new Date(arrivalTime) || oldFlightData.arrivalTime,
       economySeats: +economySeats || oldFlightData.economySeats,
       businessSeats: +businessSeats || oldFlightData.businessSeats,
       departureTerminal: departureTerminal || oldFlightData.depratureTerminal,
       arrivalTerminal: arrivalTerminal || oldFlightData.arrivalTerminal,
+      tripDuration: tripDuration || oldFlightData.tripDuration,
+      price: price || oldFlightData.price,
+      baggageAllowance: baggageAllowance || oldFlightData.baggageAllowance,
     };
     const result = await Flight.findByIdAndUpdate(
       { _id: req.params.id },
@@ -43,16 +50,22 @@ exports.create = async (req, res) => {
     businessSeats,
     departureTerminal,
     arrivalTerminal,
+    tripDuration, 
+    price, 
+    baggageAllowance
   } = req.body;
   try {
     const f = new Flight({
       flightNumber: flightNumber,
-      departureTime: departureTime,
-      arrivalTime: arrivalTime,
+      departureTime: new Date(departureTime),
+      arrivalTime: new Date(arrivalTime),
       economySeats: +economySeats,
       businessSeats: +businessSeats,
       departureTerminal: departureTerminal,
       arrivalTerminal: arrivalTerminal,
+      tripDuration: tripDuration,
+      price: price,
+      baggageAllowance: baggageAllowance,
     });
     const result = await f.save();
     res.status(200).json({ status: 'success', data: result });
@@ -137,6 +150,38 @@ exports.searchFlights = async (req, res) => {
   }
 };
 
+exports.userSearchFlights = async (req, res) => {
+  const {
+    passengers,
+    departureTerminal,
+    arrivalTerminal,
+    departureDate,
+    arrivalDate,
+    cabinClass,
+  } = req.body;
+
+  try {
+    const minDepartureTime = moment(departureDate, 'YYYY-MM-DD');
+    const maxDepartureTime = moment(departureDate, 'YYYY-MM-DD').add(1, 'days');
+    const minArrivalTime = moment(arrivalDate, 'YYYY-MM-DD');
+    const maxArrivalTime = moment(arrivalDate, 'YYYY-MM-DD').add(1, 'days');
+    const seats = cabinClass === economyCabinClass ? 'economySeats' : 'businessSeats';
+    const flights = await Flight.find({
+      departureTerminal,
+      arrivalTerminal,
+      departureTime: {
+        $gte: minDepartureTime.toDate(),
+        $lt: maxDepartureTime.toDate(),
+      },
+      arrivalTime: { $gte: minArrivalTime.toDate(), $lt: maxArrivalTime.toDate() },
+      [seats]: { $gte: passengers < 0 ? 0 : passengers },
+    });
+    res.status(200).json({ status: 'success', data: flights });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
 exports.deleteFlight = async (req, res) => {
   var toBeDeleted = req.body.flights;
   for (var i of toBeDeleted) {
@@ -148,4 +193,36 @@ exports.deleteFlight = async (req, res) => {
     }
   }
   res.status(200).json({ status: 'Success', data: null });
+};
+
+exports.viewFlight=async (req,res)=>{
+  try{
+  var flight= await Flight.findById(req.params.id);
+  }
+  catch (err){
+    res.status(500).json({ status: 'fail', message: err });
+     console.log(err);
+  }
+  res.status(200).json({ status: 'Success', data: flight });
+
+}
+
+
+
+exports.getFlightSeatInfo = async (req, res) => {
+  const { cabin } = req.body;
+  try {
+    const flight = await Flight.findById(req.params.id);
+    let seatInfo = 0;
+    if (cabin == 'Business') {
+      seatInfo = flight.allBusinessSeats;
+    } else {
+      seatInfo == flight.allEconomySeats;
+    }
+    console.log(flight);
+    res.status(200).json({ status: 'success', data: seatInfo });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 'fail', message: err });
+  }
 };
