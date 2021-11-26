@@ -17,11 +17,19 @@ const reservationSchema = new Schema(
       required: true,
     },
     departureFlightSeats: {
-      type: [String],
+      type: [Number],
       required: true,
     },
     returnFlightSeats: {
-      type: [String],
+      type: [Number],
+      required: true,
+    },
+    departureFlightCabin: {
+      type: String,
+      required: true,
+    },
+    returnFlightCabin: {
+      type: String,
       required: true,
     },
   },
