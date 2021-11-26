@@ -24,6 +24,14 @@ const reservationSchema = new Schema(
       type: [String],
       required: true,
     },
+    departureFlightCabin: {
+      type: String,
+      required: true,
+    },
+    returnFlightCabin: {
+      type: String,
+      required: true,
+    },
   },
   {
     timeStamps: true,
