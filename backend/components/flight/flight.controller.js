@@ -1,5 +1,31 @@
 const Flight = require('./flight.model');
 const moment = require('moment');
+exports.returnFlights = async (req, res) => {
+  const {cabinClass,
+  numberofPassengers} = req.body;
+  try {
+    //console.log(1);
+    const departureFlight = await Flight.findById(req.params.id);
+    let returnFlight=0;
+     if(cabinClass== 'Business'){
+      //console.log(2);
+     returnFlight = await Flight.find({departureTerminal:departureFlight.arrivalTerminal,
+       arrivalTerminal:departureFlight.departureTerminal,
+      departureTime:{$gte:departureFlight.arrivalTime}, businessSeats:{$gte: numberofPassengers}});
+    }
+    else {if(cabinClass== 'Economy'){
+      
+      returnFlight = await Flight.find({departureTerminal:departureFlight.arrivalTerminal,
+        arrivalTerminal:departureFlight.departureTerminal,
+       departureTime:{$gte:departureFlight.arrivalTime}, economySeats:{$gte: numberofPassengers} });}
+       
+    } //console.log(departureFlight); 
+    //console.log(returnFlight);
+    //console.log(3);
+    res.status(200).json({ status: 'success', data: returnFlight });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err }); 
+  }};
 
 exports.updateFlight = async (req, res) => {
   const {
@@ -34,6 +60,8 @@ exports.updateFlight = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err });
   }
 };
+
+  
 exports.create = async (req, res) => {
   const {
     flightNumber,
