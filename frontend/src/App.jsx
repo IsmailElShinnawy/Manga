@@ -15,7 +15,7 @@ function App() {
       <Router>
         <Nav />
         <Switch>
-          <Route path='/login' exact component={LoginPage} />
+          {/* <Route path='/login' exact component={LoginPage} /> */}
           <AdminRoute path='/admin' exact>
             <ProvideAdminDashboard>
               <AdminPage />

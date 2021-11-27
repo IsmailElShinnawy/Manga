@@ -1,16 +1,10 @@
 .LandingPage {
   .hero {
     min-height: 700px;
-    // background: url('../../assets/images/home-hero.png');
-    // background-repeat: no-repeat;
-    // background-position: top left;
-    // background-size: cover;
-  }
-  .hero-text-outer-container {
-    // padding: 0 550px;
-  }
-  .hero-text-container {
-    // padding: 98px 58px;
+    background: url('../../assets/images/home-hero.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-size: cover;
   }
   .hero-text {
     @apply font-nunito font-extrabold text-center;

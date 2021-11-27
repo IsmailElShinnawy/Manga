@@ -10,13 +10,21 @@ module.exports = {
         'input-error': '#fa0000',
         'button-background-primary': '#0000ff',
         background: '#ffffff',
+        backdrop: '#52527a20',
         primary: '#605DEC',
-        link: '#7C8DB0',
+        'grey-primary': '#6E7491',
+        'grey-secondary': '#7C8DB0',
+        'grey-ternary': '#CBD4E6',
+        'input-border': '#A1B0CC',
       },
       minWidth: {
         '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
+        'modal-sm': '568px',
+      },
+      maxWidth: {
+        'modal-sm': '568px',
       },
       minHeight: {
         '1/4': '25%',
@@ -28,6 +36,18 @@ module.exports = {
       },
       borderRadius: {
         link: '4px',
+        input: '4px',
+        4: '4px',
+      },
+      borderWidth: {
+        1: '1px',
+      },
+      padding: {
+        30: '120px',
+      },
+      boxShadow: {
+        'main-search':
+          '0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05)',
       },
     },
   },

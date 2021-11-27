@@ -7,8 +7,8 @@ const Modal = ({ show, close, children, sm }) => {
     <>
       <Backdrop close={close} />
       <div
-        className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white shadow-2xl ${
-          sm ? 'min-w-1/4 min-h-1/4' : 'min-w-3/4 min-h-3/4'
+        className={`p-10 rounded-xl fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-2xl ${
+          sm ? 'min-w-modal-sm max-w-modal-sm' : 'min-w-3/4 min-h-3/4'
         }`}
       >
         {children}
