@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 import { Button } from '../shared/UIKit/Buttons';
 import Backdrop from '../shared/Backdrop/Backdrop';
-import { useHttpClient } from '../../hooks/http-hook';
 import { useForm } from '../../hooks/form-hook';
 import Calendar from 'react-calendar';
 import { cabinCodes } from '../../config/flight.config';
@@ -35,7 +35,7 @@ const MainSearch = () => {
   const [showPassengersPicker, setShowPassengersPicker] = useState(false);
   const [showCabinPicker, setShowCabinPicker] = useState(false);
 
-  const { sendRequest, isLoading } = useHttpClient();
+  const history = useHistory();
 
   const { formState, inputHandler } = useForm(
     {
@@ -52,9 +52,42 @@ const MainSearch = () => {
 
   const searchHandler = async event => {
     event.preventDefault();
+    const {
+      departureTerminal,
+      arrivalTerminal,
+      departureDate,
+      returnDate,
+      adults,
+      children,
+      cabin,
+    } = formState.inputs;
+
     try {
-      console.log('inputs:', formState.inputs);
-      // const results = await sendRequest()
+      const queries = [];
+      queries.push(
+        departureTerminal.value
+          ? `departureTerminal=${encodeURIComponent(departureTerminal.value)}`
+          : '',
+        arrivalTerminal.value
+          ? `arrivalTerminal=${encodeURIComponent(arrivalTerminal.value)}`
+          : '',
+        departureDate.value
+          ? `departureDate=${encodeURIComponent(departureDate.value.toISOString())}`
+          : '',
+        returnDate.value
+          ? `returnDate=${encodeURIComponent(returnDate.value.toISOString())}`
+          : '',
+        adults.value + children.value > 0
+          ? `passengers=${encodeURIComponent(adults.value + children.value)}`
+          : '',
+        cabin.value ? `cabin=${encodeURIComponent(cabin.value.code)}` : ''
+      );
+      let url = '/flights?type=departure&';
+      queries.forEach(query => {
+        if (query !== '') url += query + '&';
+      });
+      const slicedUrl = url.slice(0, url.length - 1);
+      history.push(slicedUrl);
     } catch (err) {
       console.log(err);
     }
