@@ -36,7 +36,8 @@ const FlightCard = ({
           {moment(arrivalTime).format('hh:mm a')}
         </span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
-          {Math.floor(duration / 60)} hrs {duration % 60} mins
+          {/* {Math.floor(duration / 60)} hrs {duration % 60} mins */}
+          {moment(moment(arrivalTime).diff(moment(departureTime))).format('h[h] m[m]')}
         </span>
       </div>
       <div className='col-span-2 flex flex-col justify-around'>
