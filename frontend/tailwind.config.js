@@ -15,7 +15,10 @@ module.exports = {
         'grey-primary': '#6E7491',
         'grey-secondary': '#7C8DB0',
         'grey-ternary': '#CBD4E6',
+        'grey-4': '#27273F',
+        hover: '#F6F6FE',
         'input-border': '#A1B0CC',
+        'pale-purple': '#E9E8FC',
       },
       minWidth: {
         '1/4': '25%',
@@ -30,6 +33,9 @@ module.exports = {
         '1/4': '25%',
         '1/2': '50%',
         '3/4': '75%',
+      },
+      maxHeight: {
+        456: '456px',
       },
       fontFamily: {
         nunito: ['Nunito Sans', 'sans-serif'],
