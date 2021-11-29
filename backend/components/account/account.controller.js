@@ -1,11 +1,24 @@
-exports.allAccess = (req, res) => {
-  res.status(200).send('Public Content!');
-};
+const account = require('./account.model');
 
-exports.userBoard = (req, res) => {
-  res.status(200).send('User Content.');
-};
-
-exports.adminBoard = (req, res) => {
-  res.status(200).send('Admin Content.');
+exports.updateUserProfile = async (req, res) => {
+  const { firstname, lastname, passportNumber, email } = req.body;
+  try {
+    const oldProfileData = await account.findById(req.accountId);
+    const updatedProfileData = {
+      firstname: firstname || oldProfileData.firstname,
+      lastname: lastname || oldProfileData.lastname,
+      passportNumber: passportNumber || oldProfileData.passportNumber,
+      email: email || oldProfileData.email,
+    };
+    const result = await account.findByIdAndUpdate(
+      { _id: req.accountId },
+      updatedProfileData,
+      {
+        returnDocument: 'after',
+      }
+    );
+    res.status(200).json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(500).json({ status: 'fail', message: err });
+  }
 };

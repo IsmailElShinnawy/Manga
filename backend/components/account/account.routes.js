@@ -1,10 +1,8 @@
 const express = require('express');
+const { verifyToken } = require('../../middleware/authJwt');
 const router = express.Router();
-const { allAccess, userBoard, adminBoard } = require('./account.controller');
-const { isAdmin, verifyToken } = require('../../middleware/authJwt');
+const { updateUserProfile } = require('./account.controller');
 
-router.get('/test/all', allAccess);
-router.get('/test/admin', [verifyToken, isAdmin], adminBoard);
-router.get('/test/user', [verifyToken], userBoard);
+router.put('/updateProfile', [verifyToken], updateUserProfile);
 
 module.exports = router;
