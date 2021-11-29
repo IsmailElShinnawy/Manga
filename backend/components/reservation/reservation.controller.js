@@ -11,37 +11,51 @@ exports.viewReservations = async (req, res) => {
     }
   };
   exports.cancelReservations = async (req, res) => {
-
-    var toBeCancelled = req.body.reservations;
-    for (var i of toBeCancelled) {
-    
-       
-     try { 
-        await Flight.deleteOne({ _id: i });
+         try {
         const reservationss = await Reservation.findById(req.params.id);
-        const departureflight = await Flight.findById(reservationss._id);
-        const returnflight = await Flight.findById(reservationss._id);
+        const departureflights = await flightModel.findById(Reservation.departureFlight);
+        const returnflightss = await flightModel.findById(Reservation.returnFlight);
         for (let i = 0; i < departureFlightSeats.length; i++){
         if (reservationss.departureFlightCabin == 'Business') {
-            departureflight.allBusinessSeats[reservationss[i]-1]==true;
+            departureflights.allBusinessSeats[reservationss[i]-1]==true;
         }  
         if(reservationss.departureFlightCabin == 'Economy'){
-            departureflight.allEconmySeats[reservationss[i]-1]==true;
+            departureflights.allEconmySeats[reservationss[i]-1]==true;
         }}
         for (let j = 0; j < returnFlightSeats.length; j++){
         if (reservationss.returnFlightCabin == 'Business') {
-            returnflight.allBusinessSeats[reservationss[j]-1]==true;
+            returnflightss.allBusinessSeats[reservationss[j]-1]==true;
             
         } 
         if(reservationss.returnFlightCabin == 'Economy'){
-            returnflight.allEconmySeats[reservationss[j]-1]==true;
+            returnflightss.allEconmySeats[reservationss[j]-1]==true;
         }
     }
+    const result = await flightModel.findByIdAndUpdate(
+        {_id:reservationss.departureFlight},
+        
+        {allBusinessSeats:departureflights.allBusinessSeats,
+        allEconmySeats:departureflights.allEconmySeats} ,
+        {
+            returnDocument : 'after',
+    
+        }
+    )
+    const results = await flightModel.findByIdAndUpdate(
+        {_id:reservationss.returnFlight},
+    
+        {allBusinessSeats:returnflightss.allBusinessSeats,
+        allEconmySeats:returnflightss.allEconmySeats} ,
+        {
+            returnDocument : 'after',
+    
+        }
+    )
 }
       catch (err) {
         res.status(500).json({ status: 'fail', message: err });
         console.log(err);}
-      }
+    
       res.status(200).json({ status: 'Success', data: null });
 
     
