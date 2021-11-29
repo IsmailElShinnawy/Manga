@@ -12,7 +12,7 @@ const AuthenticatedRoute = ({ children, ...rest }) => {
         account ? (
           children
         ) : (
-          <Redirect to={{ pathname: '/login', state: { from: location } }} />
+          <Redirect to={{ pathname: '/403', state: { from: location } }} />
         )
       }
     />

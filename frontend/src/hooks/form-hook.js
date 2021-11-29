@@ -52,5 +52,10 @@ export const useForm = (initialInputs, initialFormValidity) => {
     });
   }, []);
 
-  return { formState, inputHandler, setFormData };
+  const clearForm = useCallback(
+    () => setFormData(initialInputs, initialFormValidity),
+    [initialFormValidity, initialInputs, setFormData]
+  );
+
+  return { formState, inputHandler, setFormData, clearForm };
 };

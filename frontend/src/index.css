@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import url('../node_modules/react-calendar/dist/Calendar.css');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap');
 
 html,
 body {
