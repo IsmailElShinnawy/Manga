@@ -23,9 +23,9 @@ const accountSchema = new Schema({
     required: true,
   },
   passportNumber: {
-    type: Number,
+    type: String,
     required: true,
-  }, 
+  },
   roles: [
     {
       type: Schema.Types.ObjectId,
