@@ -16,6 +16,6 @@ router.get('/', [verifyToken, isAdmin], view);
 router.put('/:id', [verifyToken, isAdmin], updateFlight);
 router.post('/search', [verifyToken, isAdmin], searchFlights);
 router.delete('/', [verifyToken, isAdmin], deleteFlight);
-router.post('/returnFlights/:id',returnFlights);
+router.post('/return/:id', returnFlights);
 
 module.exports = router;
