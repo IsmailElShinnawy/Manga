@@ -9,6 +9,7 @@ const {
   userSearchFlights,
   viewFlight,
   getFlightSeatInfo,
+  returnFlights,
 } = require('./flight.controller');
 const { isAdmin, verifyToken } = require('../../middleware/authJwt');
 const router = express.Router();
@@ -21,5 +22,6 @@ router.post('/search', [verifyToken, isAdmin], searchFlights);
 router.delete('/', [verifyToken, isAdmin], deleteFlight);
 router.get('/:id', viewFlight);
 router.get('/seats/:id', [verifyToken], getFlightSeatInfo);
+router.post('/return/:id', returnFlights);
 
 module.exports = router;
