@@ -10,12 +10,14 @@
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #cbd4e6;
+    // background: #cbd4e6;
     border-radius: 8px;
+    @apply bg-primary;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    // background: #555;
+    @apply bg-primary;
   }
 }

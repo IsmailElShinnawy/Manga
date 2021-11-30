@@ -29,9 +29,18 @@ const cabinOptions = [
   },
 ];
 
-const MainSearch = () => {
+const MainSearch = ({
+  searchResults,
+  departureTerminal,
+  arrivalTerminal,
+  departureDate,
+  arrivalDate,
+  adults,
+  children,
+  cabin,
+}) => {
   const [showDepartureDatePicker, setShowDepartureDatePicker] = useState(false);
-  const [showReturnDatePicker, setShowReturnDatePicker] = useState(false);
+  const [showArrivalDatePicker, setShowArrivalDatePicker] = useState(false);
   const [showPassengersPicker, setShowPassengersPicker] = useState(false);
   const [showCabinPicker, setShowCabinPicker] = useState(false);
 
@@ -39,13 +48,16 @@ const MainSearch = () => {
 
   const { formState, inputHandler } = useForm(
     {
-      departureTerminal: { value: '', isValid: false },
-      arrivalTerminal: { value: '', isValid: false },
-      departureDate: { value: '', isValid: false },
-      returnDate: { value: '', isValid: false },
-      adults: { value: 0, isValid: false },
-      children: { value: 0, isValid: false },
-      cabin: { value: '', isValid: false },
+      departureTerminal: { value: departureTerminal || '', isValid: false },
+      arrivalTerminal: { value: arrivalTerminal || '', isValid: false },
+      departureDate: { value: departureDate || '', isValid: false },
+      arrivalDate: { value: arrivalDate || '', isValid: false },
+      adults: { value: adults || 0, isValid: false },
+      children: { value: children || 0, isValid: false },
+      cabin: {
+        value: cabin ? cabinOptions.find(c => c.code === cabin) || '' : '',
+        isValid: false,
+      },
     },
     false
   );
@@ -56,7 +68,7 @@ const MainSearch = () => {
       departureTerminal,
       arrivalTerminal,
       departureDate,
-      returnDate,
+      arrivalDate,
       adults,
       children,
       cabin,
@@ -74,12 +86,11 @@ const MainSearch = () => {
         departureDate.value
           ? `departureDate=${encodeURIComponent(departureDate.value.toISOString())}`
           : '',
-        returnDate.value
-          ? `returnDate=${encodeURIComponent(returnDate.value.toISOString())}`
+        arrivalDate.value
+          ? `arrivalDate=${encodeURIComponent(arrivalDate.value.toISOString())}`
           : '',
-        adults.value + children.value > 0
-          ? `passengers=${encodeURIComponent(adults.value + children.value)}`
-          : '',
+        adults.value > 0 ? `adults=${encodeURIComponent(adults.value)}` : '',
+        children.value > 0 ? `children=${encodeURIComponent(children.value)}` : '',
         cabin.value ? `cabin=${encodeURIComponent(cabin.value.code)}` : ''
       );
       let url = '/flights?type=departure&';
@@ -95,33 +106,37 @@ const MainSearch = () => {
 
   return (
     <form onSubmit={searchHandler}>
-      <div className='MainSearch mb-12 grid grid-cols-6 w-full bg-white rounded-4 border-1 border-grey-ternary  shadow-main-search'>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4'>
+      <div
+        className={`MainSearch flex w-full bg-white rounded-4 border-1 border-grey-ternary ${
+          searchResults ? 'shadow-results-search' : 'shadow-main-search'
+        }`}
+      >
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4'>
           <IconAirplaneDeparture />
           <input
             type='text'
             placeholder='From where?'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
             value={formState.inputs.departureTerminal.value}
             onChange={e => inputHandler('departureTerminal', e.target.value, true)}
           />
         </div>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4'>
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4'>
           <IconAirplaneLanding />
           <input
             type='text'
             placeholder='To where?'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
             value={formState.inputs.arrivalTerminal.value}
             onChange={e => inputHandler('arrivalTerminal', e.target.value, true)}
           />
         </div>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
           <IconCalendar />
           <input
             type='text'
             placeholder='Depart Date'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
             onFocus={() => setShowDepartureDatePicker(true)}
             value={
               formState.inputs.departureDate.value
@@ -138,48 +153,76 @@ const MainSearch = () => {
                   value={formState.inputs.departureDate.value || null}
                   onChange={date => inputHandler('departureDate', date, true)}
                 />
-                <div className='w-1/4 mt-5'>
-                  <Button text='Done' onClick={() => setShowDepartureDatePicker(false)} />
+                <div className='flex'>
+                  <div className='mt-5 mr-2'>
+                    <Button
+                      type='button'
+                      text='Done'
+                      onClick={() => setShowDepartureDatePicker(false)}
+                    />
+                  </div>
+                  <div className='mt-5'>
+                    <Button
+                      type='button'
+                      outline
+                      text='Clear Selection'
+                      onClick={() => inputHandler('departureDate', '', true)}
+                    />
+                  </div>
                 </div>
               </div>
             </>
           )}
         </div>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
           <IconCalendar />
           <input
             type='text'
-            placeholder='Return Date'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
-            onFocus={() => setShowReturnDatePicker(true)}
+            placeholder='Arrival Date'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
+            onFocus={() => setShowArrivalDatePicker(true)}
             value={
-              formState.inputs.returnDate.value
-                ? moment(formState.inputs.returnDate.value).format('MMM DD YYYY')
+              formState.inputs.arrivalDate.value
+                ? moment(formState.inputs.arrivalDate.value).format('MMM DD YYYY')
                 : ''
             }
             readOnly
           />
-          {showReturnDatePicker && (
+          {showArrivalDatePicker && (
             <>
-              <Backdrop hide close={() => setShowReturnDatePicker(false)} />
+              <Backdrop hide close={() => setShowArrivalDatePicker(false)} />
               <div className='absolute -top-10 -left-1 z-10 bg-white px-5 py-8 rounded-xl border-1 border-grey-secondary'>
                 <Calendar
-                  value={formState.inputs.returnDate.value || null}
-                  onChange={date => inputHandler('returnDate', date, true)}
+                  value={formState.inputs.arrivalDate.value || null}
+                  onChange={date => inputHandler('arrivalDate', date, true)}
                 />
-                <div className='w-1/4 mt-5'>
-                  <Button text='Done' onClick={() => setShowReturnDatePicker(false)} />
+                <div className='flex'>
+                  <div className='mt-5 mr-2'>
+                    <Button
+                      type='button'
+                      text='Done'
+                      onClick={() => setShowArrivalDatePicker(false)}
+                    />
+                  </div>
+                  <div className='mt-5'>
+                    <Button
+                      outline
+                      type='button'
+                      text='Clear Selection'
+                      onClick={() => inputHandler('arrivalDate', '', true)}
+                    />
+                  </div>
                 </div>
               </div>
             </>
           )}
         </div>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
           <IconPerson />
           <input
             type='text'
             placeholder='How many?'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
             value={
               formState.inputs.adults.value + formState.inputs.children.value > 0
                 ? `${
@@ -252,12 +295,12 @@ const MainSearch = () => {
             </>
           )}
         </div>
-        <div className='py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
+        <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
           <IconDiamond width='24px' height='24px' />
           <input
             type='text'
             placeholder='Cabin?'
-            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none'
+            className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
             value={formState.inputs.cabin.value.name || ''}
             readOnly
             onFocus={() => setShowCabinPicker(true)}
@@ -283,12 +326,15 @@ const MainSearch = () => {
             </>
           )}
         </div>
-      </div>
-      <div className='w-full flex justify-center'>
-        <div className='w-1/6'>
+        <div className='w-1/7'>
           <Button text='Search' type='submit' onClick={searchHandler} />
         </div>
       </div>
+      {/* <div className='w-full flex justify-center'>
+        <div className='w-1/6'>
+          <Button text='Search' type='submit' onClick={searchHandler} />
+        </div>
+      </div> */}
     </form>
   );
 };
