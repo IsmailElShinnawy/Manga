@@ -8,6 +8,10 @@ const ProvideAuth = ({ children }) => {
   const [token, setToken] = useState(read('token') || undefined);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  const updateAccount = newAccount => {
+    setAccount(newAccount);
+  };
+
   const signin = (account, token) => {
     setAccount(account);
     setToken(token);
@@ -33,6 +37,7 @@ const ProvideAuth = ({ children }) => {
         token,
         signin,
         signout,
+        updateAccount,
         showLoginModal,
         openLoginModal,
         closeLoginModal,

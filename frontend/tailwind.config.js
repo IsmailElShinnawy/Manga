@@ -29,8 +29,12 @@ module.exports = {
         '3/4': '75%',
         'modal-sm': '568px',
       },
+      rounded: {
+        '1/2': '50%',
+      },
       maxWidth: {
         'modal-sm': '568px',
+        '100px': '100px',
       },
       minHeight: {
         '1/4': '25%',
@@ -40,6 +44,7 @@ module.exports = {
       },
       maxHeight: {
         456: '456px',
+        '100px': '100px',
       },
       fontFamily: {
         nunito: ['Nunito Sans', 'sans-serif'],

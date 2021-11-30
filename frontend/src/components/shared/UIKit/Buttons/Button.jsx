@@ -17,10 +17,10 @@ const Button = ({
   return (
     <button
       className={`button w-full font-nunito ${
-        danger ? 'bg-red-700' : isTextButton || outline ? '' : 'bg-primary'
-      } ${isLoading ? 'opacity-50' : ''} ${
-        outline ? 'border-1 border-primary hover:bg-primary' : ''
-      } ${
+        disabled ? 'bg-opacity-50 cursor-not-allowed' : ''
+      } ${danger ? 'bg-red-700' : isTextButton || outline ? '' : 'bg-primary'} ${
+        isLoading ? 'opacity-50' : ''
+      } ${outline ? 'border-1 border-primary hover:bg-primary' : ''} ${
         isTextButton
           ? 'text-grey-secondary hover:underline'
           : outline
