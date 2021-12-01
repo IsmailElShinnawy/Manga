@@ -9,6 +9,7 @@ import AdminPage from './components/admin/AdminPage';
 import LandingPage from './components/home/LandingPage';
 import ProvideAdminDashboard from './components/context/AdminDashboardContext';
 import ProvideFlights from './components/context/FlightsContext';
+import PaymentsPage from './components/flights/PaymentPage';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
                 403 - You are not authorized to access this page
               </main>
             </Route>
+            
             <Route path='/flights' exact>
               <FlightsPage />
             </Route>
