@@ -79,9 +79,8 @@ exports.create = async (req, res) => {
     businessSeats,
     departureTerminal,
     arrivalTerminal,
-    tripDuration,
-    price,
-    baggageAllowance,
+    price = 0,
+    baggageAllowance = 0,
   } = req.body;
   try {
     const f = new Flight({
@@ -90,9 +89,10 @@ exports.create = async (req, res) => {
       arrivalTime: new Date(arrivalTime),
       economySeats: +economySeats,
       businessSeats: +businessSeats,
+      allEconomySeats: new Array(+economySeats).fill(true),
+      allBusinessSeats: new Array(+businessSeats).fill(true),
       departureTerminal: departureTerminal,
       arrivalTerminal: arrivalTerminal,
-      tripDuration: tripDuration,
       price: price,
       baggageAllowance: baggageAllowance,
     });
@@ -174,7 +174,6 @@ exports.searchFlights = async (req, res) => {
     const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});
     res.status(200).json({ status: 'success', data: flights });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ status: 'fail', message: err });
   }
 };
@@ -231,7 +230,6 @@ exports.deleteFlight = async (req, res) => {
       await Flight.deleteOne({ _id: i });
     } catch (err) {
       res.status(500).json({ status: 'fail', message: err });
-      console.log(err);
     }
   }
   res.status(200).json({ status: 'Success', data: null });
@@ -242,7 +240,6 @@ exports.viewFlight = async (req, res) => {
     var flight = await Flight.findById(req.params.id);
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
-    console.log(err);
   }
   res.status(200).json({ status: 'Success', data: flight });
 };
@@ -251,16 +248,14 @@ exports.getFlightSeatInfo = async (req, res) => {
   const { cabin } = req.body;
   try {
     const flight = await Flight.findById(req.params.id);
-    let seatInfo = 0;
-    if (cabin == 'Business') {
+    let seatInfo = [];
+    if (+cabin === businessCabinClass) {
       seatInfo = flight.allBusinessSeats;
-    } else {
+    } else if (+cabin === economyCabinClass) {
       seatInfo == flight.allEconomySeats;
     }
-    console.log(flight);
     res.status(200).json({ status: 'success', data: seatInfo });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ status: 'fail', message: err });
   }
 };
