@@ -9,7 +9,7 @@ import AdminPage from './components/admin/AdminPage';
 import LandingPage from './components/home/LandingPage';
 import ProvideAdminDashboard from './components/context/AdminDashboardContext';
 import ProvideFlights from './components/context/FlightsContext';
-
+import ViewItinerary from './components/flights/ViewItinerary';
 function App() {
   return (
     <ProvideAuth>
@@ -30,6 +30,9 @@ function App() {
               <main className='page flex justify-center items-center'>
                 403 - You are not authorized to access this page
               </main>
+            </Route>
+            <Route path='/flights/viewItinerary' exact>
+            <ViewItinerary />
             </Route>
             <Route path='/flights' exact>
               <FlightsPage />
