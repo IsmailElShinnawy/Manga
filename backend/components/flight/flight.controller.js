@@ -261,7 +261,7 @@ exports.getFlightSeatInfo = async (req, res) => {
     if (cabin === 'business') {
       seatInfo = flight.allBusinessSeats;
     } else if (cabin === 'economy') {
-      seatInfo == flight.allEconomySeats;
+      seatInfo = flight.allEconomySeats;
     }
     res.status(200).json({ status: 'success', data: seatInfo });
   } catch (err) {

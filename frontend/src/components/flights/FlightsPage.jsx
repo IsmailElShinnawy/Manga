@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
 import MainSearch from '../home/MainSearch';
 import { Button } from '../shared/UIKit/Buttons';
+import Loading from '../shared/UIKit/Loading';
 import ConfirmChooseFlight from './ConfirmChooseFlight';
 import FlightCard from './FlightCard';
 import './FlightsPage.scss';
@@ -179,7 +180,7 @@ const FlightsPage = () => {
             </div>
           ) : (
             <div className='w-full rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center'>
-              <div className='w-24 h-24 border-b-4 border-primary rounded-full animate-spin' />
+              <Loading />
             </div>
           )}
           {!showAllFlights && (

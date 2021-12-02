@@ -31,7 +31,7 @@ const ProvideReservation = ({ children }) => {
     setDepartureFlightCabin(departureFlightCabin);
   };
   const chooseReturnFlightCabin = returnFlightCabin => {
-    setDepartureFlightCabin(returnFlightCabin);
+    setReturnFlightCabin(returnFlightCabin);
   };
   const chooseDepartureFlightPassengers = departureFlightPassengers => {
     setDepartureFlightPassengers(departureFlightPassengers);
@@ -45,6 +45,10 @@ const ProvideReservation = ({ children }) => {
       value={{
         departureFlight,
         returnFlight,
+        departureFlightCabin,
+        returnFlightCabin,
+        departureFlightPassengers,
+        returnFlightPassengers,
         chooseDepartureFlight,
         chooseReturnFlight,
         chooseDepartureFlightCabin,
