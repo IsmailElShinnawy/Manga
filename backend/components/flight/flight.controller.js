@@ -1,9 +1,8 @@
 const Flight = require('./flight.model');
-const { businessCabinClass, economyCabinClass } = require('../../config/flight.config');
 const moment = require('moment');
 
 exports.returnFlights = async (req, res) => {
-  const { cabinClass, numberOfPassengers } = req.body;
+  const { cabinClass, numberOfPassengers = 0 } = req.body;
   try {
     const departureFlight = await Flight.findById(req.params.id);
     let returnFlight = 0;
@@ -21,6 +20,16 @@ exports.returnFlights = async (req, res) => {
           arrivalTerminal: departureFlight.departureTerminal,
           departureTime: { $gte: departureFlight.arrivalTime },
           economySeats: { $gte: numberOfPassengers },
+        });
+      } else {
+        returnFlight = await Flight.find({
+          departureTerminal: departureFlight.arrivalTerminal,
+          arrivalTerminal: departureFlight.departureTerminal,
+          departureTime: { $gte: departureFlight.arrivalTime },
+          $or: [
+            { businessSeats: { $gte: numberOfPassengers } },
+            { economySeats: { $gte: numberOfPassengers } },
+          ],
         });
       }
     }
@@ -190,7 +199,7 @@ exports.userSearchFlights = async (req, res) => {
   try {
     const criteria = [];
     if (passengers) {
-      const seats = +cabinClass === economyCabinClass ? 'economySeats' : 'businessSeats';
+      const seats = cabinClass === 'economy' ? 'economySeats' : 'businessSeats';
       criteria.push({ [seats]: { $gte: passengers < 0 ? 0 : passengers } });
     }
     if (departureTerminal) {
@@ -249,9 +258,9 @@ exports.getFlightSeatInfo = async (req, res) => {
   try {
     const flight = await Flight.findById(req.params.id);
     let seatInfo = [];
-    if (+cabin === businessCabinClass) {
+    if (cabin === 'business') {
       seatInfo = flight.allBusinessSeats;
-    } else if (+cabin === economyCabinClass) {
+    } else if (cabin === 'economy') {
       seatInfo == flight.allEconomySeats;
     }
     res.status(200).json({ status: 'success', data: seatInfo });

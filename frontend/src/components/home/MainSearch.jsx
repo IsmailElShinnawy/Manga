@@ -6,7 +6,6 @@ import { Button } from '../shared/UIKit/Buttons';
 import Backdrop from '../shared/Backdrop/Backdrop';
 import { useForm } from '../../hooks/form-hook';
 import Calendar from 'react-calendar';
-import { cabinCodes } from '../../config/flight.config';
 
 import { ReactComponent as IconAirplaneDeparture } from '../../assets/icons/IconPlaneDeparture.svg';
 import { ReactComponent as IconAirplaneLanding } from '../../assets/icons/IconPlaneLanding.svg';
@@ -18,16 +17,16 @@ import { ReactComponent as IconMinus } from '../../assets/icons/IconMinus.svg';
 
 import './MainSearch.scss';
 
-const cabinOptions = [
-  {
-    name: 'Business Class',
-    code: cabinCodes.businessClass,
-  },
-  {
-    name: 'Economy Class',
-    code: cabinCodes.economyClass,
-  },
-];
+// const cabinOptions = [
+//   {
+//     name: 'Business Class',
+//     code: cabinCodes.businessClass,
+//   },
+//   {
+//     name: 'Economy Class',
+//     code: cabinCodes.economyClass,
+//   },
+// ];
 
 const MainSearch = ({
   searchResults,
@@ -55,7 +54,7 @@ const MainSearch = ({
       adults: { value: adults || 0, isValid: false },
       children: { value: children || 0, isValid: false },
       cabin: {
-        value: cabin ? cabinOptions.find(c => c.code === cabin) || '' : '',
+        value: cabin || '',
         isValid: false,
       },
     },
@@ -91,7 +90,7 @@ const MainSearch = ({
           : '',
         adults.value > 0 ? `adults=${encodeURIComponent(adults.value)}` : '',
         children.value > 0 ? `children=${encodeURIComponent(children.value)}` : '',
-        cabin.value ? `cabin=${encodeURIComponent(cabin.value.code)}` : ''
+        cabin.value ? `cabin=${encodeURIComponent(cabin.value)}` : ''
       );
       let url = '/flights?type=departure&';
       queries.forEach(query => {
@@ -301,7 +300,7 @@ const MainSearch = ({
             type='text'
             placeholder='Cabin?'
             className='placeholder-shown:text-grey-secondary ml-4 flex-grow outline-none min-w-0'
-            value={formState.inputs.cabin.value.name || ''}
+            value={formState.inputs.cabin.value || ''}
             readOnly
             onFocus={() => setShowCabinPicker(true)}
           />
@@ -309,19 +308,28 @@ const MainSearch = ({
             <>
               <Backdrop hide close={() => setShowCabinPicker(false)} />
               <div className='flex font-nunito flex-col absolute -top-10 -left-1 z-10 bg-white px-5 py-8 rounded-xl border-1 border-grey-secondary'>
-                {cabinOptions.map(cabin => (
-                  <span
-                    key={cabin.name}
-                    className={`${
-                      cabin.code === formState.inputs.cabin.value.code
-                        ? 'bg-primary text-white'
-                        : 'hover:bg-grey-ternary hover:bg-opacity-50'
-                    } mb-2 rounded-4 hover:cursor-pointer py-2 px-3`}
-                    onClick={() => inputHandler('cabin', cabin, true)}
-                  >
-                    {cabin.name}
-                  </span>
-                ))}
+                <span
+                  key={'economyClass'}
+                  className={`${
+                    formState.inputs.cabin.value === 'economy'
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-grey-ternary hover:bg-opacity-50'
+                  } mb-2 rounded-4 hover:cursor-pointer py-2 px-3`}
+                  onClick={() => inputHandler('cabin', 'economy', true)}
+                >
+                  Economy Class
+                </span>
+                <span
+                  key={'businessClass'}
+                  className={`${
+                    formState.inputs.cabin.value === 'business'
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-grey-ternary hover:bg-opacity-50'
+                  } mb-2 rounded-4 hover:cursor-pointer py-2 px-3`}
+                  onClick={() => inputHandler('cabin', 'business', true)}
+                >
+                  Business Class
+                </span>
               </div>
             </>
           )}
@@ -330,11 +338,6 @@ const MainSearch = ({
           <Button text='Search' type='submit' onClick={searchHandler} />
         </div>
       </div>
-      {/* <div className='w-full flex justify-center'>
-        <div className='w-1/6'>
-          <Button text='Search' type='submit' onClick={searchHandler} />
-        </div>
-      </div> */}
     </form>
   );
 };

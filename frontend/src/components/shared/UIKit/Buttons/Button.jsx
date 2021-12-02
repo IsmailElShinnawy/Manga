@@ -16,7 +16,7 @@ const Button = ({
 }) => {
   return (
     <button
-      className={`button w-full font-nunito ${
+      className={`button w-full h-full max-h-14 font-nunito ${
         disabled ? 'bg-opacity-50 cursor-not-allowed' : ''
       } ${danger ? 'bg-red-700' : isTextButton || outline ? '' : 'bg-primary'} ${
         isLoading ? 'opacity-50' : ''

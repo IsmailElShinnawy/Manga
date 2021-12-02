@@ -8,21 +8,27 @@ const FlightCard = ({
   id,
   flightNumber,
   departureTime,
+  departureTerminal,
+  arrivalTerminal,
   arrivalTime,
   duration,
   economySeats,
   businessSeats,
   price,
+  onClick,
 }) => {
   return (
-    <div className='w-full grid grid-cols-12 border-b-1 border-pale-purple last:border-b-0 py-3 px-4 hover:bg-hover hover:cursor-pointer '>
-      <div className='col-span-1 flex justify-center items-center'>
+    <div
+      onClick={onClick}
+      className='w-full flex justify-around border-b-1 border-pale-purple last:border-b-0 py-3 px-4 hover:bg-hover hover:cursor-pointer '
+    >
+      <div className='flex justify-center items-center'>
         <img src={EgyptAirLogo} alt='Egypt Air' />
       </div>
-      <div className='col-span-2 flex items-center'>
+      <div className='flex items-center'>
         <span className='text-grey-secondary leading-5'>{flightNumber}</span>
       </div>
-      <div className='col-span-2 flex flex-col justify-around'>
+      <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1'>
           {moment(departureTime).format('DD MMM')} Departing
         </span>
@@ -30,7 +36,19 @@ const FlightCard = ({
           {moment(arrivalTime).format('DD MMM')} Arriving
         </span>
       </div>
-      <div className='col-span-2 flex flex-col justify-around'>
+      <div className='flex flex-col justify-around'>
+        <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>From</span>
+        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+          {departureTerminal}
+        </span>
+      </div>
+      <div className='flex flex-col justify-around'>
+        <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>To</span>
+        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+          {arrivalTerminal}
+        </span>
+      </div>
+      <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
           {moment(departureTime).format('hh:mm a')} -{' '}
           {moment(arrivalTime).format('hh:mm a')}
@@ -40,7 +58,7 @@ const FlightCard = ({
           {moment(moment(arrivalTime).diff(moment(departureTime))).format('h[h] m[m]')}
         </span>
       </div>
-      <div className='col-span-2 flex flex-col justify-around'>
+      <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
           Business Cabin
         </span>
@@ -48,7 +66,7 @@ const FlightCard = ({
           {businessSeats || 'N/A'} seats
         </span>
       </div>
-      <div className='col-span-2 flex flex-col justify-around'>
+      <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
           Economy Cabin
         </span>
@@ -56,7 +74,7 @@ const FlightCard = ({
           {economySeats || 'N/A'} seats
         </span>
       </div>
-      <div className='col-span-1 flex flex-col justify-around'>
+      <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>Price</span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
           EGP {price}
