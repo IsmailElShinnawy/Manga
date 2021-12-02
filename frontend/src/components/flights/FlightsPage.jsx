@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useHttpClient } from '../../hooks/http-hook';
-import MainSearch from '../home/MainSearch';
-import { Button } from '../shared/UIKit/Buttons';
-import FlightCard from './FlightCard';
-import './FlightsPage.scss';
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { useHttpClient } from "../../hooks/http-hook";
+import MainSearch from "../home/MainSearch";
+import { Button } from "../shared/UIKit/Buttons";
+import FlightCard from "./FlightCard";
+import "./FlightsPage.scss";
+import FlightSummaryCard from "./FlightSummaryCard";
 
 const FlightsPage = () => {
   const location = useLocation();
@@ -12,20 +13,20 @@ const FlightsPage = () => {
   const [showAllFlights, setShowAllFlights] = useState(false);
   const { sendRequest, isLoading } = useHttpClient();
   const params = new URLSearchParams(location.search);
-  const departureTerminal = params.get('departureTerminal');
-  const arrivalTerminal = params.get('arrivalTerminal');
-  const departureDate = params.get('departureDate');
-  const arrivalDate = params.get('arrivalDate');
-  const adults = +params.get('adults');
-  const children = +params.get('children');
-  const cabin = params.get('cabin');
-  const type = params.get('type');
+  const departureTerminal = params.get("departureTerminal");
+  const arrivalTerminal = params.get("arrivalTerminal");
+  const departureDate = params.get("departureDate");
+  const arrivalDate = params.get("arrivalDate");
+  const adults = +params.get("adults");
+  const children = +params.get("children");
+  const cabin = params.get("cabin");
+  const type = params.get("type");
 
   useEffect(() => {
     const fetchFlights = async () => {
       const passengers = (adults || 0) + (children || 0);
       try {
-        const response = await sendRequest('/flight/user/search', 'POST', {
+        const response = await sendRequest("/flight/user/search", "POST", {
           departureTerminal,
           arrivalTerminal,
           departureDate: departureDate ? new Date(departureDate) : null,
@@ -52,10 +53,9 @@ const FlightsPage = () => {
     arrivalDate,
     sendRequest,
   ]);
-
   return (
-    <main className='FlightsPage page px-16'>
-      <div className='w-8/12'>
+    <main className="FlightsPage page px-16 ">
+      <div className="w-8/12">
         <MainSearch
           searchResults
           arrivalTerminal={arrivalTerminal}
@@ -67,20 +67,25 @@ const FlightsPage = () => {
           children={children}
         />
       </div>
-      <p className='font-nunito text-lg leading-6 text-grey-primary font-semibold mt-12 mb-4'>
-        Choose your{' '}
-        <span className='text-primary'>
-          {type === 'departure' ? 'departing ' : 'returning '}
+      <FlightSummaryCard
+        departureFlightId="619f765913f96f742b8d68b8"
+        returnFlightId="61a7d57b6f6dd7d5b4b95b9d"
+        cabinClass="Business"
+      />
+      <p className="font-nunito text-lg leading-6 text-grey-primary font-semibold mt-12 mb-4">
+        Choose your{" "}
+        <span className="text-primary">
+          {type === "departure" ? "departing " : "returning "}
         </span>
         flight
       </p>
       {!isLoading ? (
         <div
           className={`w-8/12 rounded-xl border-1 border-pale-purple p-4 ${
-            showAllFlights ? '' : 'max-h-456 overflow-y-scroll'
+            showAllFlights ? "" : "max-h-456 overflow-y-scroll"
           }`}
         >
-          {flights.map(flight => (
+          {flights.map((flight) => (
             <FlightCard
               key={flight._id}
               id={flight._id}
@@ -95,17 +100,17 @@ const FlightsPage = () => {
           ))}
         </div>
       ) : (
-        <div className='w-8/12 rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center'>
-          <div className='w-24 h-24 border-b-4 border-primary rounded-full animate-spin' />
+        <div className="w-8/12 rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center">
+          <div className="w-24 h-24 border-b-4 border-primary rounded-full animate-spin" />
         </div>
       )}
       {!showAllFlights && (
-        <div className='w-8/12 flex justify-end mt-4'>
+        <div className="w-8/12 flex justify-end mt-4">
           <div>
             <Button
               outline
-              text='Show all flights'
-              onClick={() => setShowAllFlights(b => !b)}
+              text="Show all flights"
+              onClick={() => setShowAllFlights((b) => !b)}
             />
           </div>
         </div>
