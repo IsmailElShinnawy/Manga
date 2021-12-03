@@ -11,16 +11,19 @@ const FlightCard = ({
   departureTerminal,
   arrivalTerminal,
   arrivalTime,
-  duration,
   economySeats,
   businessSeats,
   price,
   onClick,
+  noHover,
+  noSeats,
 }) => {
   return (
     <div
       onClick={onClick}
-      className='w-full flex justify-around border-b-1 border-pale-purple last:border-b-0 py-3 px-4 hover:bg-hover hover:cursor-pointer '
+      className={`w-full flex justify-around border-b-1 border-pale-purple last:border-b-0 py-3 px-4 ${
+        noHover ? 'hover:bg-hover hover:cursor-pointer' : ''
+      }`}
     >
       <div className='flex justify-center items-center'>
         <img src={EgyptAirLogo} alt='Egypt Air' />
@@ -58,22 +61,26 @@ const FlightCard = ({
           {moment(moment(arrivalTime).diff(moment(departureTime))).format('h[h] m[m]')}
         </span>
       </div>
-      <div className='flex flex-col justify-around'>
-        <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
-          Business Cabin
-        </span>
-        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
-          {businessSeats || 'N/A'} seats
-        </span>
-      </div>
-      <div className='flex flex-col justify-around'>
-        <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
-          Economy Cabin
-        </span>
-        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
-          {economySeats || 'N/A'} seats
-        </span>
-      </div>
+      {!noSeats && (
+        <div className='flex flex-col justify-around'>
+          <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
+            Business Cabin
+          </span>
+          <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+            {businessSeats || 'N/A'} seats
+          </span>
+        </div>
+      )}
+      {!noSeats && (
+        <div className='flex flex-col justify-around'>
+          <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
+            Economy Cabin
+          </span>
+          <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+            {economySeats || 'N/A'} seats
+          </span>
+        </div>
+      )}
       <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>Price</span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>

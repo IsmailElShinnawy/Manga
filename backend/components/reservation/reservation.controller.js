@@ -1,6 +1,24 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
 
+exports.getReservation = async (req, res) => {
+  const { id } = req.params;
+  try {
+    let reservation = await Reservation.findById(id)
+      .populate('departureFlight')
+      .populate('returnFlight')
+      .exec();
+    if (reservation && reservation.account.toString() !== req.accountId) {
+      res.status(403).json({ status: 'fail', message: 'Unauthorized' });
+      return;
+    }
+    res.status(200).json({ status: 'success', data: reservation });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
 exports.createReservation = async (req, res) => {
   const {
     departureFlightId,

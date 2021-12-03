@@ -1,19 +1,19 @@
-const { model, Schema } = require("mongoose");
+const { model, Schema } = require('mongoose');
 
 const reservationSchema = new Schema(
   {
     account: {
       type: Schema.Types.ObjectId,
-      ref: "account",
+      ref: 'Account',
     },
     departureFlight: {
       type: Schema.Types.ObjectId,
-      ref: "flight",
+      ref: 'Flight',
       required: true,
     },
     returnFlight: {
       type: Schema.Types.ObjectId,
-      ref: "flight",
+      ref: 'Flight',
       required: true,
     },
     departureFlightSeats: {
@@ -38,4 +38,4 @@ const reservationSchema = new Schema(
   }
 );
 
-module.exports = model("reservation", reservationSchema);
+module.exports = model('reservation', reservationSchema);

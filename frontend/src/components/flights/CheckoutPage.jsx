@@ -21,7 +21,7 @@ const CheckoutPage = () => {
   const { sendRequest: sendDepartureRequest, isLoading: isDepartureLoading } =
     useHttpClient();
   const { sendRequest: sendReturnRequest, isLoading: isReturnLoading } = useHttpClient();
-  const { sendRequest, isLoading } = useHttpClient();
+  const { sendRequest, isLoading, error } = useHttpClient();
 
   const [departureFlightAvailableSeats, setDepartureFlightAvailableSeats] = useState([]);
   const [returnFlightAvailableSeats, setReturnFlightAvailableSeats] = useState([]);
@@ -85,7 +85,7 @@ const CheckoutPage = () => {
       });
       if (response && response.data) {
         setReservation(response.data);
-        history.push('/itinerary');
+        history.push(`/itinerary/${response.data._id}`);
       }
     } catch (err) {
       console.log(err);
@@ -238,8 +238,11 @@ const CheckoutPage = () => {
               />
             </div>
             {(chosenDepartureSeats.length < departureFlightPassengers ||
-              chosenReturnSeats.length < returnFlightPassengers) && (
-              <p className='text-input-error'>Please make sure to select all seats</p>
+              chosenReturnSeats.length < returnFlightPassengers ||
+              error) && (
+              <p className='text-input-error'>
+                {error || 'Please make sure to select all seats'}
+              </p>
             )}
           </div>
         </section>

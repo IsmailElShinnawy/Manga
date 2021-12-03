@@ -36,7 +36,7 @@ function App() {
                 403 - You are not authorized to access this page
               </main>
             </Route>
-            <Route path='/flights/viewItinerary' exact>
+            <Route path='/itinerary/:id' exact>
               <ViewItinerary />
             </Route>
             <Route path='/flights' exact>

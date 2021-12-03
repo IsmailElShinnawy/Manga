@@ -20,7 +20,6 @@ const ProvideReservation = ({ children }) => {
   const [returnFlightPassengers, setReturnFlightPassengers] = useState(
     read('returnFlightPassengers') || undefined
   );
-  const [reservation, setReservation] = useState();
 
   const chooseDepartureFlight = departureFlight => {
     setDepartureFlight(departureFlight);
@@ -50,14 +49,12 @@ const ProvideReservation = ({ children }) => {
         returnFlightCabin,
         departureFlightPassengers,
         returnFlightPassengers,
-        reservation,
         chooseDepartureFlight,
         chooseReturnFlight,
         chooseDepartureFlightCabin,
         chooseReturnFlightCabin,
         chooseDepartureFlightPassengers,
         chooseReturnFlightPassengers,
-        setReservation,
       }}
     >
       {children}
