@@ -19,6 +19,10 @@ module.exports = {
         hover: '#F6F6FE',
         'input-border': '#A1B0CC',
         'pale-purple': '#E9E8FC',
+        'grey-5' :'#EAFFFB',
+        'light-greenn' :'#007B65',
+       
+
       },
       width: {
         '1/7': '14.28571429%',

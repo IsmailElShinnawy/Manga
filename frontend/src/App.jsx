@@ -11,6 +11,7 @@ import ProvideAdminDashboard from './components/context/AdminDashboardContext';
 import Profile from './components/profile/Profile';
 import ProvideReservation from './components/context/ReservationContext';
 import CheckoutPage from './components/flights/CheckoutPage';
+import ViewItinerary from './components/flights/ViewItinerary';
 
 function App() {
   return (
@@ -34,6 +35,9 @@ function App() {
               <main className='page flex justify-center items-center'>
                 403 - You are not authorized to access this page
               </main>
+            </Route>
+            <Route path='/flights/viewItinerary' exact>
+              <ViewItinerary />
             </Route>
             <Route path='/flights' exact>
               <FlightsPage />
