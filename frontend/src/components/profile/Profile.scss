@@ -2,4 +2,10 @@
   .active {
     @apply text-white bg-primary;
   }
+  .hero {
+    min-height: 230px;
+    background: url('../../assets/images/airplane-image.png');
+    background-size: cover;
+    background-position: top left;
+  }
 }

@@ -15,7 +15,6 @@ const ViewItinerary = () => {
     const fetchReservation = async () => {
       const response = await sendRequest(`/reservation/${reservationId}`);
       if (response && response.data) {
-        console.log(response.data);
         setReservation(response.data);
       }
     };
@@ -57,7 +56,7 @@ const ViewItinerary = () => {
           <p className='mt-3 text-grey-secondary leading-5'>
             Chosen Seats ({reservation?.departureFlightCabin}):{' '}
             {reservation?.departureFlightSeats.map(seat => (
-              <span>
+              <span key={`departureSeat${seat}`}>
                 {reservation?.departureFlightCabin === 'economy' ? 'E' : 'B'}
                 {seat}{' '}
               </span>
@@ -83,7 +82,7 @@ const ViewItinerary = () => {
           <p className='mt-3 text-grey-secondary leading-5'>
             Chosen Seats ({reservation?.returnFlightCabin}):{' '}
             {reservation?.returnFlightSeats.map(seat => (
-              <span>
+              <span key={`returnSeat${seat}`}>
                 {reservation?.returnFlightCabin === 'economy' ? 'E' : 'B'}
                 {seat}{' '}
               </span>

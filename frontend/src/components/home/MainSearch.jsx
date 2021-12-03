@@ -217,7 +217,7 @@ const MainSearch = ({
           )}
         </div>
         <div className='w-1/7 py-2 px-3 flex items-center font-nunito focus-within:ring-2 focus-within:ring-primary rounded-4 relative'>
-          <IconPerson />
+          <IconPerson stroke='#6E7491' />
           <input
             type='text'
             placeholder='How many?'

@@ -5,7 +5,10 @@ exports.getUserReservations = async (req, res) => {
   try {
     const reservations = await Reservation.find({
       account: req.accountId,
-    });
+    })
+      .populate('departureFlight')
+      .populate('returnFlight')
+      .exec();
     res.status(200).json({ status: 'success', data: reservations });
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });

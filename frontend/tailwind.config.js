@@ -69,6 +69,7 @@ module.exports = {
           '0px 2px 4px rgba(7, 4, 146, 0.1), 0px 24px 60px rgba(6, 47, 125, 0.05), 0px 12px 24px rgba(27, 59, 119, 0.05)',
         'results-search':
           '0px 2px 2px rgba(28, 5, 77, 0.05), 0px 12px 8px rgba(0, 0, 0, 0.02)',
+        'profile-nav': '0px 2px 14px rgba(28, 5, 77, 0.05)',
       },
       margin: {
         sm: '4px',

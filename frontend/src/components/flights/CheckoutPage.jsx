@@ -17,7 +17,6 @@ const CheckoutPage = () => {
     returnFlightPassengers,
   } = useReservation();
   const history = useHistory();
-  const { setReservation } = useReservation();
   const { sendRequest: sendDepartureRequest, isLoading: isDepartureLoading } =
     useHttpClient();
   const { sendRequest: sendReturnRequest, isLoading: isReturnLoading } = useHttpClient();
@@ -84,7 +83,6 @@ const CheckoutPage = () => {
         returnFlightCabin,
       });
       if (response && response.data) {
-        setReservation(response.data);
         history.push(`/itinerary/${response.data._id}`);
       }
     } catch (err) {
