@@ -12,6 +12,7 @@ import Profile from './components/profile/Profile';
 import ProvideReservation from './components/context/ReservationContext';
 import CheckoutPage from './components/flights/CheckoutPage';
 import ViewItinerary from './components/flights/ViewItinerary';
+import PaymentsPage from './components/flights/PaymentPage';
 
 function App() {
   return (
