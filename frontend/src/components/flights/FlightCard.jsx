@@ -58,7 +58,10 @@ const FlightCard = ({
         </span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
           {/* {Math.floor(duration / 60)} hrs {duration % 60} mins */}
-          {moment(moment(arrivalTime).diff(moment(departureTime))).format('h[h] m[m]')}
+          {Math.abs(
+            Math.floor(moment(arrivalTime).diff(moment(departureTime), 'minutes') / 60)
+          )}
+          h {moment(arrivalTime).diff(moment(departureTime), 'minutes') % 60}m
         </span>
       </div>
       {!noSeats && (

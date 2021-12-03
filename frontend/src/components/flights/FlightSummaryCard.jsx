@@ -44,9 +44,13 @@ const FlightSummaryCard = ({ noButton }) => {
     };
     if (departureFlightId) {
       getDepartureFlightData();
+    } else {
+      setDepartureFlight(undefined);
     }
     if (returnFlightId) {
       getReturnFlightData();
+    } else {
+      setReturnFlight(undefined);
     }
   }, [departureFlightId, returnFlightId, sendRequest]);
 

@@ -15,6 +15,7 @@ const CheckoutPage = () => {
     returnFlightCabin,
     departureFlightPassengers,
     returnFlightPassengers,
+    clear,
   } = useReservation();
   const history = useHistory();
   const { sendRequest: sendDepartureRequest, isLoading: isDepartureLoading } =
@@ -83,6 +84,7 @@ const CheckoutPage = () => {
         returnFlightCabin,
       });
       if (response && response.data) {
+        clear();
         history.push(`/itinerary/${response.data._id}`);
       }
     } catch (err) {

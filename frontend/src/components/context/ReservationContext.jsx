@@ -40,6 +40,15 @@ const ProvideReservation = ({ children }) => {
     setReturnFlightPassengers(returnFlightPassengers);
   };
 
+  const clear = () => {
+    setDepartureFlight(undefined);
+    setReturnFlight(undefined);
+    setDepartureFlightCabin(undefined);
+    setReturnFlightCabin(undefined);
+    setDepartureFlightPassengers(undefined);
+    setReturnFlightPassengers(undefined);
+  };
+
   return (
     <reservationContext.Provider
       value={{
@@ -55,6 +64,7 @@ const ProvideReservation = ({ children }) => {
         chooseReturnFlightCabin,
         chooseDepartureFlightPassengers,
         chooseReturnFlightPassengers,
+        clear,
       }}
     >
       {children}
