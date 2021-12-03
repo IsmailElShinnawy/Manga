@@ -241,7 +241,7 @@ const CheckoutPage = () => {
               chosenReturnSeats.length < returnFlightPassengers ||
               error) && (
               <p className='text-input-error'>
-                {error || 'Please make sure to select all seats'}
+                {error?.response?.data.message || 'Please make sure to select all seats'}
               </p>
             )}
           </div>

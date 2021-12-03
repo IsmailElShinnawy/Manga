@@ -22,7 +22,7 @@ const FlightCard = ({
     <div
       onClick={onClick}
       className={`w-full flex justify-around border-b-1 border-pale-purple last:border-b-0 py-3 px-4 ${
-        noHover ? 'hover:bg-hover hover:cursor-pointer' : ''
+        !noHover ? 'hover:bg-hover hover:cursor-pointer' : ''
       }`}
     >
       <div className='flex justify-center items-center'>

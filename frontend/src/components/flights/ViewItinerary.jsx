@@ -55,7 +55,7 @@ const ViewItinerary = () => {
             noSeats
           />
           <p className='mt-3 text-grey-secondary leading-5'>
-            Chosen Seats:{' '}
+            Chosen Seats ({reservation?.departureFlightCabin}):{' '}
             {reservation?.departureFlightSeats.map(seat => (
               <span>
                 {reservation?.departureFlightCabin === 'economy' ? 'E' : 'B'}
@@ -81,7 +81,7 @@ const ViewItinerary = () => {
             noSeats
           />
           <p className='mt-3 text-grey-secondary leading-5'>
-            Chosen Seats:{' '}
+            Chosen Seats ({reservation?.returnFlightCabin}):{' '}
             {reservation?.returnFlightSeats.map(seat => (
               <span>
                 {reservation?.returnFlightCabin === 'economy' ? 'E' : 'B'}
