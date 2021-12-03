@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useReservation } from '../context/ReservationContext';
 import { useHttpClient } from '../../hooks/http-hook';
 import Loading from '../shared/UIKit/Loading';
+import { Input } from '../shared/UIKit/Inputs';
+import { Button } from '../shared/UIKit/Buttons';
 
 const CheckoutPage = () => {
   const {
@@ -116,7 +118,7 @@ const CheckoutPage = () => {
           <h2 className='text-xl font-semibold font-nunito leading-6 text-grey-primary mb-4'>
             Step 1 - Choosing your seats
           </h2>
-          <h3 className='text-lg font-medium font-nunito leading-4 text-grey-secondary mb-4'>
+          <h3 className='text-lg leading-6 font-nunito text-grey-secondary mb-6'>
             Departure flight seats{' '}
             <span className='italic text-sm'>(choose {departureFlightPassengers})</span>
           </h3>
@@ -127,7 +129,7 @@ const CheckoutPage = () => {
                   seat && (
                     <span
                       onClick={() => toggleDepartureSeat(idx)}
-                      className={`mr-3 mb-3 w-10 h-10 flex justify-center items-center rounded-full ${
+                      className={`mr-3 mb-6 w-10 h-10 flex justify-center items-center rounded-full ${
                         isDepartureSeat(idx) ? 'bg-primary text-white' : 'bg-pale-purple'
                       } hover:cursor-pointer`}
                       key={`departureSeat${idx}`}
@@ -143,7 +145,7 @@ const CheckoutPage = () => {
               <Loading sm />
             </div>
           )}
-          <h3 className='text-lg font-medium font-nunito leading-4 text-grey-secondary mb-4'>
+          <h3 className='text-lg font-nunito leading-6 text-grey-secondary mb-6'>
             Return flight seats{' '}
             <span className='italic text-sm'>(choose {returnFlightPassengers})</span>
           </h3>
@@ -154,7 +156,7 @@ const CheckoutPage = () => {
                   seat && (
                     <span
                       onClick={() => toggleReturnSeat(idx)}
-                      className={`mr-3 mb-3 w-10 h-10 flex justify-center items-center rounded-full ${
+                      className={`mr-3 mb-6 w-10 h-10 flex justify-center items-center rounded-full ${
                         isReturnSeat(idx) ? 'bg-primary text-white' : 'bg-pale-purple'
                       } hover:cursor-pointer`}
                       key={`returnSeat${idx}`}
@@ -175,6 +177,26 @@ const CheckoutPage = () => {
           <h2 className='text-xl font-semibold font-nunito leading-6 text-grey-primary mb-4'>
             Step 2 - Payment
           </h2>
+          <p className='text-grey-secondary font-nunito text-lg leading-6 mb-6'>
+            Manga Flights processes your payment securely with end-to-end encryption.
+          </p>
+          <h3 className='text-grey-primary font-nunito text-lg leading-6 mb-6'>
+            Credit Card Details
+          </h3>
+          <div className='w-full'>
+            <Input type='text' placeholder='Name on card' />
+          </div>
+          <div className='w-full'>
+            <Input type='text' placeholder='Card Number' />
+          </div>
+          <div className='flex'>
+            <div className='w-1/2 pr-3'>
+              <Input type='text' placeholder='Expiration Date (MM/YY)' />
+            </div>
+            <div className='w-1/2 pl-3'>
+              <Input type='text' placeholder='CVV' display='flex' />
+            </div>
+          </div>
         </section>
       </div>
     </main>
