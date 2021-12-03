@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useHttpClient } from '../../hooks/http-hook';
 import { remove, write } from '../../service/localStorage.service';
-import { useAuth } from '../context/AuthContext';
 import { useReservation } from '../context/ReservationContext';
 import MainSearch from '../home/MainSearch';
 import { Button } from '../shared/UIKit/Buttons';
@@ -10,14 +9,13 @@ import Loading from '../shared/UIKit/Loading';
 import ConfirmChooseFlight from './ConfirmChooseFlight';
 import FlightCard from './FlightCard';
 import './FlightsPage.scss';
+import FlightSummaryCard from './FlightSummaryCard';
 
 const FlightsPage = () => {
   const location = useLocation();
   const history = useHistory();
   const { sendRequest, isLoading } = useHttpClient();
-  const { departureFlight, returnFlight, chooseDepartureFlight, chooseReturnFlight } =
-    useReservation();
-  const { account, openLoginModal } = useAuth();
+  const { departureFlight, chooseDepartureFlight, chooseReturnFlight } = useReservation();
 
   const [showAllFlights, setShowAllFlights] = useState(false);
   const [flights, setFlights] = useState([]);
@@ -132,82 +130,74 @@ const FlightsPage = () => {
         confirm={handleConfirm}
         type={type}
       />
-      <main className='FlightsPage page px-16 flex'>
+      <main className='FlightsPage page px-16'>
         <div className='w-8/12'>
-          <div className='w-full'>
-            <MainSearch
-              searchResults
-              arrivalTerminal={arrivalTerminal}
-              departureTerminal={departureTerminal}
-              cabin={cabin}
-              departureDate={departureDate ? new Date(departureDate) : null}
-              arrivalDate={arrivalDate ? new Date(arrivalDate) : null}
-              adults={adults}
-              children={children}
-            />
-          </div>
-          <p className='font-nunito text-lg leading-6 text-grey-primary font-semibold mt-12 mb-4'>
-            Choose your{' '}
-            <span className='text-primary'>
-              {type === 'departure' ? 'departing ' : 'returning '}
-            </span>
-            flight
-          </p>
-          {!isLoading ? (
-            <div
-              className={`w-full rounded-xl border-1 border-pale-purple p-4 ${
-                showAllFlights ? '' : 'max-h-456 overflow-y-scroll'
-              }`}
-            >
-              {flights.map(flight => (
-                <FlightCard
-                  onClick={() => {
-                    setChosenFlight(flight._id);
-                    setShowConfirmModal(true);
-                  }}
-                  key={flight._id}
-                  id={flight._id}
-                  flightNumber={flight.flightNumber}
-                  arrivalTime={flight.arrivalTime}
-                  departureTime={flight.departureTime}
-                  businessSeats={flight.businessSeats}
-                  economySeats={flight.economySeats}
-                  price={200}
-                  departureTerminal={flight.departureTerminal}
-                  arrivalTerminal={flight.arrivalTerminal}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className='w-full rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center'>
-              <Loading />
-            </div>
-          )}
-          {!showAllFlights && (
-            <div className='w-full flex justify-end mt-4'>
-              <div>
-                <Button
-                  outline
-                  text='Show all flights'
-                  onClick={() => setShowAllFlights(b => !b)}
-                />
+          <MainSearch
+            searchResults
+            arrivalTerminal={arrivalTerminal}
+            departureTerminal={departureTerminal}
+            cabin={cabin}
+            departureDate={departureDate ? new Date(departureDate) : null}
+            arrivalDate={arrivalDate ? new Date(arrivalDate) : null}
+            adults={adults}
+            children={children}
+          />
+        </div>
+        <p className='font-nunito text-lg leading-6 text-grey-primary font-semibold mt-12 mb-4'>
+          Choose your{' '}
+          <span className='text-primary'>
+            {type === 'departure' ? 'departing ' : 'returning '}
+          </span>
+          flight
+        </p>
+        <section className='flex'>
+          <div className='w-8/12'>
+            {!isLoading ? (
+              <div
+                className={`w-full rounded-xl border-1 border-pale-purple p-4 ${
+                  showAllFlights ? '' : 'max-h-456 overflow-y-scroll'
+                }`}
+              >
+                {flights.map(flight => (
+                  <FlightCard
+                    onClick={() => {
+                      setChosenFlight(flight._id);
+                      setShowConfirmModal(true);
+                    }}
+                    key={flight._id}
+                    id={flight._id}
+                    flightNumber={flight.flightNumber}
+                    arrivalTime={flight.arrivalTime}
+                    departureTime={flight.departureTime}
+                    businessSeats={flight.businessSeats}
+                    economySeats={flight.economySeats}
+                    price={200}
+                    departureTerminal={flight.departureTerminal}
+                    arrivalTerminal={flight.arrivalTerminal}
+                  />
+                ))}
               </div>
-            </div>
-          )}
-        </div>
-        <div className='w-4/12 flex justify-center items-center flex-col'>
-          <p>{departureFlight || 'Not chosen'}</p>
-          <p>{returnFlight || 'Not chosen'}</p>
-          {departureFlight && returnFlight && (
-            <Button
-              text='Go to checkout'
-              onClick={() => {
-                if (account) history.push('/checkout');
-                else openLoginModal();
-              }}
-            />
-          )}
-        </div>
+            ) : (
+              <div className='w-full rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center'>
+                <Loading />
+              </div>
+            )}
+            {!showAllFlights && (
+              <div className='w-full flex justify-end mt-4'>
+                <div>
+                  <Button
+                    outline
+                    text='Show all flights'
+                    onClick={() => setShowAllFlights(b => !b)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          <div className='w-4/12 flex flex-col'>
+            <FlightSummaryCard />
+          </div>
+        </section>
       </main>
     </>
   );

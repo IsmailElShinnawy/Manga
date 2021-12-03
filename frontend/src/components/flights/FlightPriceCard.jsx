@@ -1,28 +1,18 @@
-const FlightPriceCard = ({ price1, price2 }) => {
-  const taxes = price1 * 0.14 + price2 * 0.14;
+const FlightPriceCard = ({ departureFlightPrice, returnFlightPrice }) => {
+  const taxes = ((departureFlightPrice || 0) + (returnFlightPrice || 0)) * 0.14;
   return (
-    <div className="flex flex-col w-full items-end">
-      <div className=" mb-md justify-end">
-        <span className="mr-xxl text-grey-4 font-nunito text-base ">
-          Subtotal
-        </span>
-        <span className="text-base font-nunito text-grey-4">
-          ${price1 + price2}
-        </span>
+    <div className='flex flex-col w-full items-end text-grey-4 font-nunito font-semibold pr-4'>
+      <div className='mb-2'>
+        <span className='mr-10'>Subtotal</span>
+        <span>${(departureFlightPrice || 0) + (returnFlightPrice || 0)}</span>
       </div>
-      <div className="mb-md justify-end">
-        <span className=" text-right mr-xxl text-grey-4 font-nunito text-base">
-          Taxes
-        </span>
-        <span className=" text-right text-base font-nunito text-grey-4">
-          ${taxes}
-        </span>
+      <div className='mb-2'>
+        <span className='mr-10'>Taxes</span>
+        <span>${taxes}</span>
       </div>
-      <div className="mb-md justify-end">
-        <span className="mr-xxl text-grey-4 font-nunito text-base">Total</span>
-        <span className="text-base font-nunito text-grey-4">
-          ${price1 + price2 + taxes}
-        </span>
+      <div>
+        <span className='mr-10'>Total</span>
+        <span>${(departureFlightPrice || 0) + (returnFlightPrice || 0) + taxes}</span>
       </div>
     </div>
   );

@@ -62,7 +62,6 @@ module.exports = {
       },
       padding: {
         30: '120px',
-        24: '24px',
       },
       boxShadow: {
         'main-search':

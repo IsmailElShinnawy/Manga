@@ -4,6 +4,8 @@ import { useHttpClient } from '../../hooks/http-hook';
 import Loading from '../shared/UIKit/Loading';
 import { Input } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
+import FlightSummaryCard from './FlightSummaryCard';
+import { useHistory } from 'react-router-dom';
 
 const CheckoutPage = () => {
   const {
@@ -14,9 +16,12 @@ const CheckoutPage = () => {
     departureFlightPassengers,
     returnFlightPassengers,
   } = useReservation();
+  const history = useHistory();
+  const { setReservation } = useReservation();
   const { sendRequest: sendDepartureRequest, isLoading: isDepartureLoading } =
     useHttpClient();
   const { sendRequest: sendReturnRequest, isLoading: isReturnLoading } = useHttpClient();
+  const { sendRequest, isLoading } = useHttpClient();
 
   const [departureFlightAvailableSeats, setDepartureFlightAvailableSeats] = useState([]);
   const [returnFlightAvailableSeats, setReturnFlightAvailableSeats] = useState([]);
@@ -65,6 +70,25 @@ const CheckoutPage = () => {
     } else {
       if (chosenReturnSeats.length === returnFlightPassengers) return;
       addReturnSeat(seat);
+    }
+  };
+
+  const handleReserve = async () => {
+    try {
+      const response = await sendRequest('/reservation', 'POST', {
+        departureFlightId: departureFlight,
+        returnFlightId: returnFlight,
+        departureFlightSeats: chosenDepartureSeats,
+        returnFlightSeats: chosenReturnSeats,
+        departureFlightCabin,
+        returnFlightCabin,
+      });
+      if (response && response.data) {
+        setReservation(response.data);
+        history.push('/itinerary');
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -196,6 +220,27 @@ const CheckoutPage = () => {
             <div className='w-1/2 pl-3'>
               <Input type='text' placeholder='CVV' display='flex' />
             </div>
+          </div>
+        </section>
+        <section className='w-1/3'>
+          <FlightSummaryCard noButton />
+          <div className='w-full flex flex-col items-end mt-9'>
+            <div className='w-1/3'>
+              <Button
+                text='Confirm and reserve'
+                disabled={
+                  chosenDepartureSeats.length < departureFlightPassengers ||
+                  chosenReturnSeats.length < returnFlightPassengers
+                }
+                isLoading={isLoading}
+                loadingText='Loading...'
+                onClick={handleReserve}
+              />
+            </div>
+            {(chosenDepartureSeats.length < departureFlightPassengers ||
+              chosenReturnSeats.length < returnFlightPassengers) && (
+              <p className='text-input-error'>Please make sure to select all seats</p>
+            )}
           </div>
         </section>
       </div>

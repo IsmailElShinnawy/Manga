@@ -1,32 +1,35 @@
-import moment from "moment";
-import EgyptAirLogo from "../../assets/images/egypt-air-logo.png";
-const FlightSummary = ({ departureTime, arrivalTime, cabinClass }) => {
+import moment from 'moment';
+import EgyptAirLogo from '../../assets/images/egypt-air-logo.png';
+
+const FlightSummary = ({
+  departureTime,
+  arrivalTime,
+  cabinClass,
+  flightNumber,
+  departureTerminal,
+  arrivalTerminal,
+}) => {
   return (
-    <div className="flex">
-      <div className=" flex justify-center items-center">
-        <img src={EgyptAirLogo} alt="Egypt Air" />
+    <div className='flex items-center justify-around'>
+      <div className='flex justify-center items-center'>
+        <img src={EgyptAirLogo} alt='Egypt Air' />
       </div>
-      <div className="flex flex-col ml-md mb-lg">
-        <span className=" font-nunito text-grey-4 text-base mb-sm justify-start">
-          {moment(departureTime).format("DD MMM")} Departing
+      <div className='flex flex-col'>
+        <span className='font-nunito text-grey-4 mb-1'>
+          {moment(departureTime).format('DD MMM')} Departing
         </span>
-        <span className=" font-nunito text-grey-4 text-base justify-start">
-          {moment(arrivalTime).format("DD MMM")} Arriving
+        <span className='font-nunito text-grey-secondary mb-1'>{flightNumber}</span>
+        <span className='font-nunito text-grey-secondary mb-1'>
+          {departureTerminal} - {arrivalTerminal}
         </span>
       </div>
-      <div className="flex flex-col ml-md ">
-        <span className="font-nunito text-grey-4 text-base mb-sm justify-end text-right">
-          {moment(departureTime).format("hh:mm a")} -{" "}
-          {moment(arrivalTime).format("hh:mm a")}
+      <div className='flex flex-col'>
+        <span className='font-nunito text-grey-4 mb-1'>2h 15m</span>
+        <span className='font-nunito text-grey-4 mb-1'>
+          {moment(departureTime).format('h:mm A')} -{' '}
+          {moment(arrivalTime).format('h:mm A')}
         </span>
-        <span className="font-nunito text-grey-4 text-base justify-end text-right">
-          {moment(moment(arrivalTime).diff(moment(departureTime))).format(
-            "h[h] m[m]"
-          )}
-        </span>
-        <span className="flex-auto font-nunito text-grey-4 text-base justify-end text-right">
-          {cabinClass}
-        </span>
+        <span className='font-nunito text-grey-4 mb-1'>{cabinClass} class</span>
       </div>
     </div>
   );
