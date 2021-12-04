@@ -6,6 +6,7 @@ import { Input } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
 import FlightSummaryCard from './FlightSummaryCard';
 import { useHistory } from 'react-router-dom';
+import { remove } from '../../service/localStorage.service';
 
 const CheckoutPage = () => {
   const {
@@ -85,6 +86,12 @@ const CheckoutPage = () => {
       });
       if (response && response.data) {
         clear();
+        remove('departureFlighCabin');
+        remove('returnFlighCabin');
+        remove('departureFlightPassengers');
+        remove('returnFlightPassengers');
+        remove('departureFlight');
+        remove('returnFlight');
         history.push(`/itinerary/${response.data._id}`);
       }
     } catch (err) {
