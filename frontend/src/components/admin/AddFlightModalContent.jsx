@@ -11,7 +11,10 @@ import { useHttpClient } from '../../hooks/http-hook';
 const AddFlightModalContent = ({ edit, flight, onResponse }) => {
   const { formState, inputHandler } = useForm(
     {
-      flightNumber: { value: flight?.flightNumber || '', isValid: !!flight },
+      flightNumber: {
+        value: flight?.flightNumber || '',
+        isValid: !!flight?.flightNumber,
+      },
       departureDate: {
         value: flight ? moment(flight.departureTime) : moment(),
         isValid: true,
@@ -28,10 +31,27 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
         value: flight ? moment(flight.departureTime).format('HH:mm') : '12:00',
         isValid: true,
       },
-      numberOfEconomy: { value: flight?.economySeats || 0, isValid: !!flight },
-      numberOfBusiness: { value: flight?.businessSeats || 0, isValid: !!flight },
-      departureTerminal: { value: flight?.departureTerminal || '', isValid: !!flight },
-      arrivalTerminal: { value: flight?.arrivalTerminal || '', isValid: !!flight },
+      numberOfEconomy: {
+        value: flight?.economySeats || 0,
+        isValid: !!flight?.economySeats,
+      },
+      numberOfBusiness: {
+        value: flight?.businessSeats || 0,
+        isValid: !!flight?.businessSeats,
+      },
+      departureTerminal: {
+        value: flight?.departureTerminal || '',
+        isValid: !!flight?.departureTerminal,
+      },
+      arrivalTerminal: {
+        value: flight?.arrivalTerminal || '',
+        isValid: !!flight?.arrivalTerminal,
+      },
+      ticketPrice: { value: flight?.ticketPrice || 0, isValid: !!flight?.ticketPrice },
+      baggageAllowance: {
+        value: flight?.baggageAllowance || 0,
+        isValid: !!flight?.baggageAllowance,
+      },
     },
     !!flight
   );
@@ -39,7 +59,6 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
   const handleAddFlight = async event => {
     event.preventDefault();
     try {
-      // console.log(formState.inputs);
       const flightNumber = formState.inputs.flightNumber.value;
       const departureDate = formState.inputs.departureDate.value;
       const departureTime = formState.inputs.departureTime.value;
@@ -53,6 +72,8 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
       const numberOfBusiness = formState.inputs.numberOfBusiness.value;
       const departureTerminal = formState.inputs.departureTerminal.value;
       const arrivalTerminal = formState.inputs.arrivalTerminal.value;
+      const ticketPrice = formState.inputs.ticketPrice.value;
+      const baggageAllowance = formState.inputs.baggageAllowance.value;
       const response = await sendRequest(
         `/flight${edit ? `/${flight._id}` : ''}`,
         edit ? 'PUT' : 'POST',
@@ -64,6 +85,8 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
           businessSeats: numberOfBusiness,
           departureTerminal,
           arrivalTerminal,
+          ticketPrice,
+          baggageAllowance,
         },
         { 'Content-Type': 'application/json' }
       );
@@ -187,6 +210,34 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
                   onInput={inputHandler}
                   isValid={formState.inputs.numberOfBusiness.isValid}
                   errorMsg='Please enter 1 or more'
+                />
+              </div>
+            </div>
+          </div>
+          <div className='w-2/3 flex'>
+            <div className='w-1/2 pr-4'>
+              <div className='max-w-max'>
+                <Input
+                  id='ticketPrice'
+                  value={formState.inputs.ticketPrice.value}
+                  label='Ticket Price'
+                  validators={[VALIDATOR_MIN(0), VALIDATOR_REQUIRE()]}
+                  onInput={inputHandler}
+                  isValid={formState.inputs.ticketPrice.isValid}
+                  errorMsg='Please enter a valid price that is greater than 0'
+                />
+              </div>
+            </div>
+            <div className='w-1/2 pl-4'>
+              <div className='max-w-max'>
+                <Input
+                  id='baggageAllowance'
+                  value={formState.inputs.baggageAllowance.value}
+                  label='Baggage allowance'
+                  validators={[VALIDATOR_MIN(0), VALIDATOR_REQUIRE()]}
+                  onInput={inputHandler}
+                  isValid={formState.inputs.baggageAllowance.isValid}
+                  errorMsg='Please enter a valid baggage allowance that is greater than 0'
                 />
               </div>
             </div>

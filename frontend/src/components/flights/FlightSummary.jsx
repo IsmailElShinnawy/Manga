@@ -24,7 +24,12 @@ const FlightSummary = ({
         </span>
       </div>
       <div className='flex flex-col'>
-        <span className='font-nunito text-grey-4 mb-1'>2h 15m</span>
+        <span className='font-nunito text-grey-4 mb-1'>
+          {Math.abs(
+            Math.floor(moment(arrivalTime).diff(moment(departureTime), 'minutes') / 60)
+          )}
+          h {moment(arrivalTime).diff(moment(departureTime), 'minutes') % 60}m
+        </span>
         <span className='font-nunito text-grey-4 mb-1'>
           {moment(departureTime).format('h:mm A')} -{' '}
           {moment(arrivalTime).format('h:mm A')}

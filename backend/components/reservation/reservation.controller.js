@@ -1,5 +1,6 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
+const { sendCancelReservationMail } = require('../../service/mail');
 
 exports.getUserReservations = async (req, res) => {
   try {
@@ -19,10 +20,11 @@ exports.cancelReservation = async (req, res) => {
   const { id } = req.params;
   try {
     const reservation = await Reservation.findById(id)
+      .populate('account')
       .populate('departureFlight')
       .populate('returnFlight')
       .exec();
-    if (reservation && reservation.account.toString() !== req.accountId) {
+    if (reservation && reservation.account._id.toString() !== req.accountId) {
       res.status(403).json({ status: 'fail', message: 'Not Authorized' });
       return;
     }
@@ -58,6 +60,16 @@ exports.cancelReservation = async (req, res) => {
     });
 
     await Reservation.findByIdAndDelete(id);
+
+    const amountToRefund =
+      reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length +
+      reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length;
+
+    const recipientName = `${reservation.account.firstname} ${reservation.account.lastname}`;
+    const to = reservation.account.email;
+
+    await sendCancelReservationMail(to, recipientName, id, amountToRefund);
+
     res.status(200).json({ status: 'success' });
   } catch (err) {
     console.log(err);

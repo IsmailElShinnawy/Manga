@@ -171,9 +171,10 @@ const FlightsPage = () => {
                     departureTime={flight.departureTime}
                     businessSeats={flight.businessSeats}
                     economySeats={flight.economySeats}
-                    price={200}
+                    price={flight.ticketPrice}
                     departureTerminal={flight.departureTerminal}
                     arrivalTerminal={flight.arrivalTerminal}
+                    baggageAllowance={flight.baggageAllowance}
                   />
                 ))}
               </div>

@@ -16,6 +16,7 @@ module.exports = {
         'grey-secondary': '#7C8DB0',
         'grey-ternary': '#CBD4E6',
         'grey-4': '#27273F',
+        'grey-5': '#36374A',
         hover: '#F6F6FE',
         'input-border': '#A1B0CC',
         'pale-purple': '#E9E8FC',

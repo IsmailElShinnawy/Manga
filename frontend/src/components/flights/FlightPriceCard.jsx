@@ -1,18 +1,28 @@
-const FlightPriceCard = ({ departureFlightPrice, returnFlightPrice }) => {
-  const taxes = ((departureFlightPrice || 0) + (returnFlightPrice || 0)) * 0.14;
+const FlightPriceCard = ({
+  departureFlightPrice,
+  returnFlightPrice,
+  departureFlightPassengers,
+  returnFlightPassengers,
+}) => {
   return (
     <div className='flex flex-col w-full items-end text-grey-4 font-nunito font-semibold pr-4'>
       <div className='mb-2'>
-        <span className='mr-10'>Subtotal</span>
-        <span>${(departureFlightPrice || 0) + (returnFlightPrice || 0)}</span>
+        <span className='mr-10'>
+          Departure Flight (seats x{departureFlightPassengers})
+        </span>
+        <span>EGP {(departureFlightPrice || 0) * departureFlightPassengers}</span>
       </div>
       <div className='mb-2'>
-        <span className='mr-10'>Taxes</span>
-        <span>${taxes}</span>
+        <span className='mr-10'>Return Flight (seats x{returnFlightPassengers})</span>
+        <span>EGP {(returnFlightPrice || 0) * returnFlightPassengers}</span>
       </div>
-      <div>
+      <div className='mb-2'>
         <span className='mr-10'>Total</span>
-        <span>${(departureFlightPrice || 0) + (returnFlightPrice || 0) + taxes}</span>
+        <span>
+          EGP{' '}
+          {(departureFlightPrice || 0) * departureFlightPassengers +
+            (returnFlightPrice || 0) * returnFlightPassengers}
+        </span>
       </div>
     </div>
   );

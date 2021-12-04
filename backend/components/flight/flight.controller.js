@@ -49,7 +49,7 @@ exports.updateFlight = async (req, res) => {
     departureTerminal,
     arrivalTerminal,
     tripDuration,
-    price,
+    ticketPrice,
     baggageAllowance,
   } = req.body;
   try {
@@ -63,7 +63,7 @@ exports.updateFlight = async (req, res) => {
       departureTerminal: departureTerminal || oldFlightData.depratureTerminal,
       arrivalTerminal: arrivalTerminal || oldFlightData.arrivalTerminal,
       tripDuration: tripDuration || oldFlightData.tripDuration,
-      price: price || oldFlightData.price,
+      ticketPrice: ticketPrice || oldFlightData.ticketPrice,
       baggageAllowance: baggageAllowance || oldFlightData.baggageAllowance,
     };
     const result = await Flight.findByIdAndUpdate(
@@ -88,8 +88,8 @@ exports.create = async (req, res) => {
     businessSeats,
     departureTerminal,
     arrivalTerminal,
-    price = 0,
-    baggageAllowance = 0,
+    ticketPrice,
+    baggageAllowance,
   } = req.body;
   try {
     const f = new Flight({
@@ -101,9 +101,9 @@ exports.create = async (req, res) => {
       allEconomySeats: new Array(+economySeats).fill(true),
       allBusinessSeats: new Array(+businessSeats).fill(true),
       departureTerminal: departureTerminal,
-      arrivalTerminal: arrivalTerminal,
-      price: price,
-      baggageAllowance: baggageAllowance,
+      arrivalTerminal,
+      ticketPrice: +ticketPrice,
+      baggageAllowance: +baggageAllowance,
     });
     const result = await f.save();
     res.status(200).json({ status: 'success', data: result });

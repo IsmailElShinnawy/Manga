@@ -17,6 +17,7 @@ const FlightCard = ({
   onClick,
   noHover,
   noSeats,
+  baggageAllowance,
 }) => {
   return (
     <div
@@ -84,6 +85,14 @@ const FlightCard = ({
           </span>
         </div>
       )}
+      <div className='flex flex-col justify-around'>
+        <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>
+          Baggage Allowance
+        </span>
+        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+          {baggageAllowance} Kg
+        </span>
+      </div>
       <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>Price</span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>

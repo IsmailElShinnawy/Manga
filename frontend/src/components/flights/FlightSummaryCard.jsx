@@ -17,6 +17,8 @@ const FlightSummaryCard = ({ noButton }) => {
     returnFlight: returnFlightId,
     departureFlightCabin,
     returnFlightCabin,
+    departureFlightPassengers,
+    returnFlightPassengers,
   } = useReservation();
   const { account, openLoginModal } = useAuth();
   const history = useHistory();
@@ -94,8 +96,10 @@ const FlightSummaryCard = ({ noButton }) => {
             )}
           </div>
           <FlightPriceCard
-            departureFlightPrice={departureFlight?.price}
-            returnFlightPrice={returnFlight?.price}
+            departureFlightPrice={departureFlight?.ticketPrice}
+            returnFlightPrice={returnFlight?.ticketPrice}
+            departureFlightPassengers={departureFlightPassengers}
+            returnFlightPassengers={returnFlightPassengers}
           />
           {departureFlight && returnFlight && !noButton && (
             <div className='w-full flex justify-end mt-9'>

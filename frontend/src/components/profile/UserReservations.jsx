@@ -26,7 +26,7 @@ const UserReservations = () => {
   };
 
   useEffect(() => {
-    const getReservations = async (req, res) => {
+    const getReservations = async () => {
       try {
         const response = await sendRequest('/reservation');
         if (response && response.data) {
@@ -78,59 +78,64 @@ const UserReservations = () => {
         </div>
       </Modal>
       <div>
-        {reservations?.map(reservation => (
-          <div key={reservation._id}>
-            <div className='flex items-center'>
-              <h2 className='font-nunito font-semibold text-lg leading-6 text-grey-primary mb-4 mr-auto'>
-                Order #{reservation._id.toUpperCase()}{' '}
-                <Link
-                  to={`/itinerary/${reservation._id}`}
-                  className='text-primary text-base leading-5 font-bold'
-                >
-                  View summary
-                </Link>
-              </h2>
-              <div>
-                <Button
-                  text='Cancel'
-                  onClick={() => {
-                    setToBeCancelled(reservation._id);
-                    setShowConfirmModal(true);
-                  }}
-                  isLoading={isDeleting}
-                  loadingText='Cancelling...'
-                  disabled={isDeleting}
+        {reservations?.map(reservation => {
+          console.log(reservation);
+          return (
+            <div key={reservation._id}>
+              <div className='flex items-center'>
+                <h2 className='font-nunito font-semibold text-lg leading-6 text-grey-primary mb-4 mr-auto'>
+                  Order #{reservation._id.toUpperCase()}{' '}
+                  <Link
+                    to={`/itinerary/${reservation._id}`}
+                    className='text-primary text-base leading-5 font-bold'
+                  >
+                    View summary
+                  </Link>
+                </h2>
+                <div>
+                  <Button
+                    text='Cancel'
+                    onClick={() => {
+                      setToBeCancelled(reservation._id);
+                      setShowConfirmModal(true);
+                    }}
+                    isLoading={isDeleting}
+                    loadingText='Cancelling...'
+                    disabled={isDeleting}
+                  />
+                </div>
+              </div>
+              <div className='mb-4'>
+                <FlightCard
+                  arrivalTerminal={reservation?.departureFlight.arrivalTerminal}
+                  arrivalTime={reservation?.departureFlight.arrivalTime}
+                  departureTerminal={reservation?.departureFlight.departureTerminal}
+                  departureTime={reservation?.departureFlight.departureTime}
+                  flightNumber={reservation?.departureFlight.flightNumber}
+                  id={reservation?.departureFlight._id}
+                  noHover
+                  noSeats
+                  price={reservation?.departureFlight.ticketPrice}
+                  baggageAllowance={reservation?.departureFlight.baggageAllowance}
+                />
+              </div>
+              <div className='mb-10'>
+                <FlightCard
+                  arrivalTerminal={reservation?.returnFlight.arrivalTerminal}
+                  arrivalTime={reservation?.returnFlight.arrivalTime}
+                  departureTerminal={reservation?.returnFlight.departureTerminal}
+                  departureTime={reservation?.returnFlight.departureTime}
+                  flightNumber={reservation?.returnFlight.flightNumber}
+                  id={reservation?.returnFlight._id}
+                  noHover
+                  noSeats
+                  price={reservation?.returnFlight.ticketPrice}
+                  baggageAllowance={reservation?.returnFlight.baggageAllowance}
                 />
               </div>
             </div>
-            <div className='mb-4'>
-              <FlightCard
-                arrivalTerminal={reservation?.departureFlight.arrivalTerminal}
-                arrivalTime={reservation?.departureFlight.arrivalTime}
-                departureTerminal={reservation?.departureFlight.departureTerminal}
-                departureTime={reservation?.departureFlight.departureTime}
-                flightNumber={reservation?.departureFlight.flightNumber}
-                id={reservation?.departureFlight._id}
-                noHover
-                noSeats
-                price={reservation?.departureFlight.price}
-              />
-            </div>
-            <div className='mb-10'>
-              <FlightCard
-                arrivalTerminal={reservation?.returnFlight.arrivalTerminal}
-                arrivalTime={reservation?.returnFlight.arrivalTime}
-                departureTerminal={reservation?.returnFlight.departureTerminal}
-                departureTime={reservation?.returnFlight.departureTime}
-                flightNumber={reservation?.returnFlight.flightNumber}
-                id={reservation?.returnFlight._id}
-                noHover
-                noSeats
-                price={reservation?.returnFlight.price}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );

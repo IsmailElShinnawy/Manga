@@ -49,9 +49,10 @@ const ViewItinerary = () => {
             departureTime={reservation?.departureFlight.departureTime}
             flightNumber={reservation?.departureFlight.flightNumber}
             id={reservation?.departureFlight._id}
-            price={reservation?.departureFlight.price}
+            price={reservation?.departureFlight.ticketPrice}
             noHover
             noSeats
+            baggageAllowance={reservation?.departureFlight.baggageAllowance}
           />
           <p className='mt-3 text-grey-secondary leading-5'>
             Chosen Seats ({reservation?.departureFlightCabin}):{' '}
@@ -75,9 +76,10 @@ const ViewItinerary = () => {
             departureTime={reservation?.returnFlight.departureTime}
             flightNumber={reservation?.returnFlight.flightNumber}
             id={reservation?.returnFlight._id}
-            price={reservation?.returnFlight.price}
+            price={reservation?.returnFlight.ticketPrice}
             noHover
             noSeats
+            baggageAllowance={reservation?.returnFlight.baggageAllowance}
           />
           <p className='mt-3 text-grey-secondary leading-5'>
             Chosen Seats ({reservation?.returnFlightCabin}):{' '}
@@ -93,6 +95,40 @@ const ViewItinerary = () => {
           <h2 className='font-nunito text-grey-primary font-bold text-2xl leading-8 mb-6'>
             Price Breakdown
           </h2>
+          <div>
+            <div className='flex w-5/12 text-grey-primary text-lg leading-6 font-nunito mb-3'>
+              <span className='mr-auto'>
+                Departing Flight (x{reservation?.departureFlightSeats.length} seats)
+              </span>
+              <span>
+                EGP{' '}
+                {reservation?.departureFlight.ticketPrice *
+                  reservation?.departureFlightSeats.length}
+              </span>
+            </div>
+            <div className='flex w-5/12 text-grey-primary text-lg leading-6 font-nunito mb-3'>
+              <span className='mr-auto'>
+                Return Flight (x{reservation?.returnFlightSeats.length} seats)
+              </span>
+              <span>
+                EGP{' '}
+                {reservation?.returnFlight.ticketPrice *
+                  reservation?.returnFlightSeats.length}
+              </span>
+            </div>
+            <hr className='w-5/12 mb-3' />
+            <div className='flex w-5/12 text-grey-5 text-lg font-semibold leading-6 font-nunito mb-3'>
+              <span className='mr-auto'>Amount paid</span>
+              <span>
+                EGP{' '}
+                {reservation?.returnFlight.ticketPrice *
+                  reservation?.returnFlightSeats.length +
+                  reservation?.departureFlight.ticketPrice *
+                    reservation?.departureFlightSeats.length}
+              </span>
+            </div>
+            <hr className='w-5/12' />
+          </div>
         </div>
       </section>
     </main>
