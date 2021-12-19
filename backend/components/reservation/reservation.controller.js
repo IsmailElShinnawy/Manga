@@ -2,6 +2,81 @@ const Reservation = require("./reservation.model");
 const Flight = require("../flight/flight.model");
 const { sendCancelReservationMail } = require("../../service/mail");
 
+exports.updateReservedFlight = async (req, res) => {
+  try {
+    let reservation = await Reservation.findById(req.params.id);
+    if (reservation.account != req.accountId) {
+      return res.status(401).send({ message: "unauthorized" });
+    }
+    const { type, flightId, flightSeats, flightCabin } = req.body;
+    const reservedFlightId =
+      type == "departure"
+        ? reservation.departureFlight
+        : reservation.returnFlight;
+    const reservedFlightCabin =
+      type == "departure"
+        ? reservation.departureFlightCabin
+        : reservation.returnFlightCabin;
+    const reservedSeats =
+      type == "departure"
+        ? reservation.departureFlightSeats
+        : reservation.returnFlightSeats;
+    let reservedFlight = await Flight.findById(reservedFlightId);
+    let flightToBeReserved = await Flight.findById(flightId);
+    if (reservedFlight._id.equals(flightToBeReserved._id)) {
+      return res.status(400).json({
+        status: "fail",
+        message:
+          "Cannot change seats of reserved flight through this feature, please use the change seats feature in the future",
+      });
+    }
+    let allFlightSeats;
+    if (flightCabin == "economy") {
+      allFlightSeats = flightToBeReserved.allEconomySeats;
+    } else {
+      allFlightSeats = flightToBeReserved.allBusinessSeats;
+    }
+    for (let i = 0; i < flightSeats.length; i++) {
+      if (!allFlightSeats[flightSeats[i]]) {
+        return res.status(400).json({
+          status: "fail",
+          message: ` seat ${flightSeats[i]} in ${flightCabin} cabin is not available`,
+        });
+      }
+    }
+    reservedSeats.forEach((seat) => {
+      if (reservedFlightCabin == "economy") {
+        reservedFlight.allEconomySeats[+seat] = true;
+      } else {
+        reservedFlight.allBusinessSeats[+seat] = true;
+      }
+    });
+    flightSeats.forEach((seat) => {
+      if (flightCabin == "economy") {
+        flightToBeReserved.allEconomySeats[+seat] = false;
+      } else {
+        flightToBeReserved.allBusinessSeats[+seat] = false;
+      }
+    });
+    if (type == "departure") {
+      reservation.departureFlight = flightId;
+      reservation.departureFlightCabin = flightCabin;
+      reservation.departureFlightSeats = flightSeats;
+    } else {
+      reservation.returnFlight = flightId;
+      reservation.returnFlightCabin = flightCabin;
+      reservation.returnFlightSeats = flightSeats;
+    }
+    await Flight.findByIdAndUpdate(reservedFlight._id, reservedFlight);
+    await Flight.findByIdAndUpdate(flightToBeReserved._id, flightToBeReserved);
+    await Reservation.findByIdAndUpdate(reservation._id, reservation);
+    return res.status(200).json({ status: "success" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ status: "fail", message: err });
+  }
+};
+
 exports.updateSeats = async (req, res) => {
   try {
     let reservation = await Reservation.findById(req.params.id);
