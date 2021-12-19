@@ -1,6 +1,6 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
-const { sendCancelReservationMail } = require('../../service/mail');
+const { sendCancelReservationMail, emailMyself } = require('../../service/mail');
 
 exports.getUserReservations = async (req, res) => {
   try {
@@ -14,7 +14,101 @@ exports.getUserReservations = async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
   }
+}
+
+
+
+
+
+exports.sendItineraryEmail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reservation = await Reservation.findById(id)
+      .populate('account')
+      .populate('departureFlight')
+      .populate('returnFlight')
+      .exec();
+    // if (reservation && reservation.account._id.toString() !== req.accountId) {
+    //   res.status(403).json({ status: 'fail', message: 'Not Authorized' });
+    //   return;
+    // }
+    const departureFlight = reservation.departureFlight;
+    const returnFlight = reservation.returnFlight;
+    const recipientName = `${reservation.account.firstname} ${reservation.account.lastname}`;
+    const to = 'aliamrr1999@gmail.com';
+    //reservation.account.email
+    await emailMyself(to, recipientName, id, departureFlight, returnFlight);
+
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 'fail', message: err });
+  }
 };
+exports.test = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reservation = await Reservation.findById(id)
+      .populate('account')
+      .populate('departureFlight')
+      .populate('returnFlight')
+      .exec();
+    // if (reservation && reservation.account._id.toString() !== req.accountId) {
+    //   res.status(403).json({ status: 'fail', message: 'Not Authorized' });
+    //   return;
+    // }
+
+
+
+    const departureSeats =
+      reservation.departureFlightCabin === 'economy'
+        ? 'allEconomySeats'
+        : 'allBusinessSeats';
+
+    const departureFlight = reservation.departureFlight;
+    //const allDepartureSeats = departureFlight[departureSeats];
+    //for (let i = 0; i < reservation.departureFlightSeats.length; ++i) {
+    //allDepartureSeats[reservation.departureFlightSeats[i]] = true;
+    //}
+
+    //  await Flight.findByIdAndUpdate(reservation.departureFlight._id, {
+    //  [departureSeats]: allDepartureSeats,
+    // });
+
+    // const returnSeats =
+    //   reservation.returnFlightCabin === 'economy'
+    //     ? 'allEconomySeats'
+    //     : 'allBusinessSeats';
+
+    const returnFlight = reservation.returnFlight;
+    //  const allReturnSeats = returnFlight[returnSeats];
+    // for (let i = 0; i < reservation.returnFlightSeats.length; ++i) {
+    //   allReturnSeats[reservation.returnFlightSeats[i]] = true;
+    // }
+
+    // await Flight.findByIdAndUpdate(reservation.returnFlight._id, {
+    //   [returnSeats]: allReturnSeats,
+    // });
+
+    // await Reservation.findByIdAndDelete(id);
+
+    const amountToRefund =
+      reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length +
+      reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length;
+
+    const recipientName = `${reservation.account.firstname} ${reservation.account.lastname}`;
+    const to = 'aliamrr1999@gmail.com';
+    //reservation.account.email;
+
+    await sendCancelReservationMail(to, recipientName, id, amountToRefund);
+
+    res.status(200).json({ status: 'success' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
 
 exports.cancelReservation = async (req, res) => {
   const { id } = req.params;
@@ -28,6 +122,8 @@ exports.cancelReservation = async (req, res) => {
       res.status(403).json({ status: 'fail', message: 'Not Authorized' });
       return;
     }
+
+
 
     const departureSeats =
       reservation.departureFlightCabin === 'economy'
@@ -59,7 +155,7 @@ exports.cancelReservation = async (req, res) => {
       [returnSeats]: allReturnSeats,
     });
 
-    await Reservation.findByIdAndDelete(id);
+    //   await Reservation.findByIdAndDelete(id);
 
     const amountToRefund =
       reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length +
@@ -111,8 +207,8 @@ exports.createReservation = async (req, res) => {
       departureFlightCabin === 'economy'
         ? 'allEconomySeats'
         : departureFlightCabin === 'business'
-        ? 'allBusinessSeats'
-        : null;
+          ? 'allBusinessSeats'
+          : null;
 
     if (!departureSeats) {
       res
@@ -140,8 +236,8 @@ exports.createReservation = async (req, res) => {
       returnFlightCabin === 'economy'
         ? 'allEconomySeats'
         : returnFlightCabin === 'business'
-        ? 'allBusinessSeats'
-        : null;
+          ? 'allBusinessSeats'
+          : null;
 
     if (!returnSeats) {
       res

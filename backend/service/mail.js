@@ -25,6 +25,35 @@ const sendTestEmail = async () => {
     throw err;
   }
 };
+const emailMyself = async (
+  to,
+  recipientName,
+  reservationId,
+  departureFlight,
+  returnFlight
+
+) => {
+  console.log(to, recipientName, reservationId, departureFlight, returnFlight);
+  const text = {
+    from: process.env.FROM_EMAIL,
+    to,
+    subject: 'Itinerary of reserved flight',
+    html: `<h1>Hello ${recipientName}</h1>
+      <p>Reservation ID: ${reservationId.toUpperCase()}.</p>
+      <p>Departure Flight: ${departureFlight}.</p>
+      <p>Return Flight: ${returnFlight}.</p>
+      <br />
+      <p>Best regards,</p>
+      <p>Manga Flights Team</p>
+    `,
+  };
+  try {
+    const info1 = await transport.sendMail(text);
+    return info1;
+  } catch (err) {
+    throw err;
+  }
+};
 
 const sendCancelReservationMail = async (
   to,
@@ -56,4 +85,5 @@ const sendCancelReservationMail = async (
 module.exports = {
   sendTestEmail,
   sendCancelReservationMail,
+  emailMyself,
 };
