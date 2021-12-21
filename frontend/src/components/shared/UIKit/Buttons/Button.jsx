@@ -9,19 +9,19 @@ const Button = ({
   disabled,
   onClick,
   type,
-  lg,
   danger,
   isTextButton,
   outline,
+  icon,
 }) => {
   return (
     <button
       className={`button w-full h-full max-h-14 font-nunito ${
         disabled ? 'bg-opacity-50 cursor-not-allowed' : ''
-      } ${danger ? 'bg-red-700' : isTextButton || outline ? '' : 'bg-primary'} ${
+      } ${danger ? 'bg-red-700' : icon || isTextButton || outline ? '' : 'bg-primary'} ${
         isLoading ? 'opacity-50' : ''
       } ${outline ? 'border-1 border-primary hover:bg-primary' : ''} ${
-        isTextButton
+        isTextButton || icon
           ? 'text-grey-secondary hover:underline'
           : outline
           ? 'px-5 py-3 text-primary hover:text-white'
@@ -31,7 +31,7 @@ const Button = ({
       disabled={disabled}
       onClick={onClick}
     >
-      {isLoading && loadingText ? loadingText : text}
+      {icon || (isLoading && loadingText ? loadingText : text)}
     </button>
   );
 };
