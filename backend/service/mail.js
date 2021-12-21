@@ -43,12 +43,9 @@ const emailMyself = async (
   ret_flightNumber,
   ret_price,
   ret_baggageAllowance,
-  total_amount,
-
-
-
+  total_amount
 ) => {
-  console.log(to, recipientName, reservationId, departureFlight, returnFlight);
+  // console.log(to, recipientName, reservationId, departureFlight, returnFlight);
   const text = {
     from: process.env.FROM_EMAIL,
     to,
@@ -72,13 +69,6 @@ const emailMyself = async (
       <p>Return Flight's ticket Price: ${ret_price} EGP.</p>
       <p>Return Flight's baggage allowance: ${ret_baggageAllowance} Kg.</p>
       <h1>Amount to be paid: ${total_amount} EGP</h1>
-
-
-
-
-
-
-      <p>Return Flight: ${returnFlight}.</p>
       <br />
       <p>Best regards,</p>
       <p>Manga Flights Team</p>

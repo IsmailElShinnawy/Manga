@@ -14,7 +14,7 @@ exports.getUserReservations = async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
   }
-}
+};
 exports.sendItineraryEmail = async (req, res) => {
   const { id } = req.params;
   try {
@@ -51,12 +51,29 @@ exports.sendItineraryEmail = async (req, res) => {
     const ret_price = reservation.returnFlight.ticketPrice;
     const ret_baggageAllowance = reservation.returnFlight.baggageAllowance;
     //
-    const total_amount = reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length +
+    const total_amount =
+      reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length +
       reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length;
-    await emailMyself(to,
-      recipientName, reservationId, dep_arrivalTerminal, dep_arrivalTime, dep_departureTerminal, dep_departureTime,
-      dep_flightNumber, dep_price, dep_baggageAllowance, ret_arrivalTerminal, ret_arrivalTime, ret_departureTerminal,
-      ret_departureTime, ret_flightNumber, ret_price, ret_baggageAllowance, total_amount);
+    await emailMyself(
+      to,
+      recipientName,
+      id,
+      dep_arrivalTerminal,
+      dep_arrivalTime,
+      dep_departureTerminal,
+      dep_departureTime,
+      dep_flightNumber,
+      dep_price,
+      dep_baggageAllowance,
+      ret_arrivalTerminal,
+      ret_arrivalTime,
+      ret_departureTerminal,
+      ret_departureTime,
+      ret_flightNumber,
+      ret_price,
+      ret_baggageAllowance,
+      total_amount
+    );
 
     res.status(200).json({ status: 'success' });
   } catch (err) {
@@ -64,7 +81,6 @@ exports.sendItineraryEmail = async (req, res) => {
     res.status(500).json({ status: 'fail', message: err });
   }
 };
-
 
 exports.cancelReservation = async (req, res) => {
   const { id } = req.params;
@@ -78,8 +94,6 @@ exports.cancelReservation = async (req, res) => {
       res.status(403).json({ status: 'fail', message: 'Not Authorized' });
       return;
     }
-
-
 
     const departureSeats =
       reservation.departureFlightCabin === 'economy'
@@ -163,8 +177,8 @@ exports.createReservation = async (req, res) => {
       departureFlightCabin === 'economy'
         ? 'allEconomySeats'
         : departureFlightCabin === 'business'
-          ? 'allBusinessSeats'
-          : null;
+        ? 'allBusinessSeats'
+        : null;
 
     if (!departureSeats) {
       res
@@ -192,8 +206,8 @@ exports.createReservation = async (req, res) => {
       returnFlightCabin === 'economy'
         ? 'allEconomySeats'
         : returnFlightCabin === 'business'
-          ? 'allBusinessSeats'
-          : null;
+        ? 'allBusinessSeats'
+        : null;
 
     if (!returnSeats) {
       res
