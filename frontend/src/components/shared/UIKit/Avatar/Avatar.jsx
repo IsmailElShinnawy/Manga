@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Avatar = ({ firstName, lastName, lg }) => {
-  const name = `${firstName[0]}${lastName[0]}`;
+const Avatar = ({ firstName, lastName, userName, lg }) => {
+  const name = firstName && lastName ? `${firstName[0]}${lastName[0]}` : userName[0];
   return (
     <div
       className={`${
