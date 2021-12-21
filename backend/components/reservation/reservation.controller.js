@@ -27,12 +27,36 @@ exports.sendItineraryEmail = async (req, res) => {
       res.status(403).json({ status: 'fail', message: 'Not Authorized' });
       return;
     }
-    const departureFlight = reservation.departureFlight;
-    const returnFlight = reservation.returnFlight;
+    // const departureFlight = reservation.departureFlight;
+    // const returnFlight = reservation.returnFlight;
     const recipientName = `${reservation.account.firstname} ${reservation.account.lastname}`;
-    const to = 'aliamrr1999@gmail.com';
-    //reservation.account.email
-    await emailMyself(to, recipientName, id, departureFlight, returnFlight);
+    const to = reservation.account.email;
+    // departure flight
+    const dep_arrivalTerminal = reservation.departureFlight.arrivalTerminal;
+    const dep_arrivalTime = reservation.departureFlight.arrivalTime;
+    const dep_departureTerminal = reservation.departureFlight.departureTerminal;
+    const dep_departureTime = reservation.departureFlight.departureTime;
+    const dep_flightNumber = reservation.departureFlight.flightNumber;
+    const dep_id = reservation.departureFlight._id;
+    const dep_price = reservation.departureFlight.ticketPrice;
+    const dep_baggageAllowance = reservation.departureFlight.baggageAllowance;
+
+    // return flight
+    const ret_arrivalTerminal = reservation.returnFlight.arrivalTerminal;
+    const ret_arrivalTime = reservation.returnFlight.arrivalTime;
+    const ret_departureTerminal = reservation.returnFlight.departureTerminal;
+    const ret_departureTime = reservation.returnFlight.departureTime;
+    const ret_flightNumber = reservation.returnFlight.flightNumber;
+    const ret_id = reservation.returnFlight._id;
+    const ret_price = reservation.returnFlight.ticketPrice;
+    const ret_baggageAllowance = reservation.returnFlight.baggageAllowance;
+    //
+    const total_amount = reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length +
+      reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length;
+    await emailMyself(to,
+      recipientName, reservationId, dep_arrivalTerminal, dep_arrivalTime, dep_departureTerminal, dep_departureTime,
+      dep_flightNumber, dep_price, dep_baggageAllowance, ret_arrivalTerminal, ret_arrivalTime, ret_departureTerminal,
+      ret_departureTime, ret_flightNumber, ret_price, ret_baggageAllowance, total_amount);
 
     res.status(200).json({ status: 'success' });
   } catch (err) {
