@@ -13,6 +13,18 @@ const UserReservations = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toBeCancelled, setToBeCancelled] = useState();
 
+  const handleSubmit = async event => {
+    event.preventDefault();
+    try {
+      const response = await sendRequest('/reservation/email/:id', 'GET')
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
   const cancel = async id => {
     try {
       const response = await deleteRequest(`/reservation/${id}`, 'DELETE');
@@ -92,7 +104,17 @@ const UserReservations = () => {
                     View summary
                   </Link>
                 </h2>
-                <div>
+                <div className=' w-1/4 px-2'>
+                  <Button
+                    text='Email Summary'
+                    type='submit'
+                    isLoading={isLoading}
+                    loadingText='Sending email...'
+                    disabled={isLoading}
+                    onClick={handleSubmit}
+                  />
+                </div>
+                <div >
                   <Button
                     text='Cancel'
                     onClick={() => {
