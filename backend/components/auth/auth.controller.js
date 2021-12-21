@@ -16,7 +16,7 @@ const signup = async (req, res) => {
       roles: [userRoleId],
     });
     await account.save();
-    res.json({ status: 'success', message: 'account created successfully' });
+    res.json({ status: 'success', message: 'account created successfully', account, token });
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
     console.log(err);

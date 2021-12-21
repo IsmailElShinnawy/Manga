@@ -7,6 +7,8 @@ const ProvideAuth = ({ children }) => {
   const [account, setAccount] = useState(read('account') || undefined);
   const [token, setToken] = useState(read('token') || undefined);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
+
 
   const updateAccount = newAccount => {
     setAccount(newAccount);
@@ -25,10 +27,18 @@ const ProvideAuth = ({ children }) => {
   const openLoginModal = () => {
     setShowLoginModal(true);
   };
+  const openSignupModal = () => {
+    setShowSignupModal(true);
+  };
+
 
   const closeLoginModal = () => {
     setShowLoginModal(false);
   };
+  const closeSignupModal = () => {
+    setShowSignupModal(false);
+  };
+
 
   return (
     <authContext.Provider
@@ -41,6 +51,9 @@ const ProvideAuth = ({ children }) => {
         showLoginModal,
         openLoginModal,
         closeLoginModal,
+        showSignupModal,
+        openSignupModal,
+        closeSignupModal
       }}
     >
       {children}
