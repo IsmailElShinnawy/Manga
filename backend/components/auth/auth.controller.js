@@ -8,11 +8,16 @@ var bcrypt = require('bcryptjs');
 const signup = async (req, res) => {
   try {
     const userRoleId = (await Role.findOne({ name: 'user' }))._id;
-    const { username, email, password } = req.body;
+    const { username, email, password , firstname, lastname, address , CountryCode ,TelephoneNum } = req.body;
     const account = new Account({
       username,
       email,
       password: bcrypt.hashSync(password, 8),
+      firstname,
+      lastname,
+      address,
+      CountryCode,
+      TelephoneNum,
       roles: [userRoleId],
     });
     await account.save();
