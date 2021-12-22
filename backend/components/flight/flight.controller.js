@@ -1,12 +1,70 @@
-const Flight = require('./flight.model');
-const moment = require('moment');
+const Flight = require("./flight.model");
+const moment = require("moment");
+const Reservation = require("../reservation/reservation.model");
+
+exports.getAlternative = async (req, res) => {
+  try {
+    const reservation = await Reservation.findById(req.params.id);
+    if (req.accountId != reservation.account) {
+      return res.status(401).send({ message: "unauthorized" });
+    }
+    const { type } = req.body;
+    const flightToMatchId =
+      type == "departure"
+        ? reservation.returnFlight
+        : reservation.departureFlight;
+    const flightToMatch = await Flight.findById(flightToMatchId);
+    const criteria = {
+      departureTerminal: flightToMatch.arrivalTerminal,
+      arrivalTerminal: flightToMatch.departureTerminal,
+    };
+    if (type == "departure") {
+      criteria.arrivalTime = { $lte: flightToMatch.departureTime };
+    } else {
+      criteria.departureTime = { $gte: flightToMatch.arrivalTime };
+    }
+    const result = await Flight.find(criteria);
+    const checkSeats = (numberOfSeats, arr) => {
+      let count = 0;
+      for (let j = 0; j < arr.length; j++) {
+        if (!arr[j]) continue;
+        count++;
+        if (count >= numberOfSeats) return true;
+      }
+      return false;
+    };
+    const flightCabin =
+      type == "departure"
+        ? reservation.departureFlightCabin
+        : reservation.returnFlightCabin;
+    const numberOfReservedSeats =
+      type == "departure"
+        ? reservation.departureFlightSeats.length
+        : reservation.returnFlightSeats.length;
+    let filteredResult = [];
+    for (let i = 0; i < result.length; i++) {
+      if (flightCabin == "economy") {
+        if (checkSeats(numberOfReservedSeats, result[i].allEconomySeats)) {
+          filteredResult.push(result[i]);
+        }
+      } else {
+        if (checkSeats(numberOfReservedSeats, result[i].allBusinessSeats)) {
+          filteredResult.push(result[i]);
+        }
+      }
+    }
+    return res.status(200).json({ status: "success", data: filteredResult });
+  } catch (err) {
+    return res.status(200).json({ status: "success", message: err });
+  }
+};
 
 exports.returnFlights = async (req, res) => {
   const { cabinClass, numberOfPassengers = 0 } = req.body;
   try {
     const departureFlight = await Flight.findById(req.params.id);
     let returnFlight = 0;
-    if (cabinClass == 'business') {
+    if (cabinClass == "business") {
       returnFlight = await Flight.find({
         departureTerminal: departureFlight.arrivalTerminal,
         arrivalTerminal: departureFlight.departureTerminal,
@@ -14,7 +72,7 @@ exports.returnFlights = async (req, res) => {
         businessSeats: { $gte: numberOfPassengers },
       });
     } else {
-      if (cabinClass == 'economy') {
+      if (cabinClass == "economy") {
         returnFlight = await Flight.find({
           departureTerminal: departureFlight.arrivalTerminal,
           arrivalTerminal: departureFlight.departureTerminal,
@@ -33,9 +91,9 @@ exports.returnFlights = async (req, res) => {
         });
       }
     }
-    res.status(200).json({ status: 'success', data: returnFlight });
+    res.status(200).json({ status: "success", data: returnFlight });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -70,12 +128,12 @@ exports.updateFlight = async (req, res) => {
       { _id: req.params.id },
       updatedFlightData,
       {
-        returnDocument: 'after',
+        returnDocument: "after",
       }
     );
-    res.status(200).json({ status: 'success', data: result });
+    res.status(200).json({ status: "success", data: result });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -106,18 +164,18 @@ exports.create = async (req, res) => {
       baggageAllowance: +baggageAllowance,
     });
     const result = await f.save();
-    res.status(200).json({ status: 'success', data: result });
+    res.status(200).json({ status: "success", data: result });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
 exports.view = async (req, res) => {
   try {
     const flights = await Flight.find();
-    res.status(200).json({ status: 'success', data: flights });
+    res.status(200).json({ status: "success", data: flights });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -144,46 +202,48 @@ exports.searchFlights = async (req, res) => {
     });
   }
   if (fromArrivalDate) {
-    const extractedDate = moment(fromArrivalDate).format('YYYY-MM-DD');
+    const extractedDate = moment(fromArrivalDate).format("YYYY-MM-DD");
     const startDate = moment(
-      `${extractedDate} ${fromArrivalTime ? fromArrivalTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${fromArrivalTime ? fromArrivalTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     ).toDate();
     criteria.push({ arrivalTime: { $gte: startDate } });
   }
   if (toArrivalDate) {
-    const extractedDate = moment(toArrivalDate).format('YYYY-MM-DD');
+    const extractedDate = moment(toArrivalDate).format("YYYY-MM-DD");
     const endDate = moment(
-      `${extractedDate} ${toArrivalTime ? toArrivalTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${toArrivalTime ? toArrivalTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     )
-      .add(toArrivalTime ? 0 : 1, 'days')
+      .add(toArrivalTime ? 0 : 1, "days")
       .toDate();
     criteria.push({ arrivalTime: { $lt: endDate } });
   }
   if (fromDepartureDate) {
-    const extractedDate = moment(fromDepartureDate).format('YYYY-MM-DD');
+    const extractedDate = moment(fromDepartureDate).format("YYYY-MM-DD");
     const startDate = moment(
-      `${extractedDate} ${fromDepartureTime ? fromDepartureTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${fromDepartureTime ? fromDepartureTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     ).toDate();
     criteria.push({ departureTime: { $gte: startDate } });
   }
   if (toDepartureDate) {
-    const extractedDate = moment(toDepartureDate).format('YYYY-MM-DD');
+    const extractedDate = moment(toDepartureDate).format("YYYY-MM-DD");
     const endDate = moment(
-      `${extractedDate} ${toDepartureTime ? toDepartureTime : ''}`,
-      'YYYY-MM-DD hh:mm'
+      `${extractedDate} ${toDepartureTime ? toDepartureTime : ""}`,
+      "YYYY-MM-DD hh:mm"
     )
-      .add(toDepartureTime ? 0 : 1, 'days')
+      .add(toDepartureTime ? 0 : 1, "days")
       .toDate();
     criteria.push({ departureTime: { $lt: endDate } });
   }
   try {
-    const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});
-    res.status(200).json({ status: 'success', data: flights });
+    const flights = await Flight.find(
+      criteria.length > 0 ? { $and: [...criteria] } : {}
+    );
+    res.status(200).json({ status: "success", data: flights });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -199,7 +259,7 @@ exports.userSearchFlights = async (req, res) => {
   try {
     const criteria = [];
     if (passengers) {
-      const seats = cabinClass === 'economy' ? 'economySeats' : 'businessSeats';
+      const seats = cabinClass === "economy" ? "economySeats" : "businessSeats";
       criteria.push({ [seats]: { $gte: passengers < 0 ? 0 : passengers } });
     }
     if (departureTerminal) {
@@ -210,7 +270,7 @@ exports.userSearchFlights = async (req, res) => {
     }
     if (departureDate) {
       const minDepartureTime = moment(departureDate);
-      const maxDepartureTime = moment(departureDate).add(1, 'days');
+      const maxDepartureTime = moment(departureDate).add(1, "days");
       criteria.push({
         departureTime: {
           $gte: minDepartureTime.toDate(),
@@ -220,15 +280,20 @@ exports.userSearchFlights = async (req, res) => {
     }
     if (arrivalDate) {
       const minArrivalTime = moment(arrivalDate);
-      const maxArrivalTime = moment(arrivalDate).add(1, 'days');
+      const maxArrivalTime = moment(arrivalDate).add(1, "days");
       criteria.push({
-        arrivalTime: { $gte: minArrivalTime.toDate(), $lt: maxArrivalTime.toDate() },
+        arrivalTime: {
+          $gte: minArrivalTime.toDate(),
+          $lt: maxArrivalTime.toDate(),
+        },
       });
     }
-    const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});
-    res.status(200).json({ status: 'success', data: flights });
+    const flights = await Flight.find(
+      criteria.length > 0 ? { $and: [...criteria] } : {}
+    );
+    res.status(200).json({ status: "success", data: flights });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -238,19 +303,19 @@ exports.deleteFlight = async (req, res) => {
     try {
       await Flight.deleteOne({ _id: i });
     } catch (err) {
-      res.status(500).json({ status: 'fail', message: err });
+      res.status(500).json({ status: "fail", message: err });
     }
   }
-  res.status(200).json({ status: 'Success', data: null });
+  res.status(200).json({ status: "Success", data: null });
 };
 
 exports.viewFlight = async (req, res) => {
   try {
     var flight = await Flight.findById(req.params.id);
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
-  res.status(200).json({ status: 'Success', data: flight });
+  res.status(200).json({ status: "Success", data: flight });
 };
 
 exports.getFlightSeatInfo = async (req, res) => {
@@ -258,13 +323,13 @@ exports.getFlightSeatInfo = async (req, res) => {
   try {
     const flight = await Flight.findById(req.params.id);
     let seatInfo = [];
-    if (cabin === 'business') {
+    if (cabin === "business") {
       seatInfo = flight.allBusinessSeats;
-    } else if (cabin === 'economy') {
+    } else if (cabin === "economy") {
       seatInfo = flight.allEconomySeats;
     }
-    res.status(200).json({ status: 'success', data: seatInfo });
+    res.status(200).json({ status: "success", data: seatInfo });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
