@@ -6,7 +6,9 @@ import { Button } from '../shared/UIKit/Buttons';
 import Loading from '../shared/UIKit/Loading';
 import Modal from '../shared/Modal/Modal';
 import { ReactComponent as IconEdit } from '../../assets/icons/IconEdit.svg';
+import { ReactComponent as IconRefresh } from '../../assets/icons/IconRefresh.svg';
 import EditReservationSeatsModal from './EditReservationSeatsModal';
+import UpdateFlightModal from './UpdateFlightModal';
 
 const UserReservations = () => {
   const { sendRequest, isLoading } = useHttpClient();
@@ -15,9 +17,17 @@ const UserReservations = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toBeCancelled, setToBeCancelled] = useState();
   const [editing, setEditing] = useState(null);
+  const [updating, setUpdating] = useState(null);
 
   const handleEdit = (id, type) => {
     setEditing({
+      id,
+      type,
+    });
+  };
+
+  const handleUpdate = (id, type) => {
+    setUpdating({
       id,
       type,
     });
@@ -27,11 +37,14 @@ const UserReservations = () => {
     setEditing(null);
   };
 
+  const handleCloseUpdate = () => {
+    setUpdating(null);
+  };
+
   const cancel = async id => {
     try {
       const response = await deleteRequest(`/reservation/${id}`, 'DELETE');
       if (response) {
-        console.log('in');
         setReservations(res => res.filter(r => r._id !== id));
       }
     } catch (err) {
@@ -92,6 +105,7 @@ const UserReservations = () => {
         </div>
       </Modal>
       <EditReservationSeatsModal close={handleCloseEdit} editing={editing} />
+      <UpdateFlightModal close={handleCloseUpdate} updating={updating} />
       <div>
         {reservations?.map(reservation => {
           return (
@@ -138,6 +152,12 @@ const UserReservations = () => {
                     onClick={() => handleEdit(reservation._id, 'departure')}
                   />
                 </div>
+                <div className='flex items-center ml-2'>
+                  <Button
+                    icon={<IconRefresh fill='#605DEC' />}
+                    onClick={() => handleUpdate(reservation._id, 'departure')}
+                  />
+                </div>
               </div>
               <div className='mb-10 flex'>
                 <FlightCard
@@ -156,6 +176,12 @@ const UserReservations = () => {
                   <Button
                     icon={<IconEdit fill='#605DEC' />}
                     onClick={() => handleEdit(reservation._id, 'return')}
+                  />
+                </div>
+                <div className='flex items-center ml-2'>
+                  <Button
+                    icon={<IconRefresh fill='#605DEC' />}
+                    onClick={() => handleUpdate(reservation._id, 'return')}
                   />
                 </div>
               </div>
