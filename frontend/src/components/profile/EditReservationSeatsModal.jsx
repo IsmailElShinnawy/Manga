@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHttpClient } from '../../hooks/http-hook';
 import Modal from '../shared/Modal/Modal';
+import { Button } from '../shared/UIKit/Buttons';
 
-const Seats = ({ reservation, type }) => {
+const Seats = ({ reservation, type, close }) => {
+  const { sendRequest, isLoading } = useHttpClient();
+
   const cabin =
     type === 'departure'
       ? reservation.departureFlightCabin
@@ -44,24 +47,47 @@ const Seats = ({ reservation, type }) => {
     });
   };
 
+  const handleClick = async () => {
+    try {
+      const response = await sendRequest(`/reservation/seats/${reservation._id}`, 'PUT', {
+        type,
+        seats: selectedSeats,
+      });
+      if (response && response.status === 'success') {
+        close();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <div className='flex flex-wrap w-full'>
-      {allAvailableSeats.map(
-        (available, seat) =>
-          (available || isSelectedSeat(seat)) && (
-            <span
-              className={`select-none mr-3 mb-6 w-10 h-10 flex justify-center items-center rounded-full ${
-                isSelectedSeat(seat) ? 'bg-primary text-white' : 'bg-pale-purple'
-              } hover:cursor-pointer`}
-              key={`seat${seat}`}
-              onClick={() => (isSelectedSeat(seat) ? removeSeat(seat) : addSeat(seat))}
-            >
-              {cabin[0].toUpperCase()}
-              {seat}
-            </span>
-          )
-      )}
-    </div>
+    <>
+      <div className='flex flex-wrap w-full'>
+        {allAvailableSeats.map(
+          (available, seat) =>
+            (available || isSelectedSeat(seat)) && (
+              <span
+                className={`select-none mr-3 mb-6 w-10 h-10 flex justify-center items-center rounded-full ${
+                  isSelectedSeat(seat) ? 'bg-primary text-white' : 'bg-pale-purple'
+                } hover:cursor-pointer`}
+                key={`seat${seat}`}
+                onClick={() => (isSelectedSeat(seat) ? removeSeat(seat) : addSeat(seat))}
+              >
+                {cabin[0].toUpperCase()}
+                {seat}
+              </span>
+            )
+        )}
+      </div>
+      <Button
+        isLoading={isLoading}
+        loadingText='Updating...'
+        text='Update'
+        onClick={handleClick}
+        disabled={selectedSeats.length !== numberOfUserSeats}
+      />
+    </>
   );
 };
 
@@ -86,7 +112,9 @@ const EditReservationSeatsModal = ({ editing, close }) => {
       <h1 className='font-nunito text-grey-primary font-bold text-2xl leading-8 mr-auto mb-4'>
         Edit {editing?.type} flight seats
       </h1>
-      {reservation && <Seats reservation={reservation} type={editing?.type} />}
+      {reservation && (
+        <Seats reservation={reservation} type={editing?.type} close={close} />
+      )}
     </Modal>
   );
 };
