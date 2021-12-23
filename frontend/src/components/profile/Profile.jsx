@@ -8,7 +8,7 @@ import { useHttpClient } from '../../hooks/http-hook';
 import './Profile.scss';
 import { Button } from '../shared/UIKit/Buttons';
 import { useForm } from '../../hooks/form-hook';
-import { VALIDATOR_EMAIL, VALIDATOR_REQUIRE } from '../../utils/validators';
+import { VALIDATOR_EMAIL,VALIDATOR_MINLENGTH,VALIDATOR_REQUIRE } from '../../utils/validators';
 import { remove, write } from '../../service/localStorage.service';
 
 import { ReactComponent as IconAirplane } from '../../assets/icons/IconAirplaneRight.svg';
@@ -29,11 +29,14 @@ const Profile = () => {
         value: account.passportNumber || '',
         isValid: !!account.passportNumber,
       },
+      //password: { value: account.password || '', isValid: !!account.password },
+
     },
     !!account.firstname &&
       !!account.lastname &&
       !!account.email &&
       !!account.passportNumber
+      //!!account.password
   );
   const params = new URLSearchParams(location.search);
   let tab = params.get('tab');
@@ -46,6 +49,7 @@ const Profile = () => {
         lastname: formState.inputs.lastName.value,
         passportNumber: formState.inputs.passportNumber.value,
         email: formState.inputs.email.value,
+        password: formState.inputs.password.value,
       });
       if (response && response.data) {
         updateAccount(response.data);
@@ -55,10 +59,23 @@ const Profile = () => {
       console.log(err);
     }
   };
+  const handleeSubmit = async event => {
+    event.preventDefault();
+    try{
+      const response = await sendRequest('/account/changePassword', 'PUT',{
+        password: formState.inputs.password.value,
+        newpassword: formState.inputs.newpassword.value,
+      });
+    }
+    catch (err) {
+      console.log(err);
+    }
+  };
 
   switch (tab) {
     case 'account':
     case 'trips':
+    case 'changepassword':
       break;
     default:
       tab = 'account';
@@ -94,6 +111,16 @@ const Profile = () => {
                 >
                   <IconPerson stroke='black' />
                   <span className='ml-3'>My Personal Information</span>
+                </li>
+              </Link>
+              <Link to='/profile?tab=changepassword'>
+                <li
+                  className={`${
+                    tab === 'changepassword' ? 'bg-pale-purple text-primary' : ''
+                  } rounded-md py-2 px-4 flex mb-4 hover:cursor-pointer`}
+                >
+                  <IconPerson stroke='black' />
+                  <span className='ml-3'>Change My Password</span>
                 </li>
               </Link>
               <li
@@ -179,6 +206,56 @@ const Profile = () => {
               </div>
             </>
           )}
+          {tab === 'changepassword' && (
+            <>
+              <h1 className='text-2xl font-bold font-nunito text-grey-primary'>
+                Change Password
+              </h1> 
+              <div className='w-full mt-4'>
+                <form onSubmit={handleeSubmit}>
+                <Input
+                 id='password'
+                 required
+                 placeholder='Old Password'
+                 type='password'
+                isValid={formState.inputs.password.isValid}
+                validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
+                onInput={inputHandler}
+                errorMsg="'Can't leave Old Password Empty"
+                 
+        />
+        <Input
+                    placeholder='New Password'
+                    id='newpassword'
+                    required
+                    validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
+                    //name="newpas" value={this.state.input.newpas}
+                    errorMsg="Can't leave New Password Empty"
+                    onInput={inputHandler}
+                    isValid={formState.inputs.password.isValid}
+                  />
+                  <Input
+                    placeholder='Confirm New Password'
+                    id='confirmnewpassword'
+                    required
+                    validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
+                    errorMsg="Can't leave New Password Confirmation Empty"
+                    onInput={inputHandler}
+                    isValid={formState.inputs.password.isValid}
+                  />
+                  <div className='w-1/4'>
+                    <Button
+                      text='Save changes'
+                      type='submit'
+                      disabled={!formState.isValid}
+                      isLoading={isLoading}
+                      loadingText='Saving changes...'
+                      onClick={handleeSubmit}
+                    /> </div>
+                </form>
+                
+              </div>
+              </>)}
           {tab === 'trips' && (
             <>
               <h1 className='text-2xl font-bold font-nunito text-grey-primary mb-6'>
