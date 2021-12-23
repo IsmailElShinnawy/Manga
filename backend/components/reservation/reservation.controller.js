@@ -1,62 +1,74 @@
-const Reservation = require('./reservation.model');
-const Flight = require('../flight/flight.model');
-const { sendCancelReservationMail } = require('../../service/mail');
+const Reservation = require("./reservation.model");
+const Flight = require("../flight/flight.model");
+const { sendCancelReservationMail } = require("../../service/mail");
 
 exports.updateSeats = async (req, res) => {
   const { id } = req.params;
   try {
     let reservation = await Reservation.findById(id);
     if (reservation.account != req.accountId) {
-      return res.status(401).send({ message: 'unauthorized' });
+      return res.status(401).send({ message: "unauthorized" });
     }
     const { type, seats } = req.body;
     const flightId =
-      type == 'departure' ? reservation.departureFlight : reservation.returnFlight;
+      type == "departure"
+        ? reservation.departureFlight
+        : reservation.returnFlight;
     const flightCabin =
-      type == 'departure'
+      type == "departure"
         ? reservation.departureFlightCabin
         : reservation.returnFlightCabin;
     let flight = await Flight.findById(flightId);
     const allFlightSeats =
-      flightCabin == 'economy' ? flight.allEconomySeats : flight.allBusinessSeats;
+      flightCabin == "economy"
+        ? flight.allEconomySeats
+        : flight.allBusinessSeats;
     const reservedSeats =
-      type == 'departure'
+      type == "departure"
         ? reservation.departureFlightSeats
         : reservation.returnFlightSeats;
+    if (seats.length != reservedSeats.length) {
+      return res
+        .status(401)
+        .json({
+          status: "fail",
+          message: "old seats number and new seats number don't match",
+        });
+    }
     for (let i = 0; i < seats.length; i++) {
       let seat = seats[i];
       if (!allFlightSeats[Number(seat)] && !reservedSeats.includes(seat)) {
         return res.status(400).json({
-          status: 'fail',
+          status: "fail",
           message: `seat ${seat} in ${flightCabin} cabin is not available`,
         });
       }
     }
-    reservedSeats.forEach(seat => {
-      if (flightCabin == 'economy') {
+    reservedSeats.forEach((seat) => {
+      if (flightCabin == "economy") {
         flight.allEconomySeats[Number(seat)] = true;
       } else {
         flight.allBusinessSeats[Number(seat)] = true;
       }
     });
-    seats.forEach(seat => {
-      if (flightCabin == 'economy') {
+    seats.forEach((seat) => {
+      if (flightCabin == "economy") {
         flight.allEconomySeats[Number(seat)] = false;
       } else {
         flight.allBusinessSeats[Number(seat)] = false;
       }
     });
-    if (type == 'departure') {
+    if (type == "departure") {
       reservation.departureFlightSeats = seats;
     } else {
       reservation.returnFlightSeats = seats;
     }
     await Reservation.findByIdAndUpdate(reservation._id, reservation);
     await Flight.findByIdAndUpdate(flight._id, flight);
-    return res.status(200).json({ status: 'success' });
+    return res.status(200).json({ status: "success" });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ status: 'fail', message: err });
+    return res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -65,12 +77,12 @@ exports.getUserReservations = async (req, res) => {
     const reservations = await Reservation.find({
       account: req.accountId,
     })
-      .populate('departureFlight')
-      .populate('returnFlight')
+      .populate("departureFlight")
+      .populate("returnFlight")
       .exec();
-    res.status(200).json({ status: 'success', data: reservations });
+    res.status(200).json({ status: "success", data: reservations });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -78,19 +90,19 @@ exports.cancelReservation = async (req, res) => {
   const { id } = req.params;
   try {
     const reservation = await Reservation.findById(id)
-      .populate('account')
-      .populate('departureFlight')
-      .populate('returnFlight')
+      .populate("account")
+      .populate("departureFlight")
+      .populate("returnFlight")
       .exec();
     if (reservation && reservation.account._id.toString() !== req.accountId) {
-      res.status(403).json({ status: 'fail', message: 'Not Authorized' });
+      res.status(403).json({ status: "fail", message: "Not Authorized" });
       return;
     }
 
     const departureSeats =
-      reservation.departureFlightCabin === 'economy'
-        ? 'allEconomySeats'
-        : 'allBusinessSeats';
+      reservation.departureFlightCabin === "economy"
+        ? "allEconomySeats"
+        : "allBusinessSeats";
 
     const departureFlight = reservation.departureFlight;
     const allDepartureSeats = departureFlight[departureSeats];
@@ -103,9 +115,9 @@ exports.cancelReservation = async (req, res) => {
     });
 
     const returnSeats =
-      reservation.returnFlightCabin === 'economy'
-        ? 'allEconomySeats'
-        : 'allBusinessSeats';
+      reservation.returnFlightCabin === "economy"
+        ? "allEconomySeats"
+        : "allBusinessSeats";
 
     const returnFlight = reservation.returnFlight;
     const allReturnSeats = returnFlight[returnSeats];
@@ -120,18 +132,20 @@ exports.cancelReservation = async (req, res) => {
     await Reservation.findByIdAndDelete(id);
 
     const amountToRefund =
-      reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length +
-      reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length;
+      reservation.departureFlight.ticketPrice *
+        reservation.departureFlightSeats.length +
+      reservation.returnFlight.ticketPrice *
+        reservation.returnFlightSeats.length;
 
     const recipientName = `${reservation.account.firstname} ${reservation.account.lastname}`;
     const to = reservation.account.email;
 
     await sendCancelReservationMail(to, recipientName, id, amountToRefund);
 
-    res.status(200).json({ status: 'success' });
+    res.status(200).json({ status: "success" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -139,17 +153,17 @@ exports.getReservation = async (req, res) => {
   const { id } = req.params;
   try {
     let reservation = await Reservation.findById(id)
-      .populate('departureFlight')
-      .populate('returnFlight')
+      .populate("departureFlight")
+      .populate("returnFlight")
       .exec();
     if (reservation && reservation.account.toString() !== req.accountId) {
-      res.status(403).json({ status: 'fail', message: 'Unauthorized' });
+      res.status(403).json({ status: "fail", message: "Unauthorized" });
       return;
     }
-    res.status(200).json({ status: 'success', data: reservation });
+    res.status(200).json({ status: "success", data: reservation });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
 
@@ -166,16 +180,16 @@ exports.createReservation = async (req, res) => {
   try {
     const departureFlight = await Flight.findById(departureFlightId);
     const departureSeats =
-      departureFlightCabin === 'economy'
-        ? 'allEconomySeats'
-        : departureFlightCabin === 'business'
-        ? 'allBusinessSeats'
+      departureFlightCabin === "economy"
+        ? "allEconomySeats"
+        : departureFlightCabin === "business"
+        ? "allBusinessSeats"
         : null;
 
     if (!departureSeats) {
       res.status(400).json({
-        status: 'fail',
-        message: 'Cabin should be either economy or business',
+        status: "fail",
+        message: "Cabin should be either economy or business",
       });
       return;
     }
@@ -186,7 +200,7 @@ exports.createReservation = async (req, res) => {
       const seat = departureFlightSeats[i];
       if (!allDepartureSeats[+seat]) {
         res.status(400).json({
-          status: 'fail',
+          status: "fail",
           message: `Departure seat ${seat} in ${departureFlightCabin} cabin is not available`,
         });
         return;
@@ -196,16 +210,16 @@ exports.createReservation = async (req, res) => {
 
     const returnFlight = await Flight.findById(returnFlightId);
     const returnSeats =
-      returnFlightCabin === 'economy'
-        ? 'allEconomySeats'
-        : returnFlightCabin === 'business'
-        ? 'allBusinessSeats'
+      returnFlightCabin === "economy"
+        ? "allEconomySeats"
+        : returnFlightCabin === "business"
+        ? "allBusinessSeats"
         : null;
 
     if (!returnSeats) {
       res.status(400).json({
-        status: 'fail',
-        message: 'Cabin should be either economy or business',
+        status: "fail",
+        message: "Cabin should be either economy or business",
       });
       return;
     }
@@ -216,7 +230,7 @@ exports.createReservation = async (req, res) => {
       const seat = returnFlightSeats[i];
       if (!allReturnSeats[+seat]) {
         res.status(400).json({
-          status: 'fail',
+          status: "fail",
           message: `Return seat ${seat} in ${returnFlightCabin} cabin is not available`,
         });
         return;
@@ -244,8 +258,8 @@ exports.createReservation = async (req, res) => {
 
     const reservation = await r.save();
 
-    res.status(200).json({ status: 'success', data: reservation });
+    res.status(200).json({ status: "success", data: reservation });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    res.status(500).json({ status: "fail", message: err });
   }
 };
