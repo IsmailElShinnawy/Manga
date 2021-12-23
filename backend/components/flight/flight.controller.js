@@ -46,7 +46,7 @@ exports.getAlternative = async (req, res) => {
     );
     return res.status(200).json({ status: 'success', data: filteredResult });
   } catch (err) {
-    return res.status(200).json({ status: 'success', message: err });
+    return res.status(500).json({ status: 'fail', message: err });
   }
 };
 
