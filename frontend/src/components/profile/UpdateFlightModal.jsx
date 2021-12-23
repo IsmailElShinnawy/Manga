@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useHttpClient } from '../../hooks/http-hook';
 import FlightCard from '../flights/FlightCard';
 import Modal from '../shared/Modal/Modal';
-import { Button } from '../shared/UIKit/Buttons';
+// import { Button } from '../shared/UIKit/Buttons';
 import Loading from '../shared/UIKit/Loading';
+import './UpdateFlightModal.scss';
 
-const AlternativeFlights = ({ flights }) => {
+const AlternativeFlights = ({ flights, oldPrice }) => {
   return (
     <>
       <div
-        className='overflow-y-scroll mb-4'
-        style={{ maxHeight: 'calc(100vh - 200px)' }}
+        className='overflow-y-scroll mb-4 flights'
+        style={{ maxHeight: 'calc(100vh - 200px)', minHeight: 'calc(100vh - 200px)' }}
       >
         {flights.map(flight => (
           <FlightCard
@@ -23,15 +24,16 @@ const AlternativeFlights = ({ flights }) => {
             economySeats={flight.economySeats}
             flightNumber={flight.flightNumber}
             id={flight._id}
-            price={flight.price}
+            price={flight.ticketPrice}
             key={flight._id}
+            oldPrice={oldPrice}
             onClick={() => {}}
           />
         ))}
       </div>
-      <div className='w-3/12'>
+      {/* <div className='w-3/12'>
         <Button text={'Choose new flight'} />
-      </div>
+      </div> */}
     </>
   );
 };
@@ -42,24 +44,35 @@ const UpdateFlightModal = ({ updating, close }) => {
 
   useEffect(() => {
     const getAlternativeFlights = async () => {
-      const response = await sendRequest('/flight/user/search', 'POST');
+      const response = await sendRequest(`/flight/alternative/${updating.id}`, 'POST', {
+        type: updating.type,
+      });
       if (response && response.data) {
+        // const fakeFlights = new Array(50).fill(response.data[0]);
+        // setAlternativeFlights(fakeFlights);
         setAlternativeFlights(response.data);
       }
     };
-    getAlternativeFlights();
+    if (Boolean(updating)) {
+      getAlternativeFlights();
+    }
   }, [sendRequest, updating]);
 
   return (
     <Modal show={Boolean(updating)} close={close}>
       {isLoading ? (
-        <Loading />
+        <div className='min-w-full min-h-full flex justify-center items-center'>
+          <Loading />
+        </div>
       ) : (
         <>
           <h1 className='font-nunito text-grey-primary font-bold text-2xl leading-8 mr-auto mb-4'>
             Choose a new {updating?.type} flight
           </h1>
-          <AlternativeFlights flights={alternativeFlights} />
+          <AlternativeFlights
+            flights={alternativeFlights}
+            oldPrice={updating?.oldPrice}
+          />
         </>
       )}
     </Modal>

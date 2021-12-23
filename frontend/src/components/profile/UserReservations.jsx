@@ -26,10 +26,11 @@ const UserReservations = () => {
     });
   };
 
-  const handleUpdate = (id, type) => {
+  const handleUpdate = (id, type, oldPrice) => {
     setUpdating({
       id,
       type,
+      oldPrice,
     });
   };
 
@@ -155,7 +156,13 @@ const UserReservations = () => {
                 <div className='flex items-center ml-2'>
                   <Button
                     icon={<IconRefresh fill='#605DEC' />}
-                    onClick={() => handleUpdate(reservation._id, 'departure')}
+                    onClick={() =>
+                      handleUpdate(
+                        reservation._id,
+                        'departure',
+                        reservation?.departureFlight.ticketPrice
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -181,7 +188,13 @@ const UserReservations = () => {
                 <div className='flex items-center ml-2'>
                   <Button
                     icon={<IconRefresh fill='#605DEC' />}
-                    onClick={() => handleUpdate(reservation._id, 'return')}
+                    onClick={() =>
+                      handleUpdate(
+                        reservation._id,
+                        'return',
+                        reservation?.returnFlight.ticketPrice
+                      )
+                    }
                   />
                 </div>
               </div>
