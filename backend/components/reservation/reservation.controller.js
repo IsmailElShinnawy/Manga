@@ -78,8 +78,9 @@ exports.updateReservedFlight = async (req, res) => {
 };
 
 exports.updateSeats = async (req, res) => {
+  const { id } = req.params;
   try {
-    let reservation = await Reservation.findById(req.params.id);
+    let reservation = await Reservation.findById(id);
     if (reservation.account != req.accountId) {
       return res.status(401).send({ message: "unauthorized" });
     }
@@ -101,27 +102,35 @@ exports.updateSeats = async (req, res) => {
       type == "departure"
         ? reservation.departureFlightSeats
         : reservation.returnFlightSeats;
+    if (seats.length != reservedSeats.length) {
+      return res
+        .status(401)
+        .json({
+          status: "fail",
+          message: "old seats number and new seats number don't match",
+        });
+    }
     for (let i = 0; i < seats.length; i++) {
       let seat = seats[i];
-      if (!allFlightSeats[+seat] && !reservedSeats.includes(seat)) {
+      if (!allFlightSeats[Number(seat)] && !reservedSeats.includes(seat)) {
         return res.status(400).json({
           status: "fail",
-          message: ` seat ${seat} in ${flightCabin} cabin is not available`,
+          message: `seat ${seat} in ${flightCabin} cabin is not available`,
         });
       }
     }
     reservedSeats.forEach((seat) => {
       if (flightCabin == "economy") {
-        flight.allEconomySeats[+seat] = true;
+        flight.allEconomySeats[Number(seat)] = true;
       } else {
-        flight.allBusinessSeats[+seat] = true;
+        flight.allBusinessSeats[Number(seat)] = true;
       }
     });
     seats.forEach((seat) => {
       if (flightCabin == "economy") {
-        flight.allEconomySeats[+seat] = false;
+        flight.allEconomySeats[Number(seat)] = false;
       } else {
-        flight.allBusinessSeats[+seat] = false;
+        flight.allBusinessSeats[Number(seat)] = false;
       }
     });
     if (type == "departure") {
@@ -129,8 +138,6 @@ exports.updateSeats = async (req, res) => {
     } else {
       reservation.returnFlightSeats = seats;
     }
-    // console.log(reservation);
-    // console.log(flight);
     await Reservation.findByIdAndUpdate(reservation._id, reservation);
     await Flight.findByIdAndUpdate(flight._id, flight);
     return res.status(200).json({ status: "success" });

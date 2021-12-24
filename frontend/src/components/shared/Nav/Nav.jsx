@@ -69,7 +69,11 @@ const Nav = () => {
 
         {!isAdmin(account) && account && location.pathname !== '/profile' && (
           <Link to='/profile' className='ml-4'>
-            <Avatar firstName={account.firstname} lastName={account.lastname} />
+            <Avatar
+              firstName={account.firstname}
+              lastName={account.lastname}
+              userName={account.username}
+            />
           </Link>
         )}
       </nav>
