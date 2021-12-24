@@ -19,12 +19,12 @@ const FlightPriceCard = ({
           <span>EGP {newFlightPrice}</span>
         </div>
         <div className='mb-2'>
-          <span className='mr-10'>Price difference</span>
-          <span>EGP {priceDifference}</span>
+          <span className='mr-10'>Old Flight Price</span>
+          <span>EGP {oldFlightPrice}</span>
         </div>
         <div className='mb-2'>
           <span className='mr-10'>{priceDifference >= 0 ? 'Total' : 'Refunded'}</span>
-          <span>EGP {Math.abs(newFlightPrice + priceDifference)}</span>
+          <span>EGP {Math.abs(priceDifference)}</span>
         </div>
       </div>
     );

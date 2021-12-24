@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { useHttpClient } from '../../hooks/http-hook';
 import Loading from '../shared/UIKit/Loading';
 import { Input } from '../shared/UIKit/Inputs';
@@ -10,7 +10,13 @@ import FlightSummaryCard from './FlightSummaryCard';
 const UpdateReservation = () => {
   const { rid, fid, cabin, type } = useParams();
   const [seats, setSeats] = useState([]);
-  const { sendRequest, isLoading, error } = useHttpClient();
+  const { sendRequest, isLoading } = useHttpClient();
+  const {
+    sendRequest: reserve,
+    isLoading: isReserving,
+    error: reservationError,
+  } = useHttpClient();
+  const history = useHistory();
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [oldReservation, setOldReservation] = useState(null);
   const [flight, setFlight] = useState(null);
@@ -33,12 +39,18 @@ const UpdateReservation = () => {
       setSelectedSeats(seats => [...seats, idx]);
   };
 
-  const handleUpdate = () => {
-    console.log(selectedSeats);
-    console.log(fid);
-    console.log(rid);
-    console.log(cabin);
-    console.log(type);
+  const handleUpdate = async () => {
+    try {
+      await reserve(`/reservation/${rid}`, 'PUT', {
+        type,
+        flightId: fid,
+        flightSeats: selectedSeats,
+        flightCabin: cabin,
+      });
+      history.push(`/itinerary/${rid}?updated=true`);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -163,7 +175,11 @@ const UpdateReservation = () => {
                 onClick={handleUpdate}
               />
             </div>
-            {error && <p className='text-input-error'>{error?.response?.data.message}</p>}
+            {reservationError && (
+              <p className='text-input-error'>
+                {reservationError?.response?.data.message}
+              </p>
+            )}
           </div>
         </section>
       </div>
