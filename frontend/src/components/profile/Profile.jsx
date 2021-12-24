@@ -8,7 +8,12 @@ import { useHttpClient } from '../../hooks/http-hook';
 import './Profile.scss';
 import { Button } from '../shared/UIKit/Buttons';
 import { useForm } from '../../hooks/form-hook';
-import { VALIDATOR_EMAIL,VALIDATOR_MINLENGTH,VALIDATOR_REQUIRE } from '../../utils/validators';
+import {
+  VALIDATOR_EMAIL,
+  VALIDATOR_EQUAL,
+  VALIDATOR_MINLENGTH,
+  VALIDATOR_REQUIRE,
+} from '../../utils/validators';
 import { remove, write } from '../../service/localStorage.service';
 
 import { ReactComponent as IconAirplane } from '../../assets/icons/IconAirplaneRight.svg';
@@ -19,7 +24,7 @@ import UserReservations from './UserReservations';
 const Profile = () => {
   const { account, updateAccount, signout } = useAuth();
   const location = useLocation();
-  const { sendRequest, isLoading } = useHttpClient();
+  const { sendRequest, isLoading, error } = useHttpClient();
   const { formState, inputHandler } = useForm(
     {
       firstName: { value: account.firstname || '', isValid: !!account.firstname },
@@ -29,14 +34,19 @@ const Profile = () => {
         value: account.passportNumber || '',
         isValid: !!account.passportNumber,
       },
-      //password: { value: account.password || '', isValid: !!account.password },
-
     },
     !!account.firstname &&
       !!account.lastname &&
       !!account.email &&
       !!account.passportNumber
-      //!!account.password
+  );
+  const { formState: passwordFormState, inputHandler: passwordInputHandler } = useForm(
+    {
+      password: { value: '', isValid: false },
+      newPassword: { value: '', isValid: false },
+      confirmNewPassword: { value: '', isValid: false },
+    },
+    false
   );
   const params = new URLSearchParams(location.search);
   let tab = params.get('tab');
@@ -59,15 +69,14 @@ const Profile = () => {
       console.log(err);
     }
   };
-  const handleeSubmit = async event => {
+  const handleChangePassword = async event => {
     event.preventDefault();
-    try{
-      const response = await sendRequest('/account/changePassword', 'PUT',{
-        password: formState.inputs.password.value,
-        newpassword: formState.inputs.newpassword.value,
+    try {
+      await sendRequest('/account/changePassword', 'PUT', {
+        password: passwordFormState.inputs.password.value,
+        newPassword: passwordFormState.inputs.newPassword.value,
       });
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
     }
   };
@@ -210,52 +219,59 @@ const Profile = () => {
             <>
               <h1 className='text-2xl font-bold font-nunito text-grey-primary'>
                 Change Password
-              </h1> 
+              </h1>
               <div className='w-full mt-4'>
-                <form onSubmit={handleeSubmit}>
-                <Input
-                 id='password'
-                 required
-                 placeholder='Old Password'
-                 type='password'
-                isValid={formState.inputs.password.isValid}
-                validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
-                onInput={inputHandler}
-                errorMsg="'Can't leave Old Password Empty"
-                 
-        />
-        <Input
-                    placeholder='New Password'
-                    id='newpassword'
+                <form onSubmit={handleChangePassword}>
+                  <Input
+                    id='password'
                     required
-                    validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
-                    //name="newpas" value={this.state.input.newpas}
-                    errorMsg="Can't leave New Password Empty"
-                    onInput={inputHandler}
-                    isValid={formState.inputs.password.isValid}
+                    placeholder='Password'
+                    type='password'
+                    isValid={passwordFormState.inputs.password.isValid}
+                    validators={[VALIDATOR_MINLENGTH(3), VALIDATOR_REQUIRE()]}
+                    onInput={passwordInputHandler}
+                    errorMsg='This field is required'
+                  />
+                  <Input
+                    placeholder='New Password'
+                    type='password'
+                    id='newPassword'
+                    required
+                    validators={[VALIDATOR_MINLENGTH(3), VALIDATOR_REQUIRE()]}
+                    errorMsg='Field is required with minimum of 3 digits'
+                    onInput={passwordInputHandler}
+                    isValid={passwordFormState.inputs.newPassword.isValid}
                   />
                   <Input
                     placeholder='Confirm New Password'
-                    id='confirmnewpassword'
+                    type='password'
+                    id='confirmNewPassword'
                     required
-                    validators={[VALIDATOR_MINLENGTH(3),VALIDATOR_REQUIRE()]}
-                    errorMsg="Can't leave New Password Confirmation Empty"
-                    onInput={inputHandler}
-                    isValid={formState.inputs.password.isValid}
+                    validators={[
+                      VALIDATOR_REQUIRE(),
+                      VALIDATOR_EQUAL(passwordFormState.inputs.newPassword.value),
+                    ]}
+                    errorMsg='Passwords do not match'
+                    onInput={passwordInputHandler}
+                    isValid={passwordFormState.inputs.confirmNewPassword.isValid}
                   />
                   <div className='w-1/4'>
                     <Button
                       text='Save changes'
                       type='submit'
-                      disabled={!formState.isValid}
+                      disabled={!passwordFormState.isValid}
                       isLoading={isLoading}
                       loadingText='Saving changes...'
-                      onClick={handleeSubmit}
-                    /> </div>
+                      onClick={handleChangePassword}
+                    />
+                  </div>
+                  <div className='text-red-500'>
+                    {error && error.response.data.message}
+                  </div>
                 </form>
-                
               </div>
-              </>)}
+            </>
+          )}
           {tab === 'trips' && (
             <>
               <h1 className='text-2xl font-bold font-nunito text-grey-primary mb-6'>
