@@ -8,7 +8,28 @@ var bcrypt = require('bcryptjs');
 const signup = async (req, res) => {
   try {
     const userRoleId = (await Role.findOne({ name: 'user' }))._id;
-    const { username, email, password , firstname, lastname, address , CountryCode ,TelephoneNum } = req.body;
+    const {
+      username,
+      email,
+      password,
+      firstname,
+      lastname,
+      homeAddress,
+      countryCode,
+      telephoneNumber,
+      passportNumber,
+    } = req.body;
+
+    const accountWithSameEmailOrUsername = Account.findOne({
+      $or: [{ email }, { username }],
+    });
+    if (Boolean(accountWithSameEmailOrUsername)) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'An account with the same email or username already exists',
+      });
+    }
+
     const account = new Account({
       username,
       email,
@@ -16,8 +37,10 @@ const signup = async (req, res) => {
       firstname,
       lastname,
       address,
-      CountryCode,
-      TelephoneNum,
+      countryCode,
+      telephoneNumber,
+      homeAddress,
+      passportNumber,
       roles: [userRoleId],
     });
     await account.save();
