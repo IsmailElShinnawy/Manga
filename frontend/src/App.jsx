@@ -12,6 +12,7 @@ import Profile from './components/profile/Profile';
 import ProvideReservation from './components/context/ReservationContext';
 import CheckoutPage from './components/flights/CheckoutPage';
 import ViewItinerary from './components/flights/ViewItinerary';
+import UpdateReservation from './components/flights/UpdateReservation';
 
 function App() {
   return (
@@ -31,14 +32,17 @@ function App() {
             <AuthenticatedRoute path='/checkout' exact>
               <CheckoutPage />
             </AuthenticatedRoute>
+            <AuthenticatedRoute path='/checkout/:rid/:fid/:type/:cabin' exact>
+              <UpdateReservation />
+            </AuthenticatedRoute>
             <Route path='/403'>
               <main className='page flex justify-center items-center'>
                 403 - You are not authorized to access this page
               </main>
             </Route>
-            <Route path='/itinerary/:id' exact>
+            <AuthenticatedRoute path='/itinerary/:id' exact>
               <ViewItinerary />
-            </Route>
+            </AuthenticatedRoute>
             <Route path='/flights' exact>
               <FlightsPage />
             </Route>

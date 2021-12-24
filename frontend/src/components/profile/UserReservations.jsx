@@ -26,11 +26,13 @@ const UserReservations = () => {
     });
   };
 
-  const handleUpdate = (id, type, oldPrice) => {
+  const handleUpdate = (id, type, oldPrice, numberOfSeats, cabin) => {
     setUpdating({
       id,
       type,
       oldPrice,
+      numberOfSeats,
+      cabin,
     });
   };
 
@@ -160,7 +162,9 @@ const UserReservations = () => {
                       handleUpdate(
                         reservation._id,
                         'departure',
-                        reservation?.departureFlight.ticketPrice
+                        reservation?.departureFlight.ticketPrice,
+                        reservation?.departureFlightSeats.length,
+                        reservation?.departureFlightCabin
                       )
                     }
                   />
@@ -192,7 +196,9 @@ const UserReservations = () => {
                       handleUpdate(
                         reservation._id,
                         'return',
-                        reservation?.returnFlight.ticketPrice
+                        reservation?.returnFlight.ticketPrice,
+                        reservation?.returnFlightSeats.length,
+                        reservation?.returnFlightCabin
                       )
                     }
                   />

@@ -2,22 +2,69 @@ import React, { useEffect, useState } from 'react';
 import { useHttpClient } from '../../hooks/http-hook';
 import FlightCard from '../flights/FlightCard';
 import Modal from '../shared/Modal/Modal';
-// import { Button } from '../shared/UIKit/Buttons';
 import Loading from '../shared/UIKit/Loading';
 import './UpdateFlightModal.scss';
 import moment from 'moment';
 import { ReactComponent as IconArrowLeft } from '../../assets/icons/IconArrowLeft.svg';
 import { ReactComponent as IconClock } from '../../assets/icons/IconClock.svg';
 import { ReactComponent as IconBag } from '../../assets/icons/IconBag.svg';
-import { ReactComponent as IconUserStar } from '../../assets/icons/IconUserStar.svg';
+import { ReactComponent as IconMoney } from '../../assets/icons/IconMoney.svg';
 import { ReactComponent as IconUser } from '../../assets/icons/IconUser.svg';
 import { Button } from '../shared/UIKit/Buttons';
+import { Link } from 'react-router-dom';
+// import { useReservation } from '../context/ReservationContext';
+// import { useHistory } from 'react-router-dom';
+// import { remove, write } from '../../service/localStorage.service';
 
-const NewFlightDetails = ({ flight }) => {
+const NewFlightDetails = ({ flight, numberOfSeats, cabin, reservation, type }) => {
   const duration = moment(flight.arrivalTime).diff(
     moment(flight.departureTime),
     'minutes'
   );
+
+  // const {
+  //   chooseDepartureFlight,
+  //   chooseReturnFlight,
+  //   chooseDepartureFlightCabin,
+  //   chooseReturnFlightCabin,
+  //   chooseDepartureFlightPassengers,
+  //   chooseReturnFlightPassengers,
+  //   clear,
+  // } = useReservation();
+
+  // const history = useHistory();
+
+  // const clearLocalStorage = () => {
+  //   remove('departureFlight');
+  //   remove('departureFlightCabin');
+  //   remove('departureFlightPassengers');
+
+  //   remove('returnFlight');
+  //   remove('returnFlightCabin');
+  //   remove('returnFlightPassengers');
+  // };
+
+  // const handleClick = () => {
+  //   clear();
+  //   clearLocalStorage();
+  //   if (type === 'departure') {
+  //     chooseDepartureFlight(flight._id);
+  //     write('departureFlight', flight._id);
+  //     chooseDepartureFlightCabin(cabin);
+  //     write('departureFlightCabin', cabin);
+  //     chooseDepartureFlightPassengers(numberOfSeats);
+  //     write('departureFlightPassengers', numberOfSeats);
+  //   } else {
+  //     chooseReturnFlight(flight._id);
+  //     write('returnFlight', flight._id);
+  //     chooseReturnFlightCabin(cabin);
+  //     write('returnFlightCabin', cabin);
+  //     chooseReturnFlightPassengers(numberOfSeats);
+  //     write('returnFlightPassengers', numberOfSeats);
+  //   }
+  //   history.push(`/checkout/${reservation}/${flight._id}/${type}/${cabin}`);
+  // };
+
   return (
     <div>
       <h2 className='text-grey-secondary text-xl mb-2'>#{flight.flightNumber}</h2>
@@ -57,21 +104,25 @@ const NewFlightDetails = ({ flight }) => {
       </div>
       <div className='flex mb-2'>
         <div className='flex mb-1 w-1/2'>
-          <IconUserStar fill='#605DEC' className='mr-2' />
+          <IconUser fill='#605DEC' className='mr-2' />
           <span className='text-grey-secondary'>
-            {flight.allBusinessSeats.length} business seats
+            {/* {flight.allEconomySeats.length} economy seats */}
+            {numberOfSeats} {cabin} seat(s)
           </span>
         </div>
         <div className='flex mb-1 w-1/2'>
-          <IconUser fill='#605DEC' className='mr-2' />
-          <span className='text-grey-secondary'>
-            {flight.allEconomySeats.length} economy seats
-          </span>
+          <IconMoney fill='#605DEC' className='mr-2' />
+          <span className='text-grey-secondary'>EGP {flight.ticketPrice}</span>
         </div>
       </div>
-      <div className='flex w-full justify-end'>
+      <div className='flex w-full justify-end mt-2'>
         <div>
-          <Button text='Confirm and Checkout' />
+          <Link
+            to={`/checkout/${reservation}/${flight._id}/${type}/${cabin}`}
+            className='text-white bg-primary ml-2 py-3 px-5 rounded-4'
+          >
+            Confirm and Checkout
+          </Link>
         </div>
       </div>
     </div>
@@ -130,7 +181,7 @@ const UpdateFlightModal = ({ updating, close }) => {
       getAlternativeFlights();
     }
     return () => {
-      // setChosenFlight(null);
+      setChosenFlight(null);
     };
   }, [sendRequest, updating]);
 
@@ -146,7 +197,13 @@ const UpdateFlightModal = ({ updating, close }) => {
         </span>
         <span>Confirm new {updating?.type} flight</span>
       </h1>
-      <NewFlightDetails flight={chosenFlight} />
+      <NewFlightDetails
+        flight={chosenFlight}
+        numberOfSeats={updating?.numberOfSeats}
+        cabin={updating?.cabin}
+        reservation={updating?.id}
+        type={updating?.type}
+      />
     </>
   ) : (
     <>
