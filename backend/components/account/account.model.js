@@ -26,6 +26,18 @@ const accountSchema = new Schema({
     type: String,
     required: true,
   },
+  telephoneNumber: {
+    type: String,
+    required: true,
+  },
+  homeAddress: {
+    type: String,
+    required: true,
+  },
+  countryCode: {
+    type: String,
+    required: true,
+  },
   roles: [
     {
       type: Schema.Types.ObjectId,

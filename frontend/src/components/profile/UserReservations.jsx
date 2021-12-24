@@ -5,6 +5,8 @@ import FlightCard from '../flights/FlightCard';
 import { Button } from '../shared/UIKit/Buttons';
 import Loading from '../shared/UIKit/Loading';
 import Modal from '../shared/Modal/Modal';
+import { ReactComponent as IconEdit } from '../../assets/icons/IconEdit.svg';
+import EditReservationSeatsModal from './EditReservationSeatsModal';
 
 const UserReservations = () => {
   const { sendRequest, isLoading } = useHttpClient();
@@ -12,6 +14,18 @@ const UserReservations = () => {
   const [reservations, setReservations] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toBeCancelled, setToBeCancelled] = useState();
+  const [editing, setEditing] = useState(null);
+
+  const handleEdit = (id, type) => {
+    setEditing({
+      id,
+      type,
+    });
+  };
+
+  const handleCloseEdit = () => {
+    setEditing(null);
+  };
 
   const cancel = async id => {
     try {
@@ -77,9 +91,9 @@ const UserReservations = () => {
           </div>
         </div>
       </Modal>
+      <EditReservationSeatsModal close={handleCloseEdit} editing={editing} />
       <div>
         {reservations?.map(reservation => {
-          console.log(reservation);
           return (
             <div key={reservation._id}>
               <div className='flex items-center'>
@@ -105,7 +119,7 @@ const UserReservations = () => {
                   />
                 </div>
               </div>
-              <div className='mb-4'>
+              <div className='mb-4 flex'>
                 <FlightCard
                   arrivalTerminal={reservation?.departureFlight.arrivalTerminal}
                   arrivalTime={reservation?.departureFlight.arrivalTime}
@@ -118,8 +132,14 @@ const UserReservations = () => {
                   price={reservation?.departureFlight.ticketPrice}
                   baggageAllowance={reservation?.departureFlight.baggageAllowance}
                 />
+                <div className='flex items-center'>
+                  <Button
+                    icon={<IconEdit fill='#605DEC' />}
+                    onClick={() => handleEdit(reservation._id, 'departure')}
+                  />
+                </div>
               </div>
-              <div className='mb-10'>
+              <div className='mb-10 flex'>
                 <FlightCard
                   arrivalTerminal={reservation?.returnFlight.arrivalTerminal}
                   arrivalTime={reservation?.returnFlight.arrivalTime}
@@ -132,6 +152,12 @@ const UserReservations = () => {
                   price={reservation?.returnFlight.ticketPrice}
                   baggageAllowance={reservation?.returnFlight.baggageAllowance}
                 />
+                <div className='flex items-center'>
+                  <Button
+                    icon={<IconEdit fill='#605DEC' />}
+                    onClick={() => handleEdit(reservation._id, 'return')}
+                  />
+                </div>
               </div>
             </div>
           );
