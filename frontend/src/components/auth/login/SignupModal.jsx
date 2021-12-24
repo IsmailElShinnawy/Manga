@@ -34,6 +34,7 @@ const SignupModal = ({ close, show }) => {
   const { signin } = useAuth();
   const { sendRequest, isLoading, error } = useHttpClient();
   const onSubmitHandler = async event => {
+    console.log('SIGNING UP');
     event.preventDefault();
     try {
       const response = await sendRequest(
@@ -44,7 +45,7 @@ const SignupModal = ({ close, show }) => {
           email: formState.inputs.email.value,
           password: formState.inputs.password.value,
           firstname: formState.inputs.firstname.value,
-          lastname: formState.inputs.lasstname.value,
+          lastname: formState.inputs.lastname.value,
           homeAddress: formState.inputs.homeAddress.value,
           countryCode: formState.inputs.countryCode.value,
           telephoneNumber: formState.inputs.telephoneNumber.value,
@@ -52,11 +53,13 @@ const SignupModal = ({ close, show }) => {
         },
         { 'Content-Type': 'application/json' }
       );
-      write('account', response.data.account);
-      setLocalAccessToken(response.data.token);
-      signin(response.data.account, response.data.token);
-      clearForm();
-      close();
+      if (response?.data) {
+        write('account', response.data.account);
+        setLocalAccessToken(response.data.token);
+        signin(response.data.account, response.data.token);
+        clearForm();
+        close();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -115,7 +118,6 @@ const SignupModal = ({ close, show }) => {
         <Input
           id='firstname'
           placeholder='First Name'
-          type='firstname'
           value={formState.inputs.firstname.value}
           isValid={formState.inputs.firstname.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -126,7 +128,6 @@ const SignupModal = ({ close, show }) => {
         <Input
           id='lastname'
           placeholder='Last Name'
-          type='lastname'
           value={formState.inputs.lastname.value}
           isValid={formState.inputs.lastname.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -137,7 +138,6 @@ const SignupModal = ({ close, show }) => {
         <Input
           id='homeAddress'
           placeholder='Home Address'
-          type='homeAddress'
           value={formState.inputs.homeAddress.value}
           isValid={formState.inputs.homeAddress.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -148,7 +148,6 @@ const SignupModal = ({ close, show }) => {
         <Input
           id='passportNumber'
           placeholder='Passport Number'
-          type='passportNumber'
           value={formState.inputs.passportNumber.value}
           isValid={formState.inputs.passportNumber.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -157,9 +156,8 @@ const SignupModal = ({ close, show }) => {
           required
         />
         <Input
-          id='CountryCode'
+          id='countryCode'
           placeholder='Country Code'
-          type='CountryCode'
           value={formState.inputs.countryCode.value}
           isValid={formState.inputs.countryCode.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -170,7 +168,6 @@ const SignupModal = ({ close, show }) => {
         <Input
           id='telephoneNumber'
           placeholder='Telephone Number'
-          type='telephoneNumber'
           value={formState.inputs.telephoneNumber.value}
           isValid={formState.inputs.telephoneNumber.isValid}
           validators={[VALIDATOR_REQUIRE()]}
@@ -184,7 +181,6 @@ const SignupModal = ({ close, show }) => {
           text='Create Account '
           loadingText='Loading...'
           disabled={!formState.isValid}
-          onClick={onSubmitHandler}
           type='submit'
         />
         {error?.response?.data.message && (

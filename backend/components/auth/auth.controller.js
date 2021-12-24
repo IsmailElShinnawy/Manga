@@ -20,7 +20,7 @@ const signup = async (req, res) => {
       passportNumber,
     } = req.body;
 
-    const accountWithSameEmailOrUsername = Account.findOne({
+    const accountWithSameEmailOrUsername = await Account.findOne({
       $or: [{ email }, { username }],
     });
     if (Boolean(accountWithSameEmailOrUsername)) {
@@ -36,7 +36,6 @@ const signup = async (req, res) => {
       password: bcrypt.hashSync(password, 8),
       firstname,
       lastname,
-      address,
       countryCode,
       telephoneNumber,
       homeAddress,
@@ -44,6 +43,7 @@ const signup = async (req, res) => {
       roles: [userRoleId],
     });
     await account.save();
+    const token = jwt.sign({ id: account._id }, config.secret, { expiresIn: '365d' });
     res.json({ status: 'success', data: { account, token } });
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
