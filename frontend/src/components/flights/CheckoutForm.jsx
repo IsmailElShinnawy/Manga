@@ -72,7 +72,9 @@ const CheckoutForm = ({
         remove('departureFlight');
         remove('returnFlight');
       }
-      history.push(`/itinerary/${updating ? reservationId : response.data._id}`);
+      history.replace(
+        `/itinerary/${updating ? `${reservationId}?updated=true` : response.data._id}`
+      );
     } catch (err) {
       console.log(err);
     }
