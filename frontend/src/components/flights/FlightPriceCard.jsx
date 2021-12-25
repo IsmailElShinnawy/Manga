@@ -10,18 +10,18 @@ const FlightPriceCard = ({
         <span className='mr-10'>
           Departure Flight (seats x{departureFlightPassengers})
         </span>
-        <span>EGP {(departureFlightPrice || 0) * (departureFlightPassengers || 0)}</span>
+        <span>USD {(departureFlightPrice || 0) * (departureFlightPassengers || 0)}</span>
       </div>
       {returnFlightPrice && returnFlightPassengers && (
         <div className='mb-2'>
           <span className='mr-10'>Return Flight (seats x{returnFlightPassengers})</span>
-          <span>EGP {(returnFlightPrice || 0) * (returnFlightPassengers || 0)}</span>
+          <span>USD {(returnFlightPrice || 0) * (returnFlightPassengers || 0)}</span>
         </div>
       )}
       <div className='mb-2'>
         <span className='mr-10'>Total</span>
         <span>
-          EGP{' '}
+          USD{' '}
           {(departureFlightPrice || 0) * (departureFlightPassengers || 0) +
             (returnFlightPrice || 0) * (returnFlightPassengers || 0)}
         </span>

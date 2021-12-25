@@ -39,7 +39,7 @@ const sendCancelReservationMail = async (
     subject: 'Reservation Cancelling and Refund',
     html: `<h1>Hello ${recipientName}</h1>
       <p>We are very sad to hear you decided to cancel your reservation (#${reservationId.toUpperCase()}).</p>
-      <p>Luckly you will be refunded the full amount of EGP ${amountToRefund}.</p>
+      <p>Luckly you will be refunded the full amount of USD ${amountToRefund}.</p>
       <br />
       <p>Best regards,</p>
       <p>Manga Flights Team</p>

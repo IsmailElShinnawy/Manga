@@ -101,7 +101,7 @@ const ViewItinerary = () => {
                 Departing Flight (x{reservation?.departureFlightSeats.length} seats)
               </span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.departureFlight.ticketPrice *
                   reservation?.departureFlightSeats.length}
               </span>
@@ -111,7 +111,7 @@ const ViewItinerary = () => {
                 Return Flight (x{reservation?.returnFlightSeats.length} seats)
               </span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.returnFlight.ticketPrice *
                   reservation?.returnFlightSeats.length}
               </span>
@@ -120,7 +120,7 @@ const ViewItinerary = () => {
             <div className='flex w-5/12 text-grey-5 text-lg font-semibold leading-6 font-nunito mb-3'>
               <span className='mr-auto'>Amount paid</span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.returnFlight.ticketPrice *
                   reservation?.returnFlightSeats.length +
                   reservation?.departureFlight.ticketPrice *

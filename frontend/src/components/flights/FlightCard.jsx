@@ -96,7 +96,7 @@ const FlightCard = ({
       <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>Price</span>
         <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
-          EGP {price}
+          USD {price}
         </span>
       </div>
     </div>

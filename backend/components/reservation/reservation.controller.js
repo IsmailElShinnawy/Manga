@@ -1,6 +1,10 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
 const { sendCancelReservationMail } = require('../../service/mail');
+const uuid = require('uuid');
+
+// stripe
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 exports.updateReservedFlight = async (req, res) => {
   try {
@@ -326,5 +330,33 @@ exports.createReservation = async (req, res) => {
     res.status(200).json({ status: 'success', data: reservation });
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
+exports.getClientSecretForFullReservation = async (req, res) => {
+  const {
+    departureFlightId,
+    returnFlightId,
+    departureFlightPassengers,
+    returnFlightPassengers,
+  } = req.body;
+
+  const { ticketPrice: departureFlightTicketPrice } = await Flight.findById(
+    departureFlightId
+  );
+  const { ticketPrice: returnFlightTicketPrice } = await Flight.findById(returnFlightId);
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount:
+        departureFlightTicketPrice * departureFlightPassengers * 100 +
+        returnFlightTicketPrice * returnFlightPassengers * 100,
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+    });
+    return res.json({ data: { clientSecret: paymentIntent.client_secret } });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err });
   }
 };
