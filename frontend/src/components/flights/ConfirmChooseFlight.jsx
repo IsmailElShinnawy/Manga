@@ -185,7 +185,10 @@ const ConfirmChooseFlight = ({
         <div>
           <Button
             text='Confirm'
-            disabled={!formState.isValid}
+            disabled={
+              formState.inputs.adults.value + formState.inputs.children.value === 0 ||
+              !formState.inputs.cabin.isValid
+            }
             onClick={() => {
               if (type === 'departure') {
                 chooseDepartureFlightCabin(formState.inputs.cabin.value);
