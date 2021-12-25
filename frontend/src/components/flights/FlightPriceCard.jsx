@@ -23,8 +23,16 @@ const FlightPriceCard = ({
           <span>EGP {oldFlightPrice}</span>
         </div>
         <div className='mb-2'>
-          <span className='mr-10'>{priceDifference >= 0 ? 'Total' : 'Refunded'}</span>
-          <span>EGP {Math.abs(priceDifference)}</span>
+          <span className='mr-10'>Changing Flight Fee</span>
+          <span>EGP {process.env.REACT_APP_CHANGING_FLIGHT_FEE}</span>
+        </div>
+        <div className='mb-2'>
+          <span className='mr-10'>Total</span>
+          <span>
+            EGP{' '}
+            {(priceDifference >= 0 ? priceDifference : 0) +
+              Number(process.env.REACT_APP_CHANGING_FLIGHT_FEE)}
+          </span>
         </div>
       </div>
     );

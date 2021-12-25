@@ -5,6 +5,14 @@ import Loading from '../shared/UIKit/Loading';
 import { Input } from '../shared/UIKit/Inputs';
 import { Button } from '../shared/UIKit/Buttons';
 import FlightSummaryCard from './FlightSummaryCard';
+// stripe
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+import { stripeConfig } from '../../config/stripe.config';
+import CheckoutForm from './CheckoutForm';
+
+const stripePromise = loadStripe(stripeConfig.pk);
 // import { useReservation } from '../context/ReservationContext';
 
 const UpdateReservation = () => {
@@ -20,6 +28,7 @@ const UpdateReservation = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [oldReservation, setOldReservation] = useState(null);
   const [flight, setFlight] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
 
   // const { returnFlightPassengers, departureFlightPassengers } = useReservation();
 
@@ -37,20 +46,6 @@ const UpdateReservation = () => {
     if (isSelectedSeat(idx)) setSelectedSeats(seats => seats.filter(s => s !== idx));
     else if (selectedSeats.length < getNumberOfSeats())
       setSelectedSeats(seats => [...seats, idx]);
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await reserve(`/reservation/${rid}`, 'PUT', {
-        type,
-        flightId: fid,
-        flightSeats: selectedSeats,
-        flightCabin: cabin,
-      });
-      history.push(`/itinerary/${rid}?updated=true`);
-    } catch (err) {
-      console.log(err);
-    }
   };
 
   useEffect(() => {
@@ -86,10 +81,28 @@ const UpdateReservation = () => {
         console.log(err);
       }
     };
+    const fetchClientSecret = async () => {
+      try {
+        const response = await sendRequest(
+          `/reservation/${rid}/update-reservation-payment-secret`,
+          'POST',
+          {
+            flightId: fid,
+            type,
+          }
+        );
+        if (response?.data) {
+          setClientSecret(response?.data.clientSecret);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
     fetchSeats();
     fetchOldReservation();
     fetchFlight();
-  }, [sendRequest, fid, cabin, rid]);
+    fetchClientSecret();
+  }, [sendRequest, fid, cabin, rid, type]);
 
   if (isLoading)
     return (
@@ -137,20 +150,21 @@ const UpdateReservation = () => {
           <h3 className='text-grey-primary font-nunito text-lg leading-6 mb-6'>
             Credit Card Details
           </h3>
-          <div className='w-full'>
-            <Input type='text' placeholder='Name on card' />
-          </div>
-          <div className='w-full'>
-            <Input type='text' placeholder='Card Number' />
-          </div>
-          <div className='flex'>
-            <div className='w-1/2 pr-3'>
-              <Input type='text' placeholder='Expiration Date (MM/YY)' />
-            </div>
-            <div className='w-1/2 pl-3'>
-              <Input type='text' placeholder='CVV' display='flex' />
-            </div>
-          </div>
+          {clientSecret ? (
+            <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <CheckoutForm
+                updating
+                flightCabin={cabin}
+                flightId={fid}
+                flightSeats={selectedSeats}
+                reservationId={rid}
+                numberOfSeats={getNumberOfSeats()}
+                type={type}
+              />
+            </Elements>
+          ) : (
+            <Loading />
+          )}
         </section>
         <section className='w-1/3'>
           <FlightSummaryCard
@@ -165,22 +179,6 @@ const UpdateReservation = () => {
             }
             updating
           />
-          <div className='w-full flex flex-col items-end mt-9'>
-            <div className='w-1/3'>
-              <Button
-                text='Confirm and reserve'
-                disabled={selectedSeats.length < getNumberOfSeats()}
-                isLoading={isLoading}
-                loadingText='Loading...'
-                onClick={handleUpdate}
-              />
-            </div>
-            {reservationError && (
-              <p className='text-input-error'>
-                {reservationError?.response?.data.message}
-              </p>
-            )}
-          </div>
         </section>
       </div>
     </main>

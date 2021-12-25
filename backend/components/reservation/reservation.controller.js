@@ -460,3 +460,44 @@ exports.getClientSecretForFullReservation = async (req, res) => {
     res.status(500).json({ message: err });
   }
 };
+
+exports.getClientSecretForUpdateReservation = async (req, res) => {
+  const { flightId, type } = req.body;
+  const { id } = req.params;
+
+  const { ticketPrice } = await Flight.findById(flightId);
+  const {
+    departureFlight,
+    returnFlight,
+    account,
+    departureFlightSeats,
+    returnFlightSeats,
+  } = await Reservation.findById(id)
+    .populate('departureFlight')
+    .populate('returnFlight')
+    .exec();
+
+  if (account && account.toString() !== req.accountId) {
+    return res.status(401).json({ status: 'fail', message: 'unauthorized' });
+  }
+
+  const flightToBeReplaced = type === 'departure' ? departureFlight : returnFlight;
+  const seatsToBeReplaced =
+    type === 'departure' ? departureFlightSeats : returnFlightSeats;
+
+  const priceDifference =
+    ticketPrice * seatsToBeReplaced.length -
+    flightToBeReplaced.ticketPrice * seatsToBeReplaced.length;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: (priceDifference >= 0 ? priceDifference * 100 : 0) + 500,
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+    });
+    return res.json({ data: { clientSecret: paymentIntent.client_secret } });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err });
+  }
+};

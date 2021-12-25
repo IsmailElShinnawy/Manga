@@ -16,6 +16,13 @@ const CheckoutForm = ({
   returnFlight,
   departureFlightCabin,
   returnFlightCabin,
+  updating,
+  reservationId,
+  type,
+  flightId,
+  flightSeats,
+  flightCabin,
+  numberOfSeats,
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -37,15 +44,26 @@ const CheckoutForm = ({
 
       if (error) throw error;
 
-      const response = await sendRequest('/reservation', 'POST', {
-        departureFlightId: departureFlight,
-        returnFlightId: returnFlight,
-        departureFlightSeats: chosenDepartureSeats,
-        returnFlightSeats: chosenReturnSeats,
-        departureFlightCabin,
-        returnFlightCabin,
-      });
-      if (response && response.data) {
+      const response = await sendRequest(
+        updating ? `/reservation/${reservationId}` : '/reservation',
+        updating ? 'PUT' : 'POST',
+        updating
+          ? {
+              type,
+              flightId,
+              flightSeats,
+              flightCabin,
+            }
+          : {
+              departureFlightId: departureFlight,
+              returnFlightId: returnFlight,
+              departureFlightSeats: chosenDepartureSeats,
+              returnFlightSeats: chosenReturnSeats,
+              departureFlightCabin,
+              returnFlightCabin,
+            }
+      );
+      if (!updating) {
         clear();
         remove('departureFlighCabin');
         remove('returnFlighCabin');
@@ -53,8 +71,8 @@ const CheckoutForm = ({
         remove('returnFlightPassengers');
         remove('departureFlight');
         remove('returnFlight');
-        history.push(`/itinerary/${response.data._id}`);
       }
+      history.push(`/itinerary/${updating ? reservationId : response.data._id}`);
     } catch (err) {
       console.log(err);
     }
@@ -67,8 +85,10 @@ const CheckoutForm = ({
         <Button
           text='Confirm and reserve'
           disabled={
-            chosenDepartureSeats.length < departureFlightPassengers ||
-            chosenReturnSeats.length < returnFlightPassengers ||
+            (updating
+              ? flightSeats?.length < numberOfSeats
+              : chosenDepartureSeats?.length < departureFlightPassengers ||
+                chosenReturnSeats?.length < returnFlightPassengers) ||
             !stripe ||
             !elements
           }

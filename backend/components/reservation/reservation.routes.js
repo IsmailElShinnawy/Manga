@@ -11,6 +11,7 @@ const {
   updateSeats,
   updateReservedFlight,
   getClientSecretForFullReservation,
+  getClientSecretForUpdateReservation,
 } = require('./reservation.controller');
 
 router.get('/', [verifyToken], getUserReservations);
@@ -21,5 +22,10 @@ router.get('/email/:id', [verifyToken], sendItineraryEmail);
 router.put('/seats/:id', [verifyToken], updateSeats);
 router.put('/:id', [verifyToken], updateReservedFlight);
 router.post('/full-reservation-payment-secret', getClientSecretForFullReservation);
+router.post(
+  '/:id/update-reservation-payment-secret',
+  [verifyToken],
+  getClientSecretForUpdateReservation
+);
 
 module.exports = router;
