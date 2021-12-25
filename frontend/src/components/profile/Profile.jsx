@@ -19,6 +19,7 @@ import { remove, write } from '../../service/localStorage.service';
 import { ReactComponent as IconAirplane } from '../../assets/icons/IconAirplaneRight.svg';
 import { ReactComponent as IconPerson } from '../../assets/icons/IconPerson.svg';
 import { ReactComponent as IconLogout } from '../../assets/icons/IconLogout.svg';
+import { ReactComponent as IconKey } from '../../assets/icons/IconKey.svg';
 import UserReservations from './UserReservations';
 
 const Profile = () => {
@@ -128,7 +129,7 @@ const Profile = () => {
                     tab === 'changepassword' ? 'bg-pale-purple text-primary' : ''
                   } rounded-md py-2 px-4 flex mb-4 hover:cursor-pointer`}
                 >
-                  <IconPerson stroke='black' />
+                  <IconKey stroke='black' />
                   <span className='ml-3'>Change My Password</span>
                 </li>
               </Link>
