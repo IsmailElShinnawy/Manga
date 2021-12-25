@@ -1,6 +1,7 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
-const { sendCancelReservationMail, emailMyself } = require('../../service/mail');
+const Account = require('../account/account.model');
+const { sendCancelReservationMail, emailItinerary } = require('../../service/mail');
 const uuid = require('uuid');
 
 // stripe
@@ -195,7 +196,7 @@ exports.sendItineraryEmail = async (req, res) => {
     const total_amount =
       reservation.returnFlight.ticketPrice * reservation.returnFlightSeats.length +
       reservation.departureFlight.ticketPrice * reservation.departureFlightSeats.length;
-    await emailMyself(
+    await emailItinerary(
       to,
       recipientName,
       id,
@@ -397,9 +398,38 @@ exports.createReservation = async (req, res) => {
 
     const reservation = await r.save();
 
+    const userAccount = await Account.findById(req.accountId);
+
+    await emailItinerary(
+      userAccount.email,
+      `${userAccount.firstname} ${userAccount.lastname}`,
+      reservation._id.toString(),
+      departureFlight.arrivalTerminal,
+      departureFlight.arrivalTime,
+      departureFlight.departureTerminal,
+      departureFlight.departureTime,
+      departureFlight.flightNumber,
+      departureFlight.ticketPrice,
+      departureFlight.baggageAllowance,
+      departureFlightCabin,
+      departureFlightSeats,
+      returnFlight.arrivalTerminal,
+      returnFlight.arrivalTime,
+      returnFlight.departureTerminal,
+      returnFlight.departureTime,
+      returnFlight.flightNumber,
+      returnFlight.ticketPrice,
+      returnFlight.baggageAllowance,
+      returnFlightCabin,
+      returnFlightSeats,
+      departureFlightSeats.length * departureFlight.ticketPrice +
+        returnFlightSeats.length * returnFlight.ticketPrice
+    );
+
     res.status(200).json({ status: 'success', data: reservation });
   } catch (err) {
-    res.status(500).json({ status: 'fail', message: err });
+    console.log(err);
+    return res.status(500).json({ status: 'fail', message: err });
   }
 };
 

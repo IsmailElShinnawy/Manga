@@ -35,7 +35,6 @@ app.use('/reservation', reservationRouter);
 app.get('/testmail', async (req, res) => {
   try {
     const info = await sendTestEmail();
-    console.log(info);
     return res.json(info);
   } catch (err) {
     console.log(err);

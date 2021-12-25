@@ -27,7 +27,7 @@ const sendTestEmail = async () => {
     throw err;
   }
 };
-const emailMyself = async (
+const emailItinerary = async (
   to,
   recipientName,
   reservationId,
@@ -59,7 +59,6 @@ const emailMyself = async (
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-  // console.log(to, recipientName, reservationId, departureFlight, returnFlight);
 
   const getSeatsString = (cabin, seats = []) => {
     return seats.reduce(
@@ -128,7 +127,6 @@ const sendCancelReservationMail = async (
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-  console.log(to, recipientName, reservationId, amountToRefund);
   const options = {
     from: process.env.FROM_EMAIL,
     to,
@@ -152,5 +150,5 @@ const sendCancelReservationMail = async (
 module.exports = {
   sendTestEmail,
   sendCancelReservationMail,
-  emailMyself,
+  emailItinerary,
 };

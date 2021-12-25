@@ -34,7 +34,6 @@ const SignupModal = ({ close, show }) => {
   const { signin } = useAuth();
   const { sendRequest, isLoading, error } = useHttpClient();
   const onSubmitHandler = async event => {
-    console.log('SIGNING UP');
     event.preventDefault();
     try {
       const response = await sendRequest(
