@@ -10,6 +10,7 @@ import ConfirmChooseFlight from './ConfirmChooseFlight';
 import FlightCard from './FlightCard';
 import './FlightsPage.scss';
 import FlightSummaryCard from './FlightSummaryCard';
+import NoResults from '../../assets/images/no-results.png';
 
 const FlightsPage = () => {
   const location = useLocation();
@@ -153,45 +154,59 @@ const FlightsPage = () => {
         <section className='flex'>
           <div className='w-8/12'>
             {!isLoading ? (
-              <div
-                className={`w-full rounded-xl border-1 border-pale-purple p-4 ${
-                  showAllFlights ? '' : 'max-h-456 overflow-y-scroll'
-                }`}
-              >
-                {flights.map(flight => (
-                  <FlightCard
-                    onClick={() => {
-                      setChosenFlight(flight._id);
-                      setShowConfirmModal(true);
-                    }}
-                    key={flight._id}
-                    id={flight._id}
-                    flightNumber={flight.flightNumber}
-                    arrivalTime={flight.arrivalTime}
-                    departureTime={flight.departureTime}
-                    businessSeats={flight.businessSeats}
-                    economySeats={flight.economySeats}
-                    price={flight.ticketPrice}
-                    departureTerminal={flight.departureTerminal}
-                    arrivalTerminal={flight.arrivalTerminal}
-                    baggageAllowance={flight.baggageAllowance}
+              flights.length === 0 ? (
+                <div className='w-full flex flex-col justify-center items-center opacity-50'>
+                  <img
+                    src={NoResults}
+                    alt='no results for your search'
+                    width='25%'
+                    height='25%'
                   />
-                ))}
-              </div>
+                  <p>It appears that there are no results for your criteria!</p>
+                </div>
+              ) : (
+                <>
+                  <div
+                    className={`w-full rounded-xl border-1 border-pale-purple p-4 ${
+                      showAllFlights ? '' : 'max-h-456 overflow-y-scroll'
+                    }`}
+                  >
+                    {flights.map(flight => (
+                      <FlightCard
+                        onClick={() => {
+                          setChosenFlight(flight._id);
+                          setShowConfirmModal(true);
+                        }}
+                        key={flight._id}
+                        id={flight._id}
+                        flightNumber={flight.flightNumber}
+                        arrivalTime={flight.arrivalTime}
+                        departureTime={flight.departureTime}
+                        businessSeats={flight.businessSeats}
+                        economySeats={flight.economySeats}
+                        price={flight.ticketPrice}
+                        departureTerminal={flight.departureTerminal}
+                        arrivalTerminal={flight.arrivalTerminal}
+                        baggageAllowance={flight.baggageAllowance}
+                      />
+                    ))}
+                  </div>
+                  {!showAllFlights && (
+                    <div className='w-full flex justify-end mt-4'>
+                      <div>
+                        <Button
+                          outline
+                          text='Show all flights'
+                          onClick={() => setShowAllFlights(b => !b)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
             ) : (
               <div className='w-full rounded-xl border-1 border-pale-purple min-h-456 flex justify-center items-center'>
                 <Loading />
-              </div>
-            )}
-            {!showAllFlights && (
-              <div className='w-full flex justify-end mt-4'>
-                <div>
-                  <Button
-                    outline
-                    text='Show all flights'
-                    onClick={() => setShowAllFlights(b => !b)}
-                  />
-                </div>
               </div>
             )}
           </div>
