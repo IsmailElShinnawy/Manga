@@ -206,6 +206,8 @@ exports.sendItineraryEmail = async (req, res) => {
       dep_flightNumber,
       dep_price,
       dep_baggageAllowance,
+      reservation.departureFlightCabin,
+      reservation.departureFlightSeats,
       ret_arrivalTerminal,
       ret_arrivalTime,
       ret_departureTerminal,
@@ -213,13 +215,15 @@ exports.sendItineraryEmail = async (req, res) => {
       ret_flightNumber,
       ret_price,
       ret_baggageAllowance,
+      reservation.returnFlightCabin,
+      reservation.returnFlightSeats,
       total_amount
     );
 
-    res.status(200).json({ status: 'success' });
+    return res.status(200).json({ status: 'success' });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: 'fail', message: err });
+    return res.status(500).json({ status: 'fail', message: err });
   }
 };
 
