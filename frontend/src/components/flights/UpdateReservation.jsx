@@ -163,7 +163,9 @@ const UpdateReservation = () => {
               />
             </Elements>
           ) : (
-            <Loading />
+            <div className='w-full flex justify-center'>
+              <Loading />
+            </div>
           )}
         </section>
         <section className='w-1/3'>
