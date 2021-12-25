@@ -12,8 +12,16 @@ import './Nav.scss';
 
 const Nav = () => {
   const location = useLocation();
-  const { account, signout, showLoginModal, closeLoginModal, openLoginModal, showSignupModal,
-    closeSignupModal, openSignupModal } = useAuth();
+  const {
+    account,
+    signout,
+    showLoginModal,
+    closeLoginModal,
+    openLoginModal,
+    showSignupModal,
+    closeSignupModal,
+    openSignupModal,
+  } = useAuth();
   const onLogoutHandler = () => {
     remove('token');
     remove('account');
@@ -28,18 +36,14 @@ const Nav = () => {
         <Link to='/' className='text-primary font-nunito font-extrabold text-2xl mr-auto'>
           <h1>Manga Flights</h1>
         </Link>
-        <Link
-          to='/user/flights'
-          className='text-primary font-nunito mr-4 hover:underline'
-        >
-          Flights
-        </Link>
-        <Link
-          to='/packages'
-          className='text-grey-secondary font-nunito mx-4 hover:underline'
-        >
-          Packages
-        </Link>
+        {account && (
+          <Link
+            to='/profile?tab=trips'
+            className='text-primary font-nunito mr-4 hover:underline'
+          >
+            Flights
+          </Link>
+        )}
         {!account ? (
           <>
             <div className='mx-4'>
