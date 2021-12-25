@@ -7,6 +7,7 @@ import Loading from '../shared/UIKit/Loading';
 import Modal from '../shared/Modal/Modal';
 import { ReactComponent as IconEdit } from '../../assets/icons/IconEdit.svg';
 import { ReactComponent as IconRefresh } from '../../assets/icons/IconRefresh.svg';
+import { ReactComponent as IconMail } from '../../assets/icons/IconMail.svg';
 import EditReservationSeatsModal from './EditReservationSeatsModal';
 import UpdateFlightModal from './UpdateFlightModal';
 
@@ -44,17 +45,14 @@ const UserReservations = () => {
     setUpdating(null);
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async rid => {
+    if (!rid) return;
     try {
-      const response = await sendRequest('/reservation/email/:id', 'GET')
-
+      await sendRequest(`/reservation/email/${rid}`);
     } catch (err) {
       console.log(err);
     }
   };
-
-
 
   const cancel = async id => {
     try {
@@ -135,17 +133,14 @@ const UserReservations = () => {
                     View summary
                   </Link>
                 </h2>
-                <div className=' w-1/4 px-2'>
+                <div className='px-2 mr-2'>
                   <Button
-                    text='Email Summary'
-                    type='submit'
-                    isLoading={isLoading}
-                    loadingText='Sending email...'
                     disabled={isLoading}
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit(reservation?._id)}
+                    icon={<IconMail fill='#605DEC' />}
                   />
                 </div>
-                <div >
+                <div>
                   <Button
                     text='Cancel'
                     onClick={() => {
