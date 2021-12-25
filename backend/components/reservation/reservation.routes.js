@@ -8,6 +8,9 @@ const {
   cancelReservation,
   getUserReservations,
   sendItineraryEmail,
+  updateSeats,
+  updateReservedFlight,
+  getClientSecretForFullReservation,
 } = require('./reservation.controller');
 
 router.get('/', [verifyToken], getUserReservations);
@@ -15,5 +18,8 @@ router.delete('/:id', [verifyToken], cancelReservation);
 router.get('/:id', [verifyToken], getReservation);
 router.post('/', [verifyToken], createReservation);
 router.get('/email/:id', [verifyToken], sendItineraryEmail);
+router.put('/seats/:id', [verifyToken], updateSeats);
+router.put('/:id', [verifyToken], updateReservedFlight);
+router.post('/full-reservation-payment-secret', getClientSecretForFullReservation);
 
 module.exports = router;

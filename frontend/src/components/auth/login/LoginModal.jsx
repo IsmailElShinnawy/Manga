@@ -22,6 +22,9 @@ const LoginModal = ({ close, show }) => {
   );
   const { signin } = useAuth();
   const { sendRequest, isLoading, error } = useHttpClient();
+
+  const { closeLoginModal, openSignupModal } = useAuth();
+
   const onSubmitHandler = async event => {
     event.preventDefault();
     try {
@@ -101,13 +104,12 @@ const LoginModal = ({ close, show }) => {
         <hr className='w-1/3' />
       </div>
       <Button
-        // isLoading={isLoading}
         text='Create new account'
-        loadingText='Loading...'
-        disabled={!formState.isValid}
-        // onClick={onClickHandler}
-        type='submit'
         outline
+        onClick={() => {
+          closeLoginModal();
+          openSignupModal();
+        }}
       />
     </Modal>
   );

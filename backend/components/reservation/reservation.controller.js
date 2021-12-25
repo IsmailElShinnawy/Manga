@@ -1,6 +1,147 @@
 const Reservation = require('./reservation.model');
 const Flight = require('../flight/flight.model');
 const { sendCancelReservationMail, emailMyself } = require('../../service/mail');
+const uuid = require('uuid');
+
+// stripe
+const stripe = require('stripe')(process.env.STRIPE_KEY);
+
+exports.updateReservedFlight = async (req, res) => {
+  try {
+    let reservation = await Reservation.findById(req.params.id);
+    if (reservation.account != req.accountId) {
+      return res.status(401).send({ message: 'unauthorized' });
+    }
+    const { type, flightId, flightSeats, flightCabin } = req.body;
+    const reservedFlightId =
+      type == 'departure' ? reservation.departureFlight : reservation.returnFlight;
+    const reservedFlightCabin =
+      type == 'departure'
+        ? reservation.departureFlightCabin
+        : reservation.returnFlightCabin;
+    const reservedSeats =
+      type == 'departure'
+        ? reservation.departureFlightSeats
+        : reservation.returnFlightSeats;
+    let reservedFlight = await Flight.findById(reservedFlightId);
+    let flightToBeReserved = await Flight.findById(flightId);
+    if (reservedFlight._id.equals(flightToBeReserved._id)) {
+      return res.status(400).json({
+        status: 'fail',
+        message:
+          'Cannot change seats of reserved flight through this feature, please use the change seats feature in the future',
+      });
+    }
+    let allFlightSeats;
+    if (flightCabin == 'economy') {
+      allFlightSeats = flightToBeReserved.allEconomySeats;
+    } else {
+      allFlightSeats = flightToBeReserved.allBusinessSeats;
+    }
+    for (let i = 0; i < flightSeats.length; i++) {
+      if (!allFlightSeats[flightSeats[i]]) {
+        return res.status(400).json({
+          status: 'fail',
+          message: ` seat ${flightSeats[i]} in ${flightCabin} cabin is not available`,
+        });
+      }
+    }
+    reservedSeats.forEach(seat => {
+      if (reservedFlightCabin == 'economy') {
+        reservedFlight.allEconomySeats[+seat] = true;
+      } else {
+        reservedFlight.allBusinessSeats[+seat] = true;
+      }
+    });
+    flightSeats.forEach(seat => {
+      if (flightCabin == 'economy') {
+        flightToBeReserved.allEconomySeats[+seat] = false;
+      } else {
+        flightToBeReserved.allBusinessSeats[+seat] = false;
+      }
+    });
+    if (type == 'departure') {
+      reservation.departureFlight = flightId;
+      reservation.departureFlightCabin = flightCabin;
+      reservation.departureFlightSeats = flightSeats;
+    } else {
+      reservation.returnFlight = flightId;
+      reservation.returnFlightCabin = flightCabin;
+      reservation.returnFlightSeats = flightSeats;
+    }
+    await Flight.findByIdAndUpdate(reservedFlight._id, reservedFlight);
+    await Flight.findByIdAndUpdate(flightToBeReserved._id, flightToBeReserved);
+    await Reservation.findByIdAndUpdate(reservation._id, reservation);
+    return res.status(204).json({ status: 'success' });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
+exports.updateSeats = async (req, res) => {
+  const { id } = req.params;
+  try {
+    let reservation = await Reservation.findById(id);
+    if (reservation.account != req.accountId) {
+      return res.status(401).send({ message: 'unauthorized' });
+    }
+    const { type, seats } = req.body;
+    const flightId =
+      type == 'departure' ? reservation.departureFlight : reservation.returnFlight;
+    const flightCabin =
+      type == 'departure'
+        ? reservation.departureFlightCabin
+        : reservation.returnFlightCabin;
+    let flight = await Flight.findById(flightId);
+    const allFlightSeats =
+      flightCabin == 'economy' ? flight.allEconomySeats : flight.allBusinessSeats;
+    const reservedSeats =
+      type == 'departure'
+        ? reservation.departureFlightSeats
+        : reservation.returnFlightSeats;
+    if (seats.length != reservedSeats.length) {
+      return res.status(401).json({
+        status: 'fail',
+        message: "old seats number and new seats number don't match",
+      });
+    }
+    for (let i = 0; i < seats.length; i++) {
+      let seat = seats[i];
+      if (!allFlightSeats[Number(seat)] && !reservedSeats.includes(seat)) {
+        return res.status(400).json({
+          status: 'fail',
+          message: `seat ${seat} in ${flightCabin} cabin is not available`,
+        });
+      }
+    }
+    reservedSeats.forEach(seat => {
+      if (flightCabin == 'economy') {
+        flight.allEconomySeats[Number(seat)] = true;
+      } else {
+        flight.allBusinessSeats[Number(seat)] = true;
+      }
+    });
+    seats.forEach(seat => {
+      if (flightCabin == 'economy') {
+        flight.allEconomySeats[Number(seat)] = false;
+      } else {
+        flight.allBusinessSeats[Number(seat)] = false;
+      }
+    });
+    if (type == 'departure') {
+      reservation.departureFlightSeats = seats;
+    } else {
+      reservation.returnFlightSeats = seats;
+    }
+    await Reservation.findByIdAndUpdate(reservation._id, reservation);
+    await Flight.findByIdAndUpdate(flight._id, flight);
+    return res.status(200).json({ status: 'success' });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ status: 'fail', message: err });
+  }
+};
 
 exports.getUserReservations = async (req, res) => {
   try {
@@ -181,9 +322,10 @@ exports.createReservation = async (req, res) => {
         : null;
 
     if (!departureSeats) {
-      res
-        .status(400)
-        .json({ status: 'fail', message: 'Cabin should be either economy or business' });
+      res.status(400).json({
+        status: 'fail',
+        message: 'Cabin should be either economy or business',
+      });
       return;
     }
 
@@ -210,9 +352,10 @@ exports.createReservation = async (req, res) => {
         : null;
 
     if (!returnSeats) {
-      res
-        .status(400)
-        .json({ status: 'fail', message: 'Cabin should be either economy or business' });
+      res.status(400).json({
+        status: 'fail',
+        message: 'Cabin should be either economy or business',
+      });
       return;
     }
 
@@ -253,5 +396,33 @@ exports.createReservation = async (req, res) => {
     res.status(200).json({ status: 'success', data: reservation });
   } catch (err) {
     res.status(500).json({ status: 'fail', message: err });
+  }
+};
+
+exports.getClientSecretForFullReservation = async (req, res) => {
+  const {
+    departureFlightId,
+    returnFlightId,
+    departureFlightPassengers,
+    returnFlightPassengers,
+  } = req.body;
+
+  const { ticketPrice: departureFlightTicketPrice } = await Flight.findById(
+    departureFlightId
+  );
+  const { ticketPrice: returnFlightTicketPrice } = await Flight.findById(returnFlightId);
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount:
+        departureFlightTicketPrice * departureFlightPassengers * 100 +
+        returnFlightTicketPrice * returnFlightPassengers * 100,
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+    });
+    return res.json({ data: { clientSecret: paymentIntent.client_secret } });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err });
   }
 };

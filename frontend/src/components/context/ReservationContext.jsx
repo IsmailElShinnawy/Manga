@@ -20,6 +20,13 @@ const ProvideReservation = ({ children }) => {
   const [returnFlightPassengers, setReturnFlightPassengers] = useState(
     read('returnFlightPassengers') || undefined
   );
+  const [oldDepartureFlightPrice, setOldDepartureFlightPrice] = useState(
+    read('oldDepartureFlightPrice') || undefined
+  );
+
+  const [oldReturnFlightPrice, setOldReturnFlightPrice] = useState(
+    read('oldReturnFlightPrice') || undefined
+  );
 
   const chooseDepartureFlight = departureFlight => {
     setDepartureFlight(departureFlight);
@@ -47,6 +54,8 @@ const ProvideReservation = ({ children }) => {
     setReturnFlightCabin(undefined);
     setDepartureFlightPassengers(undefined);
     setReturnFlightPassengers(undefined);
+    setOldDepartureFlightPrice(undefined);
+    setOldReturnFlightPrice(undefined);
   };
 
   return (
@@ -58,12 +67,16 @@ const ProvideReservation = ({ children }) => {
         returnFlightCabin,
         departureFlightPassengers,
         returnFlightPassengers,
+        oldDepartureFlightPrice,
+        oldReturnFlightPrice,
         chooseDepartureFlight,
         chooseReturnFlight,
         chooseDepartureFlightCabin,
         chooseReturnFlightCabin,
         chooseDepartureFlightPassengers,
         chooseReturnFlightPassengers,
+        setOldDepartureFlightPrice,
+        setOldReturnFlightPrice,
         clear,
       }}
     >
