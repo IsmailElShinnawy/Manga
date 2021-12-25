@@ -60,7 +60,6 @@ const Profile = () => {
         lastname: formState.inputs.lastName.value,
         passportNumber: formState.inputs.passportNumber.value,
         email: formState.inputs.email.value,
-        password: formState.inputs.password.value,
       });
       if (response && response.data) {
         updateAccount(response.data);
