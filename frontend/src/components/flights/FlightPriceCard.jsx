@@ -16,20 +16,20 @@ const FlightPriceCard = ({
       <div className='flex flex-col w-full items-end text-grey-4 font-nunito font-semibold pr-4'>
         <div className='mb-2'>
           <span className='mr-10'>New Flight (seats x{numberOfPassengers})</span>
-          <span>EGP {newFlightPrice}</span>
+          <span>USD {newFlightPrice}</span>
         </div>
         <div className='mb-2'>
           <span className='mr-10'>Old Flight Price</span>
-          <span>EGP {oldFlightPrice}</span>
+          <span>USD {oldFlightPrice}</span>
         </div>
         <div className='mb-2'>
           <span className='mr-10'>Changing Flight Fee</span>
-          <span>EGP {process.env.REACT_APP_CHANGING_FLIGHT_FEE}</span>
+          <span>USD {process.env.REACT_APP_CHANGING_FLIGHT_FEE}</span>
         </div>
         <div className='mb-2'>
           <span className='mr-10'>Total</span>
           <span>
-            EGP{' '}
+            USD{' '}
             {(priceDifference >= 0 ? priceDifference : 0) +
               Number(process.env.REACT_APP_CHANGING_FLIGHT_FEE)}
           </span>

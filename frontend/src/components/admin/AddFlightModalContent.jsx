@@ -220,7 +220,7 @@ const AddFlightModalContent = ({ edit, flight, onResponse }) => {
                 <Input
                   id='ticketPrice'
                   value={formState.inputs.ticketPrice.value}
-                  label='Ticket Price'
+                  label='Ticket Price (in USD)'
                   validators={[VALIDATOR_MIN(0), VALIDATOR_REQUIRE()]}
                   onInput={inputHandler}
                   isValid={formState.inputs.ticketPrice.isValid}

@@ -112,7 +112,7 @@ const NewFlightDetails = ({ flight, numberOfSeats, cabin, reservation, type }) =
         </div>
         <div className='flex mb-1 w-1/2'>
           <IconMoney fill='#605DEC' className='mr-2' />
-          <span className='text-grey-secondary'>EGP {flight.ticketPrice}</span>
+          <span className='text-grey-secondary'>USD {flight.ticketPrice}</span>
         </div>
       </div>
       <div className='flex w-full justify-end mt-2'>
