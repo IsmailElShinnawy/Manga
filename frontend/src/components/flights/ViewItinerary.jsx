@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useHttpClient } from '../../hooks/http-hook';
 import { useAuth } from '../context/AuthContext';
 import FlightCard from './FlightCard';
@@ -10,6 +10,9 @@ const ViewItinerary = () => {
   const { account } = useAuth();
   const { sendRequest } = useHttpClient();
   const [reservation, setReservation] = useState();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  let updated = Boolean(params.get('updated'));
 
   useEffect(() => {
     const fetchReservation = async () => {
@@ -25,11 +28,12 @@ const ViewItinerary = () => {
     <main className='page px-16'>
       <section className='w-7/12'>
         <div className='bg-light-green border-dark-green border-1 rounded-lg p-5 text-dark-green font-nunito mb-10'>
-          Your flights has been booked successfully! Your confirmation number is #
+          Your {updated ? 'reservation' : 'flights'} has been{' '}
+          {updated ? 'updated' : 'booked'} successfully! Your confirmation number is #
           {reservationId.toUpperCase()}
         </div>
         <h1 className='text-primary font-nunito font-bold text-2xl leading-8 mb-4'>
-          Bon voyage, {account.firstname}
+          Bon voyage, {account.firstname || account.username}
         </h1>
         <p className='text-grey-primary font-semibold font-nunito text-lg leading-6 mb-14'>
           Confirmation number: #{reservationId.toUpperCase()}
@@ -101,7 +105,7 @@ const ViewItinerary = () => {
                 Departing Flight (x{reservation?.departureFlightSeats.length} seats)
               </span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.departureFlight.ticketPrice *
                   reservation?.departureFlightSeats.length}
               </span>
@@ -111,7 +115,7 @@ const ViewItinerary = () => {
                 Return Flight (x{reservation?.returnFlightSeats.length} seats)
               </span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.returnFlight.ticketPrice *
                   reservation?.returnFlightSeats.length}
               </span>
@@ -120,7 +124,7 @@ const ViewItinerary = () => {
             <div className='flex w-5/12 text-grey-5 text-lg font-semibold leading-6 font-nunito mb-3'>
               <span className='mr-auto'>Amount paid</span>
               <span>
-                EGP{' '}
+                USD{' '}
                 {reservation?.returnFlight.ticketPrice *
                   reservation?.returnFlightSeats.length +
                   reservation?.departureFlight.ticketPrice *

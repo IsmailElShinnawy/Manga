@@ -8,7 +8,12 @@ import { useHttpClient } from '../../hooks/http-hook';
 import './Profile.scss';
 import { Button } from '../shared/UIKit/Buttons';
 import { useForm } from '../../hooks/form-hook';
-import { VALIDATOR_EMAIL, VALIDATOR_REQUIRE } from '../../utils/validators';
+import {
+  VALIDATOR_EMAIL,
+  VALIDATOR_EQUAL,
+  VALIDATOR_MINLENGTH,
+  VALIDATOR_REQUIRE,
+} from '../../utils/validators';
 import { remove, write } from '../../service/localStorage.service';
 
 import { ReactComponent as IconAirplane } from '../../assets/icons/IconAirplaneRight.svg';
@@ -19,7 +24,7 @@ import UserReservations from './UserReservations';
 const Profile = () => {
   const { account, updateAccount, signout } = useAuth();
   const location = useLocation();
-  const { sendRequest, isLoading } = useHttpClient();
+  const { sendRequest, isLoading, error } = useHttpClient();
   const { formState, inputHandler } = useForm(
     {
       firstName: { value: account.firstname || '', isValid: !!account.firstname },
@@ -35,6 +40,14 @@ const Profile = () => {
       !!account.email &&
       !!account.passportNumber
   );
+  const { formState: passwordFormState, inputHandler: passwordInputHandler } = useForm(
+    {
+      password: { value: '', isValid: false },
+      newPassword: { value: '', isValid: false },
+      confirmNewPassword: { value: '', isValid: false },
+    },
+    false
+  );
   const params = new URLSearchParams(location.search);
   let tab = params.get('tab');
 
@@ -46,6 +59,7 @@ const Profile = () => {
         lastname: formState.inputs.lastName.value,
         passportNumber: formState.inputs.passportNumber.value,
         email: formState.inputs.email.value,
+        password: formState.inputs.password.value,
       });
       if (response && response.data) {
         updateAccount(response.data);
@@ -55,10 +69,22 @@ const Profile = () => {
       console.log(err);
     }
   };
+  const handleChangePassword = async event => {
+    event.preventDefault();
+    try {
+      await sendRequest('/account/changePassword', 'PUT', {
+        password: passwordFormState.inputs.password.value,
+        newPassword: passwordFormState.inputs.newPassword.value,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   switch (tab) {
     case 'account':
     case 'trips':
+    case 'changepassword':
       break;
     default:
       tab = 'account';
@@ -94,6 +120,16 @@ const Profile = () => {
                 >
                   <IconPerson stroke='black' />
                   <span className='ml-3'>My Personal Information</span>
+                </li>
+              </Link>
+              <Link to='/profile?tab=changepassword'>
+                <li
+                  className={`${
+                    tab === 'changepassword' ? 'bg-pale-purple text-primary' : ''
+                  } rounded-md py-2 px-4 flex mb-4 hover:cursor-pointer`}
+                >
+                  <IconPerson stroke='black' />
+                  <span className='ml-3'>Change My Password</span>
                 </li>
               </Link>
               <li
@@ -174,6 +210,63 @@ const Profile = () => {
                       loadingText='Saving changes...'
                       onClick={handleSubmit}
                     />
+                  </div>
+                </form>
+              </div>
+            </>
+          )}
+          {tab === 'changepassword' && (
+            <>
+              <h1 className='text-2xl font-bold font-nunito text-grey-primary'>
+                Change Password
+              </h1>
+              <div className='w-full mt-4'>
+                <form onSubmit={handleChangePassword}>
+                  <Input
+                    id='password'
+                    required
+                    placeholder='Password'
+                    type='password'
+                    isValid={passwordFormState.inputs.password.isValid}
+                    validators={[VALIDATOR_MINLENGTH(3), VALIDATOR_REQUIRE()]}
+                    onInput={passwordInputHandler}
+                    errorMsg='This field is required'
+                  />
+                  <Input
+                    placeholder='New Password'
+                    type='password'
+                    id='newPassword'
+                    required
+                    validators={[VALIDATOR_MINLENGTH(3), VALIDATOR_REQUIRE()]}
+                    errorMsg='Field is required with minimum of 3 digits'
+                    onInput={passwordInputHandler}
+                    isValid={passwordFormState.inputs.newPassword.isValid}
+                  />
+                  <Input
+                    placeholder='Confirm New Password'
+                    type='password'
+                    id='confirmNewPassword'
+                    required
+                    validators={[
+                      VALIDATOR_REQUIRE(),
+                      VALIDATOR_EQUAL(passwordFormState.inputs.newPassword.value),
+                    ]}
+                    errorMsg='Passwords do not match'
+                    onInput={passwordInputHandler}
+                    isValid={passwordFormState.inputs.confirmNewPassword.isValid}
+                  />
+                  <div className='w-1/4'>
+                    <Button
+                      text='Save changes'
+                      type='submit'
+                      disabled={!passwordFormState.isValid}
+                      isLoading={isLoading}
+                      loadingText='Saving changes...'
+                      onClick={handleChangePassword}
+                    />
+                  </div>
+                  <div className='text-red-500'>
+                    {error && error.response.data.message}
                   </div>
                 </form>
               </div>

@@ -1,5 +1,53 @@
 const Flight = require('./flight.model');
 const moment = require('moment');
+const Reservation = require('../reservation/reservation.model');
+
+exports.getAlternative = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reservation = await Reservation.findById(id);
+    if (req.accountId != reservation.account) {
+      return res.status(401).send({ message: 'unauthorized' });
+    }
+    const { type } = req.body;
+    const flightToMatchId =
+      type === 'departure' ? reservation.returnFlight : reservation.departureFlight;
+    const flightToMatch = await Flight.findById(flightToMatchId);
+    const criteria = {
+      departureTerminal: flightToMatch.arrivalTerminal,
+      arrivalTerminal: flightToMatch.departureTerminal,
+      _id: {
+        $ne:
+          type === 'departure' ? reservation.departureFlight : reservation.returnFlight,
+      },
+    };
+    if (type === 'departure') {
+      criteria.arrivalTime = { $lt: flightToMatch.departureTime };
+    } else {
+      criteria.departureTime = { $gt: flightToMatch.arrivalTime };
+    }
+    const result = await Flight.find(criteria);
+    const checkSeats = (numberOfSeats, arr = []) =>
+      arr.reduce((prev, current) => (current ? 1 : 0) + prev, 0) >= numberOfSeats;
+    const flightCabin =
+      type == 'departure'
+        ? reservation.departureFlightCabin
+        : reservation.returnFlightCabin;
+    const numberOfReservedSeats =
+      type == 'departure'
+        ? reservation.departureFlightSeats.length
+        : reservation.returnFlightSeats.length;
+    const filteredResult = result.filter(flight =>
+      checkSeats(
+        numberOfReservedSeats,
+        flightCabin == 'economy' ? flight.allEconomySeats : flight.allBusinessSeats
+      )
+    );
+    return res.status(200).json({ status: 'success', data: filteredResult });
+  } catch (err) {
+    return res.status(500).json({ status: 'fail', message: err });
+  }
+};
 
 exports.returnFlights = async (req, res) => {
   const { cabinClass, numberOfPassengers = 0 } = req.body;
@@ -222,7 +270,10 @@ exports.userSearchFlights = async (req, res) => {
       const minArrivalTime = moment(arrivalDate);
       const maxArrivalTime = moment(arrivalDate).add(1, 'days');
       criteria.push({
-        arrivalTime: { $gte: minArrivalTime.toDate(), $lt: maxArrivalTime.toDate() },
+        arrivalTime: {
+          $gte: minArrivalTime.toDate(),
+          $lt: maxArrivalTime.toDate(),
+        },
       });
     }
     const flights = await Flight.find(criteria.length > 0 ? { $and: [...criteria] } : {});

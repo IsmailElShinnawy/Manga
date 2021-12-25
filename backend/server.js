@@ -36,10 +36,10 @@ app.get('/testmail', async (req, res) => {
   try {
     const info = await sendTestEmail();
     console.log(info);
-    res.json(info);
+    return res.json(info);
   } catch (err) {
     console.log(err);
-    res.send(500);
+    return res.send(500);
   }
 });
 

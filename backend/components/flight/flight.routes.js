@@ -10,6 +10,7 @@ const {
   viewFlight,
   getFlightSeatInfo,
   returnFlights,
+  getAlternative,
 } = require('./flight.controller');
 const { isAdmin, verifyToken } = require('../../middleware/authJwt');
 const router = express.Router();
@@ -23,5 +24,6 @@ router.get('/:id', viewFlight);
 router.post('/user/search', userSearchFlights);
 router.post('/seats/:id', [verifyToken], getFlightSeatInfo);
 router.post('/return/:id', returnFlights);
+router.post('/alternative/:id', [verifyToken], getAlternative);
 
 module.exports = router;

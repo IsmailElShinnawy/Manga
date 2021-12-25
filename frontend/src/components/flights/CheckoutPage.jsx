@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useReservation } from '../context/ReservationContext';
 import { useHttpClient } from '../../hooks/http-hook';
 import Loading from '../shared/UIKit/Loading';
-import { Input } from '../shared/UIKit/Inputs';
-import { Button } from '../shared/UIKit/Buttons';
+// import { Button } from '../shared/UIKit/Buttons';
 import FlightSummaryCard from './FlightSummaryCard';
-import { useHistory } from 'react-router-dom';
-import { remove } from '../../service/localStorage.service';
+// import { useHistory } from 'react-router-dom';
+// import { remove } from '../../service/localStorage.service';
+
+// stripe
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+import { stripeConfig } from '../../config/stripe.config';
+import CheckoutForm from './CheckoutForm';
+
+const stripePromise = loadStripe(stripeConfig.pk);
 
 const CheckoutPage = () => {
   const {
@@ -16,19 +24,21 @@ const CheckoutPage = () => {
     returnFlightCabin,
     departureFlightPassengers,
     returnFlightPassengers,
-    clear,
+    // clear,
   } = useReservation();
-  const history = useHistory();
+  // const history = useHistory();
   const { sendRequest: sendDepartureRequest, isLoading: isDepartureLoading } =
     useHttpClient();
   const { sendRequest: sendReturnRequest, isLoading: isReturnLoading } = useHttpClient();
-  const { sendRequest, isLoading, error } = useHttpClient();
+  const { sendRequest } = useHttpClient();
 
   const [departureFlightAvailableSeats, setDepartureFlightAvailableSeats] = useState([]);
   const [returnFlightAvailableSeats, setReturnFlightAvailableSeats] = useState([]);
 
   const [chosenDepartureSeats, setChosenDepartureSeats] = useState([]);
   const [chosenReturnSeats, setChosenReturnSeats] = useState([]);
+
+  const [clientSecret, setClientSecret] = useState(null);
 
   const addDepartureSeat = seat => {
     setChosenDepartureSeats(seats => [...seats, seat]);
@@ -74,30 +84,30 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleReserve = async () => {
-    try {
-      const response = await sendRequest('/reservation', 'POST', {
-        departureFlightId: departureFlight,
-        returnFlightId: returnFlight,
-        departureFlightSeats: chosenDepartureSeats,
-        returnFlightSeats: chosenReturnSeats,
-        departureFlightCabin,
-        returnFlightCabin,
-      });
-      if (response && response.data) {
-        clear();
-        remove('departureFlighCabin');
-        remove('returnFlighCabin');
-        remove('departureFlightPassengers');
-        remove('returnFlightPassengers');
-        remove('departureFlight');
-        remove('returnFlight');
-        history.push(`/itinerary/${response.data._id}`);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const handleReserve = async () => {
+  //   try {
+  //     const response = await sendRequest('/reservation', 'POST', {
+  //       departureFlightId: departureFlight,
+  //       returnFlightId: returnFlight,
+  //       departureFlightSeats: chosenDepartureSeats,
+  //       returnFlightSeats: chosenReturnSeats,
+  //       departureFlightCabin,
+  //       returnFlightCabin,
+  //     });
+  //     if (response && response.data) {
+  //       clear();
+  //       remove('departureFlighCabin');
+  //       remove('returnFlighCabin');
+  //       remove('departureFlightPassengers');
+  //       remove('returnFlightPassengers');
+  //       remove('departureFlight');
+  //       remove('returnFlight');
+  //       history.push(`/itinerary/${response.data._id}`);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchDepartureFlightSeats = async () => {
@@ -128,14 +138,37 @@ const CheckoutPage = () => {
         }
       } catch (err) {}
     };
+    const fetchClientSecret = async () => {
+      try {
+        const response = await sendRequest(
+          `/reservation/full-reservation-payment-secret`,
+          'POST',
+          {
+            departureFlightId: departureFlight,
+            returnFlightId: returnFlight,
+            departureFlightPassengers,
+            returnFlightPassengers,
+          }
+        );
+        if (response?.data) {
+          setClientSecret(response?.data.clientSecret);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
     if (departureFlight) fetchDepartureFlightSeats();
     if (returnFlight) fetchReturnFlightSeats();
+    if (departureFlight && returnFlight) fetchClientSecret();
   }, [
     departureFlight,
     departureFlightCabin,
+    departureFlightPassengers,
     returnFlight,
     returnFlightCabin,
+    returnFlightPassengers,
     sendDepartureRequest,
+    sendRequest,
     sendReturnRequest,
   ]);
 
@@ -214,24 +247,26 @@ const CheckoutPage = () => {
           <h3 className='text-grey-primary font-nunito text-lg leading-6 mb-6'>
             Credit Card Details
           </h3>
-          <div className='w-full'>
-            <Input type='text' placeholder='Name on card' />
-          </div>
-          <div className='w-full'>
-            <Input type='text' placeholder='Card Number' />
-          </div>
-          <div className='flex'>
-            <div className='w-1/2 pr-3'>
-              <Input type='text' placeholder='Expiration Date (MM/YY)' />
-            </div>
-            <div className='w-1/2 pl-3'>
-              <Input type='text' placeholder='CVV' display='flex' />
-            </div>
-          </div>
+          {clientSecret ? (
+            <Elements stripe={stripePromise} options={{ clientSecret }}>
+              <CheckoutForm
+                chosenDepartureSeats={chosenDepartureSeats}
+                chosenReturnSeats={chosenReturnSeats}
+                departureFlightPassengers={departureFlightPassengers}
+                returnFlightPassengers={returnFlightPassengers}
+                departureFlight={departureFlight}
+                returnFlight={returnFlight}
+                departureFlightCabin={departureFlightCabin}
+                returnFlightCabin={returnFlightCabin}
+              />
+            </Elements>
+          ) : (
+            <Loading />
+          )}
         </section>
         <section className='w-1/3'>
           <FlightSummaryCard noButton />
-          <div className='w-full flex flex-col items-end mt-9'>
+          {/* <div className='w-full flex flex-col items-end mt-9'>
             <div className='w-1/3'>
               <Button
                 text='Confirm and reserve'
@@ -251,7 +286,7 @@ const CheckoutPage = () => {
                 {error?.response?.data.message || 'Please make sure to select all seats'}
               </p>
             )}
-          </div>
+          </div> */}
         </section>
       </div>
     </main>
