@@ -27,9 +27,8 @@ exports.getAlternative = async (req, res) => {
       criteria.departureTime = { $gt: flightToMatch.arrivalTime };
     }
     const result = await Flight.find(criteria);
-    const checkSeats = (numberOfSeats, arr = []) => {
-      return arr.reduce((_, current) => (current ? 1 : 0), 0) >= numberOfSeats;
-    };
+    const checkSeats = (numberOfSeats, arr = []) =>
+      arr.reduce((prev, current) => (current ? 1 : 0) + prev, 0) >= numberOfSeats;
     const flightCabin =
       type == 'departure'
         ? reservation.departureFlightCabin
