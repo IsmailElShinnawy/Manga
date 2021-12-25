@@ -8,7 +8,14 @@ import { useReservation } from '../context/ReservationContext';
 import { useAuth } from '../context/AuthContext';
 import { useHistory } from 'react-router-dom';
 
-const FlightSummaryCard = ({ noButton }) => {
+const FlightSummaryCard = ({
+  noButton,
+  flight,
+  flightCabin,
+  updating,
+  oldPrice,
+  numberOfPassengers,
+}) => {
   const { sendRequest } = useHttpClient();
   const [departureFlight, setDepartureFlight] = useState();
   const [returnFlight, setReturnFlight] = useState();
@@ -55,6 +62,28 @@ const FlightSummaryCard = ({ noButton }) => {
       setReturnFlight(undefined);
     }
   }, [departureFlightId, returnFlightId, sendRequest]);
+
+  if (updating) {
+    return (
+      <div className='w-full pl-10'>
+        <div className='border-1 border-pale-purple p-6 rounded-xl mb-4'>
+          <FlightSummary
+            departureTerminal={flight?.departureTerminal}
+            arrivalTerminal={flight?.arrivalTerminal}
+            flightNumber={flight?.flightNumber}
+            departureTime={flight?.departureTime}
+            arrivalTime={flight?.arrivalTime}
+            cabinClass={flightCabin}
+          />
+        </div>
+        <FlightPriceCard
+          flightPrice={flight?.ticketPrice}
+          oldPrice={oldPrice}
+          numberOfPassengers={numberOfPassengers}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className='w-full pl-10'>

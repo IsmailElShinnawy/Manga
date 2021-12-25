@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHttpClient } from '../../hooks/http-hook';
 import Modal from '../shared/Modal/Modal';
+import Loading from '../shared/UIKit/Loading';
 import { Button } from '../shared/UIKit/Buttons';
 
 const Seats = ({ reservation, type, close }) => {
@@ -92,7 +93,7 @@ const Seats = ({ reservation, type, close }) => {
 };
 
 const EditReservationSeatsModal = ({ editing, close }) => {
-  const { sendRequest } = useHttpClient();
+  const { sendRequest, isLoading } = useHttpClient();
   const [reservation, setReservation] = useState(null);
 
   useEffect(() => {
@@ -109,11 +110,17 @@ const EditReservationSeatsModal = ({ editing, close }) => {
 
   return (
     <Modal show={Boolean(editing)} close={close} sm>
-      <h1 className='font-nunito text-grey-primary font-bold text-2xl leading-8 mr-auto mb-4'>
-        Edit {editing?.type} flight seats
-      </h1>
-      {reservation && (
-        <Seats reservation={reservation} type={editing?.type} close={close} />
+      {isLoading || !Boolean(reservation) ? (
+        <div className='flex w-full justify-center'>
+          <Loading />
+        </div>
+      ) : (
+        <>
+          <h1 className='font-nunito text-grey-primary font-bold text-2xl leading-8 mr-auto mb-4'>
+            Edit {editing?.type} flight seats
+          </h1>
+          <Seats reservation={reservation} type={editing?.type} close={close} />
+        </>
       )}
     </Modal>
   );

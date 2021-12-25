@@ -18,6 +18,7 @@ const FlightCard = ({
   noHover,
   noSeats,
   baggageAllowance,
+  oldPrice,
 }) => {
   return (
     <div
@@ -95,9 +96,24 @@ const FlightCard = ({
       </div>
       <div className='flex flex-col justify-around'>
         <span className='text-grey-4 font-nunito leading-5 mb-1 text-right'>Price</span>
-        <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
-          USD {price}
-        </span>
+        {oldPrice && oldPrice !== price ? (
+          <>
+            <span className='font-nunito text-right w-full text-grey-secondary leading-5 line-through'>
+              USD {oldPrice}
+            </span>
+            <span
+              className={`font-nunito text-right w-full ${
+                price > oldPrice ? 'text-red-500' : 'text-dark-green'
+              } leading-5`}
+            >
+              USD {price}
+            </span>
+          </>
+        ) : (
+          <span className='font-nunito text-right w-full text-grey-secondary leading-5'>
+            USD {price}
+          </span>
+        )}
       </div>
     </div>
   );
